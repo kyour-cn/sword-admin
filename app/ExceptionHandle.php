@@ -61,6 +61,7 @@ class ExceptionHandle extends Handle
                     'status' => 0,
                     'code' => CodeService::JWT_AUTH_ERROR['code'],
                     'message' => CodeService::JWT_AUTH_ERROR['message'],
+                    'data' => []
                 ]);
             }
         }

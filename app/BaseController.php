@@ -3,6 +3,7 @@ declare (strict_types = 1);
 
 namespace app;
 
+use app\service\CodeService;
 use think\App;
 use think\exception\ValidateException;
 use think\Validate;
@@ -93,18 +94,24 @@ abstract class BaseController
 
     /**
      * api接口返回数据，封装统一规则
-     * @param int $code 错误代码，0为无错误
-     * @param string $msg 响应提示文本
-     * @param array|object $result 响应数据主体
+     * @param int|string $code 错误代码，0为无错误
+     * @param string $message 响应提示文本
+     * @param array|object $data 响应数据主体
      * @return null
      */
-    protected function withData(int $code = 0, string $msg = '', $result = [])
+    protected function withData($code = 0, string $message = '', $data = [])
     {
+        if(gettype($code) == 'string') {
+            $codeData = CodeService::get($code);
+            $code = $codeData['code'];
+            $message or $message = $codeData['message'];
+        }
+
         $ret = [
             'status' => $code === 0?1:0,
             'code'   => $code,
-            'result'   => $result,
-            'message'=> $msg
+            'data'   => $data,
+            'message'=> $message
         ];
 
         header('Content-Type: application/json;charset=utf-8');
