@@ -2,7 +2,7 @@
 namespace app\admin\controller;
 
 use app\BaseController;
-use app\model\UserModel;
+use app\model\system\UserModel;
 use thans\jwt\facade\JWTAuth;
 
 class Login extends BaseController

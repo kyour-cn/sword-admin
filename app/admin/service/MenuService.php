@@ -2,7 +2,7 @@
 
 namespace app\admin\service;
 
-use app\model\MenuModel;
+use app\model\system\MenuModel;
 
 class MenuService
 {
@@ -50,7 +50,7 @@ class MenuService
     }
 
     /**
-     * 创建菜单
+     * 创建、修改菜单
      */
     public function createMenu($data)
     {
@@ -64,7 +64,7 @@ class MenuService
             isset($data['parentId']) and $menu['pid'] = $data['parentId'];
             isset($data['name']) and $menu['name'] = $data['name'];
             isset($data['path']) and $menu['path'] = $data['path'];
-            isset($data['component']) and $menu['component'] = $data['component'];
+            isset($data['sort']) and $menu['sort'] = $data['sort'];
             isset($data['component']) and $menu['component'] = $data['component'];
             if(isset($data['meta'])){
                 $menu['meta'] = json_encode($data['meta'], JSON_UNESCAPED_UNICODE);
@@ -81,9 +81,6 @@ class MenuService
                 'component' => $data['component'],
                 "meta" => json_encode($data['meta'], JSON_UNESCAPED_UNICODE),
                 'title' => $data['meta']['title'],
-//                'type' => $data['meta']['type'],
-//                'icon' => $data['meta']['icon']?? '',
-//                'hidden' => (int) ($data['meta']['hidden']?? 0)
             ];
             $model->save($menu);
         }

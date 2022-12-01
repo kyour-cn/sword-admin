@@ -2,8 +2,8 @@
 
 namespace app\admin\service;
 
-use app\model\MenuModel;
-use app\model\RoleModel;
+use app\model\system\MenuModel;
+use app\model\system\RoleModel;
 
 class RoleService
 {
@@ -21,7 +21,7 @@ class RoleService
             'total' => $list->total(),
             'page' => $list->currentPage(),
             'pageSize' => $pageSize,
-            'row' => $list->listRows()
+            'rows' => $list->toArray()['data']
         ];
     }
 

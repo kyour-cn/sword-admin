@@ -1,6 +1,6 @@
 <?php declare (strict_types = 1);
 
-namespace app\model;
+namespace app\model\system;
 
 use think\Model;
 

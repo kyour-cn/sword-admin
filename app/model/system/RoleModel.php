@@ -1,11 +1,11 @@
 <?php declare (strict_types = 1);
 
-namespace app\model;
+namespace app\model\system;
 
 use think\Model;
 
 class RoleModel extends Model
 {
-    protected $name = 'role';
+    protected $name = 'roles';
 
 }

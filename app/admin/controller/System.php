@@ -1,6 +1,7 @@
 <?php
 namespace app\admin\controller;
 
+use app\admin\service\AppService;
 use app\admin\service\MenuService;
 use app\admin\service\RoleService;
 use app\BaseController;
@@ -15,6 +16,16 @@ class System extends BaseController
     public function index()
     {
         echo "hello admin.";
+    }
+
+    /**
+     * 应用列表
+     */
+    public function appList()
+    {
+        $service = new AppService();
+        $list = $service->getList();
+        return $this->withData(200, 'success', $list);
     }
 
     /**

@@ -2,8 +2,7 @@
 
 namespace app\admin\service;
 
-use app\model\MenuModel;
-use thans\jwt\facade\JWTAuth;
+use app\model\system\MenuModel;
 
 class RbacService
 {
