@@ -6,11 +6,21 @@ use app\model\system\MenuModel;
 
 class MenuService
 {
-    public function getList()
+
+    /**
+     * 获取数据
+     * @param array $params
+     * @return array
+     */
+    public function getList(array $params): array
     {
         $model = MenuModel::newQuery()
             ->order('sort')
             ->where('status', 1);
+
+        if(!empty($params['appid'])){
+            $model->where('appid', $params['appid']);
+        }
 
         $list = $model->column('*','id');
 
@@ -34,7 +44,7 @@ class MenuService
                     'id' => $value['id'],
                     'name' => $value['name'],
                     'path' => $value['path'],
-                    'component' => $value['component']??'',
+                    'component' => $value['component'],
                     'sort' => $value['sort'],
                     'meta' => json_decode($value['meta'], true)
                 ];
@@ -52,15 +62,15 @@ class MenuService
     /**
      * 创建、修改菜单
      */
-    public function createMenu($data)
+    public function editOrAdd($data): MenuModel
     {
         $model = new MenuModel();
 
         if(!empty($data['id'])){
-
             $menu = [];
             empty($data['parentId']) and $data['parentId'] = 0;
-            is_array($data['parentId']) and $data['parentId'] = $data['parentId'][0];
+            is_array($data['parentId']) and $data['parentId'] = $data['parentId'][0]; //适配编辑页
+            isset($data['appid']) and $menu['appid'] = $data['appid'];
             isset($data['parentId']) and $menu['pid'] = $data['parentId'];
             isset($data['name']) and $menu['name'] = $data['name'];
             isset($data['path']) and $menu['path'] = $data['path'];
@@ -73,8 +83,9 @@ class MenuService
 
             $model->where('id', $data['id'])->update($menu);
         }else{
-
+            //新增
             $menu = [
+                'appid' => $data['appid']?? 0,
                 'pid' => $data['parentId']?: 0,
                 'name' => $data['name'],
                 'path' => $data['path'],
@@ -93,7 +104,7 @@ class MenuService
      * @param $ids
      * @return bool
      */
-    public function deleteMenu($ids): bool
+    public function delete($ids): bool
     {
         return MenuModel::newQuery()
             ->whereIn('id', $ids)

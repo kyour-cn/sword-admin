@@ -4,7 +4,7 @@ namespace app\admin\service;
 
 use app\model\system\MenuModel;
 
-class RbacService
+class AuthService
 {
 
     /**

@@ -1,7 +1,7 @@
 <?php
 namespace app\admin\controller;
 
-use app\admin\service\RbacService;
+use app\admin\service\AuthService;
 use app\BaseController;
 use app\middleware\JwtMiddleware;
 
@@ -21,7 +21,7 @@ class Index extends BaseController
      */
     public function menu()
     {
-        $service = new RbacService();
+        $service = new AuthService();
         $menu = $service->getUserMenu();
 
         return $this->withData(0, 'success', [

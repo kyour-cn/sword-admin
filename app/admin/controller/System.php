@@ -23,9 +23,32 @@ class System extends BaseController
      */
     public function appList()
     {
+        $params = input();
         $service = new AppService();
-        $list = $service->getList();
+        $list = $service->getList($params);
         return $this->withData(200, 'success', $list);
+    }
+
+    /**
+     * 编辑应用
+     */
+    public function editApp()
+    {
+        $data = input();
+        $service = new AppService();
+        $res = $service->editOrAdd($data);
+        return $this->withData(0, '编辑成功', $res);
+    }
+
+    /**
+     * 删除应用
+     */
+    public function deleteApp()
+    {
+        $ids = input('ids');
+        $service = new AppService();
+        $res = $service->delete($ids);
+        return $this->withData(0, '删除成功', $res);
     }
 
     /**
@@ -33,8 +56,9 @@ class System extends BaseController
      */
     public function menuList()
     {
+        $params = input();
         $service = new MenuService();
-        $menu = $service->getList();
+        $menu = $service->getList($params);
         return $this->withData(0, 'success', $menu);
     }
 
@@ -45,7 +69,7 @@ class System extends BaseController
     {
         $data = input();
         $service = new MenuService();
-        $res = $service->createMenu($data);
+        $res = $service->editOrAdd($data);
         return $this->withData(0, '编辑成功', $res);
     }
 
@@ -56,7 +80,7 @@ class System extends BaseController
     {
         $ids = input('ids');
         $service = new MenuService();
-        $res = $service->deleteMenu($ids);
+        $res = $service->delete($ids);
         return $this->withData(0, '删除成功', $res);
     }
 
@@ -65,8 +89,31 @@ class System extends BaseController
      */
     public function roleList()
     {
+        $params = input();
         $service = new RoleService();
-        $list = $service->getList();
+        $list = $service->getList($params);
         return $this->withData(200, 'success', $list);
+    }
+
+    /**
+     * 编辑角色
+     */
+    public function editRole()
+    {
+        $data = input();
+        $service = new MenuService();
+        $res = $service->editOrAdd($data);
+        return $this->withData(0, '编辑成功', $res);
+    }
+
+    /**
+     * 删除角色
+     */
+    public function deleteRole()
+    {
+        $ids = input('ids');
+        $service = new MenuService();
+        $res = $service->delete($ids);
+        return $this->withData(0, '删除成功', $res);
     }
 }

@@ -6,6 +6,6 @@ use think\Model;
 
 class RuleModel extends Model
 {
-    protected $name = 'rules';
+    protected $name = 'rule';
 
 }

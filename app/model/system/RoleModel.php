@@ -6,6 +6,6 @@ use think\Model;
 
 class RoleModel extends Model
 {
-    protected $name = 'roles';
+    protected $name = 'role';
 
 }
