@@ -20,7 +20,6 @@ class UserService
         $pageSize = input('pageSize');
 
         $model = UserModel::newQuery()
-            ->order('sort')
             ->where('status', 1);
 
         $list = $model->paginate($pageSize);

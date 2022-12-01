@@ -32,7 +32,7 @@ class System extends BaseController
     }
 
     /**
-     * 编辑应用
+     * 编辑、新增应用
      */
     public function editApp()
     {
@@ -65,7 +65,7 @@ class System extends BaseController
     }
 
     /**
-     * 编辑菜单
+     * 编辑、新增菜单
      */
     public function editMenu()
     {
@@ -98,7 +98,7 @@ class System extends BaseController
     }
 
     /**
-     * 编辑权限
+     * 编辑、新增权限
      */
     public function editRule()
     {
@@ -131,7 +131,7 @@ class System extends BaseController
     }
 
     /**
-     * 编辑角色
+     * 编辑、新增角色
      */
     public function editRole()
     {
@@ -164,7 +164,7 @@ class System extends BaseController
     }
 
     /**
-     * 编辑用户
+     * 编辑、新增用户
      */
     public function editUser()
     {
