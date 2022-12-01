@@ -4,6 +4,8 @@ namespace app\admin\controller;
 use app\admin\service\AppService;
 use app\admin\service\MenuService;
 use app\admin\service\RoleService;
+use app\admin\service\RuleService;
+use app\admin\service\UserService;
 use app\BaseController;
 use app\middleware\JwtMiddleware;
 
@@ -85,6 +87,39 @@ class System extends BaseController
     }
 
     /**
+     * 权限菜单
+     */
+    public function ruleList()
+    {
+        $params = input();
+        $service = new RuleService();
+        $list = $service->getList($params);
+        return $this->withData(200, 'success', $list);
+    }
+
+    /**
+     * 编辑权限
+     */
+    public function editRule()
+    {
+        $data = input();
+        $service = new RuleService();
+        $res = $service->editOrAdd($data);
+        return $this->withData(0, '编辑成功', $res);
+    }
+
+    /**
+     * 删除权限
+     */
+    public function deleteRule()
+    {
+        $ids = input('ids');
+        $service = new RuleService();
+        $res = $service->delete($ids);
+        return $this->withData(0, '删除成功', $res);
+    }
+
+    /**
      * 角色菜单
      */
     public function roleList()
@@ -101,7 +136,7 @@ class System extends BaseController
     public function editRole()
     {
         $data = input();
-        $service = new MenuService();
+        $service = new RoleService();
         $res = $service->editOrAdd($data);
         return $this->withData(0, '编辑成功', $res);
     }
@@ -112,7 +147,40 @@ class System extends BaseController
     public function deleteRole()
     {
         $ids = input('ids');
-        $service = new MenuService();
+        $service = new RoleService();
+        $res = $service->delete($ids);
+        return $this->withData(0, '删除成功', $res);
+    }
+
+    /**
+     * 用户
+     */
+    public function userList()
+    {
+        $params = input();
+        $service = new UserService();
+        $list = $service->getList($params);
+        return $this->withData(200, 'success', $list);
+    }
+
+    /**
+     * 编辑用户
+     */
+    public function editUser()
+    {
+        $data = input();
+        $service = new UserService();
+        $res = $service->editOrAdd($data);
+        return $this->withData(0, '编辑成功', $res);
+    }
+
+    /**
+     * 删除用户
+     */
+    public function deleteUser()
+    {
+        $ids = input('ids');
+        $service = new UserService();
         $res = $service->delete($ids);
         return $this->withData(0, '删除成功', $res);
     }

@@ -18,6 +18,7 @@ class AuthService
 
         $model = MenuModel::newQuery()
             ->order('sort')
+            ->where('appid', 1)
             ->where('status', 1);
 
         if($exclude)
@@ -27,6 +28,5 @@ class AuthService
 
         return MenuService::recursionMenu($list, 0);
     }
-
 
 }

@@ -3,9 +3,10 @@
 namespace app\admin\service;
 
 use app\model\system\RoleModel;
+use app\model\system\UserModel;
 use think\db\exception\DbException;
 
-class RoleService
+class UserService
 {
 
     /**
@@ -18,7 +19,7 @@ class RoleService
     {
         $pageSize = input('pageSize');
 
-        $model = RoleModel::newQuery()
+        $model = UserModel::newQuery()
             ->order('sort')
             ->where('status', 1);
 
@@ -55,7 +56,7 @@ class RoleService
      */
     public function delete($ids): bool
     {
-        return RoleModel::newQuery()
+        return UserModel::newQuery()
             ->whereIn('id', $ids)
             ->delete();
     }
