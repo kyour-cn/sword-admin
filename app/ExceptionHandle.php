@@ -71,9 +71,9 @@ class ExceptionHandle extends Handle
 
         if($code != 0){
             if($request->isAjax()){
-                return response($message);
-            }else{
                 return $this->withData($code, $message);
+            }else{
+                return response($message);
             }
         }
 
