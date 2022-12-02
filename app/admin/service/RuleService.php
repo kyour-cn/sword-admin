@@ -15,8 +15,7 @@ class RuleService
     public function getList(array $params): array
     {
         $model = RuleModel::newQuery()
-            ->order('sort')
-            ->where('status', 1);
+            ->order('sort');
 
         if(!empty($params['appid'])){
             $model->where('appid', $params['appid']);
@@ -73,6 +72,7 @@ class RuleService
             isset($data['appid']) and $menu['appid'] = $data['appid'];
             isset($data['parentId']) and $menu['pid'] = $data['parentId'];
             isset($data['name']) and $menu['name'] = $data['name'];
+            isset($data['alias']) and $menu['alias'] = $data['alias'];
             isset($data['path']) and $menu['path'] = $data['path'];
             isset($data['sort']) and $menu['sort'] = $data['sort'];
 

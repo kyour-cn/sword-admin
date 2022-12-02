@@ -11,6 +11,6 @@ class RoleModel extends Model
     // 定义自动时间戳
     protected $autoWriteTimestamp = 'int';
     protected $createTime = 'create_time';
-    protected $updateTime = false;
+    protected $updateTime = 'update_time';
 
 }

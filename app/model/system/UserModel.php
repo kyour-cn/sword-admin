@@ -15,4 +15,9 @@ class UserModel extends Model
     protected string $deleteTime = 'delete_time';
     protected $defaultSoftDelete = 0;
 
+    //定义自动时间戳
+    protected $autoWriteTimestamp = 'int';
+    protected $createTime = 'register_time';
+    protected $updateTime = false;
+
 }

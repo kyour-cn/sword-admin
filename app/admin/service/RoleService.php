@@ -16,11 +16,17 @@ class RoleService
      */
     public function getList(array $params): array
     {
-        $pageSize = input('pageSize');
+        $pageSize = input('pageSize', 10);
 
         $model = RoleModel::newQuery()
-            ->order('sort')
-            ->where('status', 1);
+            ->order('sort');
+
+        if(!empty($params['appid'])){
+            $model->where('appid', $params['appid']);
+        }
+        if(!empty($params['name'])){
+            $model->where('name', 'like', "%{$params['name']}%");
+        }
 
         $list = $model->paginate($pageSize);
 

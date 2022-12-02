@@ -17,10 +17,9 @@ class UserService
      */
     public function getList(array $params): array
     {
-        $pageSize = input('pageSize');
+        $pageSize = input('pageSize', 10);
 
-        $model = UserModel::newQuery()
-            ->where('status', 1);
+        $model = UserModel::newQuery();
 
         $list = $model->paginate($pageSize);
 
