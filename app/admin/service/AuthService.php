@@ -29,4 +29,31 @@ class AuthService
         return MenuService::recursionMenu($list, 0);
     }
 
+    /**
+     * @return void
+     */
+    public function checkAuth(int $uid)
+    {
+
+        $request = request();
+        $appName = app('http')->getName();
+        $controller =  $request->controller();
+        $action = $request->action();
+
+        //当前请求的Path
+        $path =  "$appName/$controller/$action";
+
+
+    }
+
+    /**
+     * 判断用户是否为超级管理员
+     * @param int $uid
+     * @return bool
+     */
+    public function isRootUser(int $uid): bool
+    {
+        return $uid == 1;
+    }
+
 }

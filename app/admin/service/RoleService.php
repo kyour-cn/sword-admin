@@ -47,7 +47,7 @@ class RoleService
     {
         $model = new RoleModel();
         if (!empty($data['id'])) {
-            $model->where('id', $data['id'])->update($data);
+            $model->where('id', $data['id'])->save($data);
         }else{
             $model->save($data);
         }

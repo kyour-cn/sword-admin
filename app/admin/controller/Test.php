@@ -16,4 +16,14 @@ class Test extends BaseController
             'menu' => $menu
         ]);
     }
+
+    public function path()
+    {
+        $request = request();
+        $appName = app('http')->getName();
+        $controller =  $request->controller();
+        $action = $request->action();
+
+        return "$appName.$controller.$action";
+    }
 }

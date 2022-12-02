@@ -40,7 +40,7 @@ class AppService
     {
         $model = new AppModel();
         if (!empty($data['id'])) {
-            $model->where('id', $data['id'])->update($data);
+            $model->where('id', $data['id'])->save($data);
         }else{
             $model->save($data);
         }

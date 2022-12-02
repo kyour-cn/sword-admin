@@ -76,7 +76,7 @@ class RuleService
             isset($data['path']) and $menu['path'] = $data['path'];
             isset($data['sort']) and $menu['sort'] = $data['sort'];
 
-            $model->where('id', $data['id'])->update($menu);
+            $model->where('id', $data['id'])->save($menu);
         }else{
             //新增
             $menu = [

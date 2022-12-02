@@ -81,7 +81,7 @@ class MenuService
                 $menu['title'] = $data['meta']['title'];
             }
 
-            $model->where('id', $data['id'])->update($menu);
+            $model->where('id', $data['id'])->save($menu);
         }else{
             //新增
             $menu = [

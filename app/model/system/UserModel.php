@@ -20,4 +20,14 @@ class UserModel extends Model
     protected $createTime = 'register_time';
     protected $updateTime = false;
 
+    /**
+     * 密码修改器
+     * @param $value
+     * @return string
+     */
+    public function setPasswordAttr($value): string
+    {
+        return md5($value);
+    }
+
 }

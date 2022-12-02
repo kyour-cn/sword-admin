@@ -1,6 +1,7 @@
 <?php
 namespace app;
 
+use app\exception\MsgException;
 use app\service\CodeService;
 use thans\jwt\exception\JWTException;
 use think\db\exception\DataNotFoundException;
@@ -27,6 +28,9 @@ class ExceptionHandle extends Handle
         ModelNotFoundException::class,
         DataNotFoundException::class,
         ValidateException::class,
+
+        JWTException::class,
+        MsgException::class
     ];
 
     /**
@@ -52,21 +56,55 @@ class ExceptionHandle extends Handle
      */
     public function render($request, Throwable $e): Response
     {
-        // Jwt验证异常
-        if ($e instanceof JWTException) {
+        $code = 0;
+        $message = '';
+
+        if($e instanceof JWTException) {
+            // Jwt验证异常
+            $code = CodeService::JWT_AUTH_ERROR['code'];
+            $message = CodeService::JWT_AUTH_ERROR['message'];
+        }elseif($e instanceof MsgException) {
+            //错误提示消息
+            $code = $e->getCode();
+            $message = $e->getMessage();
+        }
+
+        if($code != 0){
             if($request->isAjax()){
-                return response($e->getMessage());
+                return response($message);
             }else{
-                return json([
-                    'status' => 0,
-                    'code' => CodeService::JWT_AUTH_ERROR['code'],
-                    'message' => CodeService::JWT_AUTH_ERROR['message'],
-                    'data' => []
-                ]);
+                return $this->withData($code, $message);
             }
         }
 
         // 其他错误交给系统处理
         return parent::render($request, $e);
+    }
+
+    /**
+     * api接口返回数据，封装统一规则
+     * @param int|string $code 错误代码，0为无错误
+     * @param string $message 响应提示文本
+     * @param array|object $data 响应数据主体
+     * @return null
+     */
+    protected function withData($code = 0, string $message = '', $data = [])
+    {
+        if(gettype($code) == 'string') {
+            $codeData = CodeService::get($code);
+            $code = $codeData['code'];
+            $message or $message = $codeData['message'];
+        }
+
+        $ret = [
+            'status' => $code === 0?1:0,
+            'code'   => $code,
+            'data'   => $data,
+            'message'=> $message
+        ];
+
+        header('Content-Type: application/json;charset=utf-8');
+        header('Access-Control-Allow-Origin: *');
+        return json($ret);
     }
 }

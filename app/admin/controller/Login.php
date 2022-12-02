@@ -12,10 +12,13 @@ class Login extends BaseController
         $username = input('username');
         $password = input('password');
 
+        $field = 'id,username,realname,mobile,avatar,status';
+
         //登录判断
         $user = UserModel::where('id', 1)
             ->where('username|mobile', $username)
             ->where('password', $password)
+            ->field($field)
             ->find();
         if(!$user){
             return $this->withData(1, '账号或密码不正确');

@@ -7,12 +7,14 @@ use app\admin\service\RoleService;
 use app\admin\service\RuleService;
 use app\admin\service\UserService;
 use app\BaseController;
+use app\middleware\AuthMiddleware;
 use app\middleware\JwtMiddleware;
 
 class System extends BaseController
 {
     protected $middleware = [
-        JwtMiddleware::class
+        JwtMiddleware::class,
+        AuthMiddleware::class
     ];
 
     public function index()
