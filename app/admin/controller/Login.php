@@ -24,6 +24,7 @@ class Login extends BaseController
             return $this->withData(1, '账号或密码不正确');
         }
 
+
         //更新登录时间
         $user->save([
             'login_time' => time()

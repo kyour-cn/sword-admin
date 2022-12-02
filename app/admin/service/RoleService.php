@@ -18,7 +18,7 @@ class RoleService
     {
         $pageSize = input('pageSize', 10);
 
-        $model = RoleModel::newQuery()
+        $model = (new RoleModel())
             ->order('sort');
 
         if(!empty($params['appid'])){
@@ -61,8 +61,7 @@ class RoleService
      */
     public function delete($ids): bool
     {
-        return RoleModel::newQuery()
-            ->whereIn('id', $ids)
+        return RoleModel::whereIn('id', $ids)
             ->delete();
     }
 }

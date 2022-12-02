@@ -16,7 +16,7 @@ class AuthService
     {
 //        $payload = JWTAuth::auth();
 
-        $model = MenuModel::newQuery()
+        $model = (new MenuModel())
             ->order('sort')
             ->where('appid', 1)
             ->where('status', 1);

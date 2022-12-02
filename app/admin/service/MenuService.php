@@ -14,7 +14,7 @@ class MenuService
      */
     public function getList(array $params): array
     {
-        $model = MenuModel::newQuery()
+        $model = (new MenuModel())
             ->order('sort')
             ->where('status', 1);
 
@@ -106,8 +106,7 @@ class MenuService
      */
     public function delete($ids): bool
     {
-        return MenuModel::newQuery()
-            ->whereIn('id', $ids)
+        return MenuModel::whereIn('id', $ids)
             ->delete();
     }
 }

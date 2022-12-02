@@ -4,6 +4,7 @@ namespace app\model\system;
 
 use think\Model;
 use think\model\concern\SoftDelete;
+use think\model\relation\HasOne;
 
 class UserModel extends Model
 {
@@ -21,13 +22,12 @@ class UserModel extends Model
     protected $updateTime = false;
 
     /**
-     * 密码修改器
-     * @param $value
-     * @return string
+     * 角色模型管理
+     * @return HasOne
      */
-    public function setPasswordAttr($value): string
+    public function role(): HasOne
     {
-        return md5($value);
+        return $this->hasOne(RoleModel::class);
     }
 
 }

@@ -14,7 +14,7 @@ class RuleService
      */
     public function getList(array $params): array
     {
-        $model = RuleModel::newQuery()
+        $model = (new RuleModel())
             ->order('sort');
 
         if(!empty($params['appid'])){
@@ -98,8 +98,7 @@ class RuleService
      */
     public function delete($ids): bool
     {
-        return RuleModel::newQuery()
-            ->whereIn('id', $ids)
+        return RuleModel::whereIn('id', $ids)
             ->delete();
     }
 }

@@ -43,6 +43,11 @@ class UserService
      */
     public function editOrAdd(array $data): UserModel
     {
+        //密码转md5
+        if(!empty($data['password'])){
+            $data['password'] = md5($data['password']);
+        }
+
         $model = new UserModel();
         if (!empty($data['id'])) {
 
@@ -51,7 +56,8 @@ class UserService
                 throw new MsgException($check['field']. '已存在，请检测数据是否正确：');
             }
 
-            $model->where('id', $data['id'])->save($data);
+            $model->where('id', $data['id'])
+                ->save($data);
         }else{
 
             //验证用户是否已存在
@@ -71,9 +77,14 @@ class UserService
      */
     public function delete($ids): bool
     {
-        return UserModel::newQuery()
-            ->whereIn('id', $ids)
-            ->delete();
+        if(is_array($ids)){
+            foreach ($ids as $id){
+                UserModel::destroy($id);
+            }
+        }else{
+            UserModel::destroy($ids);
+        }
+        return true;
     }
 
     /**

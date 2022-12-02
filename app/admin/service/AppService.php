@@ -18,7 +18,7 @@ class AppService
     {
         $pageSize = $params['pageSize']?? 10;
 
-        $model = AppModel::newQuery()
+        $model = (new AppModel())
             ->order('sort');
 
         $list = $model->paginate($pageSize);
@@ -54,8 +54,7 @@ class AppService
      */
     public function delete($ids): bool
     {
-        return AppModel::newQuery()
-            ->whereIn('id', $ids)
+        return AppModel::whereIn('id', $ids)
             ->delete();
     }
 
