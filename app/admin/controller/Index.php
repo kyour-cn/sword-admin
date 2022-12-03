@@ -1,9 +1,9 @@
 <?php
 namespace app\admin\controller;
 
-use app\admin\service\AuthService;
 use app\BaseController;
 use app\middleware\JwtMiddleware;
+use app\service\AuthService;
 
 class Index extends BaseController
 {

@@ -1,8 +1,9 @@
 <?php
 namespace app\admin\controller;
 
-use app\admin\service\AuthService;
 use app\BaseController;
+use app\service\AuthService;
+use app\service\CodeService;
 
 class Test extends BaseController
 {
@@ -25,5 +26,10 @@ class Test extends BaseController
         $action = $request->action();
 
         return "$appName.$controller.$action";
+    }
+
+    public function code()
+    {
+        throw CodeService::makeException('API_AUTH_ERROR');
     }
 }

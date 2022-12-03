@@ -1,8 +1,11 @@
 <?php
 
-namespace app\admin\service;
+namespace app\service;
 
+use app\admin\service\MenuService;
+use app\exception\MsgException;
 use app\model\system\MenuModel;
+use thans\jwt\facade\JWTAuth;
 
 class AuthService
 {
@@ -30,11 +33,11 @@ class AuthService
     }
 
     /**
-     * @return void
+     * 检查当前访问权限
+     * @throws MsgException
      */
-    public function checkAuth(int $uid)
+    public function checkAuth(): bool
     {
-
         $request = request();
         $appName = app('http')->getName();
         $controller =  $request->controller();
@@ -43,7 +46,17 @@ class AuthService
         //当前请求的Path
         $path =  "$appName/$controller/$action";
 
+        //获取登录信息
+        $payload = JWTAuth::auth();
 
+        $uid = $payload['uid']->getValue();
+        $roleId = $payload['role']->getValue();
+
+        if($roleId != 1){
+            throw CodeService::makeException('API_AUTH_ERROR');
+        }
+
+        return true;
     }
 
     /**

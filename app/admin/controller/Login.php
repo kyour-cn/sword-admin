@@ -12,18 +12,16 @@ class Login extends BaseController
         $username = input('username');
         $password = input('password');
 
-        $field = 'id,username,realname,mobile,avatar,status';
+        $field = 'id,username,realname,mobile,avatar,status,role_id';
 
         //登录判断
-        $user = UserModel::where('id', 1)
-            ->where('username|mobile', $username)
+        $user = UserModel::where('username|mobile', $username)
             ->where('password', $password)
             ->field($field)
             ->find();
         if(!$user){
             return $this->withData(1, '账号或密码不正确');
         }
-
 
         //更新登录时间
         $user->save([
@@ -32,7 +30,8 @@ class Login extends BaseController
 
         //开始创建token
         $token = JWTAuth::builder([
-            'uid' => $user->id
+            'uid' => $user->id,
+            'role' => $user->role_id
         ]);
 
         return $this->withData(0, 'success', [

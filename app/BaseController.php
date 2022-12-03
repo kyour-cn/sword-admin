@@ -4,6 +4,7 @@ declare (strict_types = 1);
 namespace app;
 
 use app\service\CodeService;
+use app\service\ResponseService;
 use think\App;
 
 /**
@@ -62,22 +63,7 @@ abstract class BaseController
      */
     protected function withData($code = 0, string $message = '', $data = [])
     {
-        if(gettype($code) == 'string') {
-            $codeData = CodeService::get($code);
-            $code = $codeData['code'];
-            $message or $message = $codeData['message'];
-        }
-
-        $ret = [
-            'status' => $code === 0?1:0,
-            'code'   => $code,
-            'data'   => $data,
-            'message'=> $message
-        ];
-
-        header('Content-Type: application/json;charset=utf-8');
-        header('Access-Control-Allow-Origin: *');
-        return json($ret);
+        return ResponseService::jsonPack($code, $message, $data);
     }
 
 }

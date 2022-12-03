@@ -3,6 +3,7 @@ namespace app;
 
 use app\exception\MsgException;
 use app\service\CodeService;
+use app\service\ResponseService;
 use thans\jwt\exception\JWTException;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\ModelNotFoundException;
@@ -71,7 +72,7 @@ class ExceptionHandle extends Handle
 
         if($code != 0){
             if($request->isAjax()){
-                return $this->withData($code, $message);
+                return ResponseService::jsonPack($code, $message);
             }else{
                 return response($message);
             }
@@ -81,30 +82,4 @@ class ExceptionHandle extends Handle
         return parent::render($request, $e);
     }
 
-    /**
-     * api接口返回数据，封装统一规则
-     * @param int|string $code 错误代码，0为无错误
-     * @param string $message 响应提示文本
-     * @param array|object $data 响应数据主体
-     * @return null
-     */
-    protected function withData($code = 0, string $message = '', $data = [])
-    {
-        if(gettype($code) == 'string') {
-            $codeData = CodeService::get($code);
-            $code = $codeData['code'];
-            $message or $message = $codeData['message'];
-        }
-
-        $ret = [
-            'status' => $code === 0?1:0,
-            'code'   => $code,
-            'data'   => $data,
-            'message'=> $message
-        ];
-
-        header('Content-Type: application/json;charset=utf-8');
-        header('Access-Control-Allow-Origin: *');
-        return json($ret);
-    }
 }

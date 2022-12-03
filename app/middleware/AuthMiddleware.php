@@ -2,16 +2,21 @@
 
 namespace app\middleware;
 
-use thans\jwt\facade\JWTAuth;
+use app\exception\MsgException;
+use app\service\AuthService;
+use app\service\ResponseService;
 
 class AuthMiddleware
 {
     public function handle($request, \Closure $next)
     {
-        //获取登录信息
-        $payload = JWTAuth::auth();
-
-//        var_dump($payload);
+        try{
+            //接口鉴权
+            $service = new AuthService();
+            $service->checkAuth();
+        }catch (MsgException $e){
+            return ResponseService::jsonPack($e->getCode(), $e->getMessage());
+        }
 
         return $next($request);
     }
