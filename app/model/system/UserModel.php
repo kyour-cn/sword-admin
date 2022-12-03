@@ -25,9 +25,9 @@ class UserModel extends Model
      * 角色模型管理
      * @return HasOne
      */
-    public function role(): HasOne
-    {
-        return $this->hasOne(RoleModel::class);
-    }
+//    public function role(): HasOne
+//    {
+//        return $this->hasOne(RoleModel::class);
+//    }
 
 }

@@ -19,7 +19,7 @@ class MenuService
             ->where('status', 1);
 
         if(!empty($params['appid'])){
-            $model->where('appid', $params['appid']);
+            $model = $model->where('appid', $params['appid']);
         }
 
         $list = $model->column('*','id');
@@ -69,7 +69,7 @@ class MenuService
         if(!empty($data['id'])){
             $menu = [];
             empty($data['parentId']) and $data['parentId'] = 0;
-            is_array($data['parentId']) and $data['parentId'] = $data['parentId'][0]; //适配编辑页
+            is_array($data['parentId']) and $data['parentId'] = $data['parentId'][count($data['parentId']) -1]; //适配编辑页
             isset($data['appid']) and $menu['appid'] = $data['appid'];
             isset($data['parentId']) and $menu['pid'] = $data['parentId'];
             isset($data['name']) and $menu['name'] = $data['name'];
@@ -81,7 +81,8 @@ class MenuService
                 $menu['title'] = $data['meta']['title'];
             }
 
-            $model->where('id', $data['id'])->save($menu);
+            $model->where('id', $data['id'])
+                ->save($menu);
         }else{
             //新增
             $menu = [

@@ -22,10 +22,10 @@ class RoleService
             ->order('sort');
 
         if(!empty($params['appid'])){
-            $model->where('appid', $params['appid']);
+            $model = $model->where('appid', $params['appid']);
         }
         if(!empty($params['name'])){
-            $model->where('name', 'like', "%{$params['name']}%");
+            $model = $model->where('name', 'like', "%{$params['name']}%");
         }
 
         $list = $model->paginate($pageSize);
@@ -47,7 +47,8 @@ class RoleService
     {
         $model = new RoleModel();
         if (!empty($data['id'])) {
-            $model->where('id', $data['id'])->save($data);
+            $model->where('id', $data['id'])
+                ->save($data);
         }else{
             $model->save($data);
         }

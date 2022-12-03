@@ -15,7 +15,7 @@ class CodeService
     //权限验证失败 -无接口权限
     const API_AUTH_ERROR = [
         'code' => 511,
-        'message' => 'Token验证失败'
+        'message' => '无接口权限'
     ];
 
     /**

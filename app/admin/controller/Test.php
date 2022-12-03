@@ -1,7 +1,9 @@
 <?php
 namespace app\admin\controller;
 
+use app\admin\service\MenuService;
 use app\BaseController;
+use app\model\system\UserModel;
 use app\service\AuthService;
 use app\service\CodeService;
 
@@ -32,4 +34,19 @@ class Test extends BaseController
     {
         throw CodeService::makeException('API_AUTH_ERROR');
     }
+
+    public function menu()
+    {
+        $service = new AuthService();
+        $menu = $service->getUserMenu(1);
+
+        return $this->withData(0, '111', $menu);
+    }
+
+//    public function model()
+//    {
+//        $user = UserModel::where('realname', 'like', "%1%")->select();
+//
+//        return $this->withData(0, '111', $user);
+//    }
 }

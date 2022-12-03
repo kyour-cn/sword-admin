@@ -20,10 +20,14 @@ class UserService
     {
         $pageSize = input('pageSize', 10);
 
-        $model = UserModel::newQuery();
+        $model = new UserModel();
+
+        if(!empty($params['keyword'])){
+            $model = $model->where('realname|username|mobile', 'like', "%{$params['keyword']}%");
+        }
 
         $list = $model->paginate($pageSize)->each(function($item){
-            $item['role_name'] = RoleModel::where('id', $item['role'])->value('name');
+            $item['role_name'] = RoleModel::where('id', $item['role_id'])->value('name');
             return $item;
         });
 
@@ -46,6 +50,8 @@ class UserService
         //密码转md5
         if(!empty($data['password'])){
             $data['password'] = md5($data['password']);
+        }else{
+            unset($data['password']);
         }
 
         $model = new UserModel();

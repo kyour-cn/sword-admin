@@ -18,7 +18,7 @@ class RuleService
             ->order('sort');
 
         if(!empty($params['appid'])){
-            $model->where('appid', $params['appid']);
+            $model = $model->where('appid', $params['appid']);
         }
 
         $list = $model->column('*','id');
@@ -76,7 +76,8 @@ class RuleService
             isset($data['path']) and $menu['path'] = $data['path'];
             isset($data['sort']) and $menu['sort'] = $data['sort'];
 
-            $model->where('id', $data['id'])->save($menu);
+            $model->where('id', $data['id'])
+                ->save($menu);
         }else{
             //新增
             $menu = [
