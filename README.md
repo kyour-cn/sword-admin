@@ -1,10 +1,36 @@
-ThinkPHP 6.0
-===============
+~~# Webman
 
-> 运行环境要求PHP7.2+，兼容PHP8.1
+High performance HTTP Service Framework for PHP based on [Workerman](https://github.com/walkor/workerman).
 
-## 错误代码
+# Manual (文档)
 
-在 `app\service\CodeService` 中配置错误代码及提示
+https://www.workerman.net/doc/webman
 
+# Benchmarks （压测）
 
+![image](https://user-images.githubusercontent.com/6073368/96447814-120fc980-1245-11eb-938d-6ea408716c72.png)
+
+## 安装运行
+
+安装依赖包
+```bash
+commposer install
+```
+
+启动
+```bash
+php server start
+```
+
+常驻内存启动（后台）
+```bash
+php server start -d
+```
+
+## 开发说明
+
+控制器中间件
+
+全局函数
+
+Nginx反向代理

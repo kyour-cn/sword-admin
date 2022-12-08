@@ -2,19 +2,16 @@
 namespace app\admin\controller;
 
 use app\BaseController;
-use app\middleware\JwtMiddleware;
-use app\service\AuthService;
-use thans\jwt\facade\JWTAuth;
+use app\common\service\AuthService;
+use Tinywan\Jwt\JwtToken;
 
 class Index extends BaseController
 {
-    protected $middleware = [
-        JwtMiddleware::class
-    ];
+    public array $middleware = [];
 
     public function index()
     {
-        echo "hello admin.";
+        return "hello admin.";
     }
 
     /**
@@ -23,9 +20,8 @@ class Index extends BaseController
     public function menu()
     {
         //获取当前用户角色
-        $payload = JWTAuth::auth();
-        $roleId = $payload['role']->getValue();
-        $uid = $payload['uid']->getValue();
+        $roleId = JwtToken::getExtendVal('role');
+        $uid = JwtToken::getExtendVal('id');
 
         $service = new AuthService();
         if($service->isRootUser($uid)){

@@ -1,32 +1,41 @@
 <?php
-// +----------------------------------------------------------------------
-// | 应用设置
-// +----------------------------------------------------------------------
+/**
+ * This file is part of webman.
+ *
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the MIT-LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author    walkor<walkor@workerman.net>
+ * @copyright walkor<walkor@workerman.net>
+ * @link      http://www.workerman.net/
+ * @license   http://www.opensource.org/licenses/mit-license.php MIT License
+ */
+
+use support\Request;
 
 return [
-    // 应用地址
-    'app_host'         => env('app.host', ''),
-    // 应用的命名空间
-    'app_namespace'    => '',
-    // 是否启用路由
-    'with_route'       => true,
-    // 默认应用
-    'default_app'      => 'index',
-    // 默认时区
+    'debug' => env('APP_DEBUG', false),
+    'error_reporting' => E_ALL,
     'default_timezone' => 'Asia/Shanghai',
+    'request_class' => Request::class,
+    'public_path' => base_path() . DIRECTORY_SEPARATOR . 'public',
+    'runtime_path' => base_path(false) . DIRECTORY_SEPARATOR . 'runtime',
+    'controller_suffix' => '',
+    'controller_reuse' => true, //控制器复用
 
-    // 应用映射（自动多应用模式有效）
-    'app_map'          => [],
-    // 域名绑定（自动多应用模式有效）
-    'domain_bind'      => [],
-    // 禁止URL访问的应用列表（自动多应用模式有效）
-    'deny_app_list'    => [],
+    //响应跨域标识 (Access-Control-Allow-Origin)
+    'response_cors' => [
+        'Access-Control-Allow-Credentials' => 'true',
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Methods' => '*',
+        'Access-Control-Allow-Headers' => '*'
+    ],
 
-    // 异常页面的模板文件
-    'exception_tmpl'   => app()->getThinkPath() . 'tpl/think_exception.tpl',
+    //登录服务类注册 -按顺序进行登录验证
+    'login_service' => [
+        //用户登录（系统默认）
+        \app\common\service\LoginService::class
+    ]
 
-    // 错误显示信息,非调试模式有效
-    'error_message'    => '页面错误！请稍后再试～',
-    // 显示错误信息
-    'show_error_msg'   => false,
 ];

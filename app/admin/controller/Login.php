@@ -2,48 +2,80 @@
 namespace app\admin\controller;
 
 use app\BaseController;
-use app\model\system\UserModel;
-use thans\jwt\facade\JWTAuth;
+use app\common\service\BaseLoginService;
+use App\common\service\CaptchaService;
+use app\common\service\LoginService;
+use Tinywan\Jwt\JwtToken;
+use support\Request;
 
 class Login extends BaseController
 {
-    public function index()
+    public function index(Request $request)
     {
-        $username = input('username');
-        $password = input('password');
+        $params = $request->all();
 
-        $field = 'id,username,realname,mobile,avatar,status,role_id';
+        //密码转换
+        if(empty($params['md5'])){
+            $params['password'] = md5($params['password']);
+        }
 
-        //登录判断
-        $user = UserModel::where('username|mobile', $username)
-            ->where('password', $password)
-            ->field($field)
-            ->find();
-        if(!$user){
+        //从配置中获取注册的登录服务
+        $serviceList = config('app.login_service', [
+            //用户登录 -系统默认
+            LoginService::class
+        ]);
+
+        foreach ($serviceList as $serviceClass) {
+            /**
+             * 遍历并实例化登录服务
+             * @var $service BaseLoginService
+             */
+            $service = new $serviceClass();
+            if($service->login($params)){
+                break; //跳出循环
+            }
+        }
+
+        if(!isset($service) or !$service->success){
             return $this->withData(1, '账号或密码不正确');
         }
 
-        //更新登录时间
-        $user->save([
-            'login_time' => time()
-        ]);
-
         //开始创建token
-        $token = JWTAuth::builder([
-            'uid' => $user->id,
-            'role' => $user->role_id
-        ]);
+        $token = JwtToken::generateToken($service->jwtData);
 
         return $this->withData(0, 'success', [
-            'token' => $token,
-            'userInfo' => $user
+            'token' => $token['access_token'],
+            'userInfo' => $service->userInfo
         ]);
     }
 
-    public function state()
+    /**
+     * 输出验证码图像
+     */
+    public function captcha(Request $request)
     {
-        $payload = JWTAuth::auth();
-        return $this->withData(0, 'success', $payload);
+        $uid = JwtToken::getExtendVal('id');
+
+        $service = new CaptchaService();
+
+        return $service->captcha($uid);
+    }
+
+    /**
+     * 检查验证码
+     */
+    public function check(Request $request)
+    {
+        $input = $request->all();
+        $uid = JwtToken::getExtendVal('id');
+
+        $service = new CaptchaService();
+
+        if($service->check($uid, $input['code']??'')){
+            return $this->withData(0, 'success');
+        }else{
+            return $this->withData(0, 'error');
+        }
     }
 
 }
