@@ -6,6 +6,7 @@ use app\common\service\CodeService;
 use app\common\service\ResponseService;
 use support\exception\BusinessException;
 use Tinywan\Jwt\Exception\JwtTokenException;
+use Tinywan\Jwt\Exception\JwtTokenExpiredException;
 use Webman\Exception\ExceptionHandler;
 use Webman\Http\Request;
 use Webman\Http\Response;
@@ -34,7 +35,7 @@ class HttpExceptionHandler extends ExceptionHandler
             $code = $exception->getCode();
             $message = $exception->getMessage();
             $data = $exception->getData();
-        }elseif($exception instanceof JwtTokenException) {
+        }elseif($exception instanceof JwtTokenException or $exception instanceof JwtTokenExpiredException) {
             // Jwt验证异常
             $code = CodeService::JWT_AUTH_ERROR['code'];
             $message = CodeService::JWT_AUTH_ERROR['message'];
