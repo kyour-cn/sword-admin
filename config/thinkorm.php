@@ -13,7 +13,7 @@ return [
             // 数据库用户名
             'username' => env('DB_USER', 'root'),
             // 数据库密码
-            'password' => env('DB_PASSWORD', ''),
+            'password' => env('DB_PASSWORD', 'root'),
             // 数据库连接端口
             'hostport' => env('DB_PORT', 3306),
             // 数据库连接参数

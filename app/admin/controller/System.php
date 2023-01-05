@@ -4,6 +4,7 @@ namespace app\admin\controller;
 use app\admin\service\MenuService;
 use app\BaseController;
 use app\common\service\AppService;
+use app\common\service\LogService;
 use app\common\service\RoleService;
 use app\common\service\RuleService;
 use app\common\service\UserService;
@@ -207,5 +208,40 @@ class System extends BaseController
         $service = new UserService();
         $res = $service->delete($ids);
         return $this->withData(0, '删除成功', $res);
+    }
+
+    /**
+     * 日志页数据
+     */
+    public function logPageInfo(Request $request)
+    {
+        $params = $request->all();
+
+        $service = new LogService();
+        $levels = $service->getLevelList();
+
+        $levelArr = [
+            'system' => [],
+            'app' => [],
+        ];
+
+        foreach ($levels as $item){
+            $levelArr[$item['id'] < 10 ? 'system' : 'app'][] = $item;
+        }
+
+        $count = $service->getCount($params);
+
+        return $this->withData(0, 'success', [
+            'levels' => $levelArr,
+            'count' => $count
+        ]);
+    }
+
+    public function logList(Request $request)
+    {
+        $params = $request->all();
+        $service = new LogService();
+        $list = $service->getList($params);
+        return $this->withData(200, 'success', $list);
     }
 }

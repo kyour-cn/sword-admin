@@ -24,6 +24,9 @@ return [
     'controller_suffix' => '',
     'controller_reuse' => true, //控制器复用
 
+    //AppKey应用唯一标识,作为缓存前缀避免冲突
+    'app_key' => 'rbac_srv',
+
     //响应跨域标识 (Access-Control-Allow-Origin)
     'response_cors' => [
         'Access-Control-Allow-Credentials' => 'true',

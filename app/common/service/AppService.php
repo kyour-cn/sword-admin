@@ -3,8 +3,8 @@
 namespace app\common\service;
 
 use app\common\model\AppModel;
-use think\db\exception\DbException;
 use think\facade\Cache;
+use think\db\exception\DbException;
 
 class AppService
 {
@@ -70,15 +70,18 @@ class AppService
     }
 
     /**
+     * 获取指定应用的id
      * @param string $key
+     * @param int $expire 缓存过期时间
      * @return mixed
+     * @throws \Throwable
      */
-    public static function getId(string $key)
+    public static function getId(string $key, int $expire = 3600)
     {
-        //TODO: 应使用缓存，避免频繁的Model查询
-//        $cacheKey = __METHOD__. "_{$key}";
-//        $cache = Cache::get($cacheKey);
-        return AppModel::where('key', $key)->value('id');
+        $cacheKey = __METHOD__. ":{$key}_{$expire}";
+        return Cache::remember($cacheKey, function () use($key){
+            return AppModel::where('key', $key)->value('id');
+        }, $expire);
     }
 
 }

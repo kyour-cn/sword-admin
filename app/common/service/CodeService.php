@@ -12,6 +12,12 @@ class CodeService
         'message' => 'Token验证失败'
     ];
 
+    //Token已过期
+    const JWT_EXPIRED_ERROR = [
+        'code' => 511,
+        'message' => 'Token已过期，请重新登录'
+    ];
+
     //权限验证失败 -无接口权限
     const API_AUTH_ERROR = [
         'code' => 511,

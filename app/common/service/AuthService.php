@@ -7,6 +7,7 @@ use app\admin\service\MenuService;
 use app\common\exception\MsgException;
 use app\common\model\RoleModel;
 use app\common\model\RuleModel;
+use Tinywan\Jwt\Exception\JwtTokenException;
 use Tinywan\Jwt\JwtToken;
 use Webman\Http\Request;
 
@@ -72,7 +73,7 @@ class AuthService
     /**
      * 检查当前访问权限
      * @throws MsgException
-     * @throws \Tinywan\Jwt\Exception\JwtTokenException
+     * @throws JwtTokenException
      */
     public function checkAuth(Request $request): bool
     {
@@ -83,18 +84,28 @@ class AuthService
         //验证是否超级管理员
         if($this->isRootUser($uid)) return true;
 
-        $appName = $request->app;
-        $controller = explode('\\',$request->controller);
-        $controller = $controller[count($controller) -1];
-        $action = $request->action;
-
         //当前请求的Path
-        $path =  "$appName/$controller/$action";
+        $path = UtilsService::getRequestPath($request);
 
         if(!$this->checkRulePath($roleId, $path)){
             throw CodeService::makeException('API_AUTH_ERROR');
         }
 
+        return true;
+    }
+
+    /**
+     * 检查是否登录
+     * @return bool
+     */
+    public function checkLogin(): bool
+    {
+        if(!request()) return false;
+        try{
+            JwtToken::getCurrentId();
+        }catch (JwtTokenException $e){
+            return false;
+        }
         return true;
     }
 
@@ -149,5 +160,16 @@ class AuthService
     {
         return $uid == 1;
     }
+
+    /**
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     */
+    public static function __callStatic($name, $arguments)
+    {
+        return static::instance()->{$name}(... $arguments);
+    }
+
 
 }

@@ -3,6 +3,7 @@
 namespace app\common\service;
 
 use app\common\model\UserModel;
+use think\db\exception\DbException;
 
 class LoginService extends BaseLoginService
 {
@@ -11,13 +12,10 @@ class LoginService extends BaseLoginService
      * 登录
      * @param array $params
      * @return bool
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DbException
      */
     public function login(array $params): bool
     {
-
         $field = 'id,username,realname,mobile,avatar,status,role_id';
 
         //登录判断
@@ -36,6 +34,7 @@ class LoginService extends BaseLoginService
 
         $this->jwtData = [
             'id' => $user->id,
+            'name' => $user->realname,
             'role' => $user->role_id,
             'login_type' => 'user' //默认用户标识
         ];

@@ -25,8 +25,6 @@ class HttpExceptionHandler extends ExceptionHandler
 
     public function render(Request $request, Throwable $exception): Response
     {
-        $code = 0;
-        $message = '';
         $data = [];
 
         //处理通用消息异常
@@ -35,26 +33,42 @@ class HttpExceptionHandler extends ExceptionHandler
             $code = $exception->getCode();
             $message = $exception->getMessage();
             $data = $exception->getData();
-        }elseif($exception instanceof JwtTokenException or $exception instanceof JwtTokenExpiredException) {
+        }elseif($exception instanceof JwtTokenExpiredException) {
+            // Jwt验证异常
+            $code = CodeService::JWT_EXPIRED_ERROR['code'];
+            $message = CodeService::JWT_EXPIRED_ERROR['message'];
+        }elseif($exception instanceof JwtTokenException) {
             // Jwt验证异常
             $code = CodeService::JWT_AUTH_ERROR['code'];
             $message = CodeService::JWT_AUTH_ERROR['message'];
-        }
-
-        if($code != 0){
-            if($request->isAjax()){
-                return ResponseService::jsonPack($code, $message, $data);
+        }else{
+            //错误提示消息
+            if(env('APP_DEBUG')){
+                $code = $exception->getCode();
+                $message = $exception->getMessage();
+                if($request->isAjax()){
+                    $data = $exception->getTrace();
+                }else{
+                    $message .= "\n". $exception->getTraceAsString();
+                }
             }else{
-                return response($message);
+                $code = 500;
+                $message = '系统发生错误';
             }
         }
 
-        if(($exception instanceof BusinessException) && ($response = $exception->render($request)))
-        {
-            return $response;
+        if($request->isAjax()){
+            return ResponseService::jsonPack($code, $message, $data);
+        }else{
+            return response($message);
         }
 
-        return parent::render($request, $exception);
+//        if(($exception instanceof BusinessException) && ($response = $exception->render($request)))
+//        {
+//            return $response;
+//        }
+//
+//        return parent::render($request, $exception);
     }
 
 }

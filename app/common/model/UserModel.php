@@ -20,6 +20,8 @@ class UserModel extends Model
     protected $autoWriteTimestamp = 'int';
     protected $createTime = 'register_time';
     protected $updateTime = false;
+    //输出自动时间戳不自动格式化
+    protected $dateFormat = false;
 
     /**
      * 角色模型管理

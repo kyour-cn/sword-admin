@@ -17,12 +17,12 @@ https://www.workerman.net/doc/webman
 commposer install
 ```
 
-启动
+启动(Debug 开发模式)
 ```bash
 php server start
 ```
 
-常驻内存启动（后台）
+常驻内存启动(线上模式)
 ```bash
 php server start -d
 ```

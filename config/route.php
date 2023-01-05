@@ -12,6 +12,7 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+use app\common\service\ResponseService;
 use support\Response;
 use Webman\Route;
 use support\Request;
@@ -20,7 +21,7 @@ use support\Request;
 Route::fallback(function(Request $request){
     // ajax请求时返回json
     if ($request->expectsJson()) {
-        return json(['code' => 404, 'msg' => '404 not found']);
+        return ResponseService::jsonPack(404, '404 not found');
     }
     // 页面请求返回404
     return new Response(404, [], '404 not found');

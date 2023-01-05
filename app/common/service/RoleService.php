@@ -31,7 +31,8 @@ class RoleService
             $model = $model->where('is_auto', '=', $params['is_auto']);
         }
 
-        $list = $model->paginate($pageSize);
+        $list = $model->order('id', 'desc')
+            ->paginate($pageSize);
 
         return [
             'total' => $list->total(),

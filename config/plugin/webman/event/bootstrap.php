@@ -13,6 +13,5 @@
  */
 
 return [
-    Webman\ThinkOrm\ThinkOrm::class,
-    Webman\ThinkCache\ThinkCache::class
+    Webman\Event\BootStrap::class,
 ];

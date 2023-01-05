@@ -26,10 +26,12 @@ class UserService
             $model = $model->where('realname|username|mobile', 'like', "%{$params['keyword']}%");
         }
 
-        $list = $model->paginate($pageSize)->each(function($item){
-            $item['role_name'] = RoleModel::where('id', $item['role_id'])->value('name');
-            return $item;
-        });
+        $list = $model->order('id', 'desc')
+            ->paginate($pageSize)
+            ->each(function($item){
+                $item['role_name'] = RoleModel::where('id', $item['role_id'])->value('name');
+                return $item;
+            });
 
         return [
             'total' => $list->total(),
