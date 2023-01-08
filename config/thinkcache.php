@@ -1,6 +1,6 @@
 <?php
 return [
-    'default' => env('CACHE_DEFAULT_TYPE', 'file'),
+    'default' => env('CACHE_TYPE', 'file'),
     'stores' => [
         'file' => [
             'type' => 'File',
