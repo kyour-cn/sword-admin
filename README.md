@@ -1,36 +1,50 @@
-~~# Webman
 
-High performance HTTP Service Framework for PHP based on [Workerman](https://github.com/walkor/workerman).
+SwordAdmin 0.1 Beta 2022
+===============
 
-# Manual (文档)
+> 基于Webman的PHP快速开发框架，让你更专注于业务代码的开发
 
-https://www.workerman.net/doc/webman
+## 主要特性
+* 前后端分离
+* 集成RBAC权限管理
+* 基于Webman高性能框架
 
-# Benchmarks （压测）
+## 开始使用
 
-![image](https://user-images.githubusercontent.com/6073368/96447814-120fc980-1245-11eb-938d-6ea408716c72.png)
-
-## 安装运行
-
-安装依赖包
-```bash
-commposer install
+- 通过Composer构建项目：
+```shell
+composer create-project kyour-cn/sword-admin admin
 ```
 
-启动(Debug 开发模式)
-```bash
+## 启动项目
+```shell
 php server start
 ```
 
-常驻内存启动(线上模式)
-```bash
+守护进程（后台运行）:
+```shell
 php server start -d
 ```
 
-## 开发说明
+停止运行：
+```shell
+php server stop
+```
 
-控制器中间件
+## 参与开发
 
-全局函数
+直接提交PR或者Issue即可
 
-Nginx反向代理
+## 更新记录
+
+[转到文档查看](https://github.com/kyour-cn/sword-admin/wiki/Update)
+
+## 版权信息
+
+本项目遵循Apache2.0 开源协议发布，并提供免费使用。
+
+本项目包含的第三方源码和二进制文件之版权信息另行标注。
+
+版权所有Copyright © 2020 by Kyour (http://kyour.cn) All rights reserved。
+
+更多细节参阅 [LICENSE](LICENSE)
