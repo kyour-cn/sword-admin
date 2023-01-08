@@ -2,8 +2,8 @@
 
 namespace App\common\exception;
 
-use app\common\service\CodeService;
-use app\common\service\ResponseService;
+use App\common\service\CodeService;
+use App\common\service\ResponseService;
 use support\exception\BusinessException;
 use Tinywan\Jwt\Exception\JwtTokenException;
 use Tinywan\Jwt\Exception\JwtTokenExpiredException;
@@ -25,7 +25,9 @@ class HttpExceptionHandler extends ExceptionHandler
 
     public function render(Request $request, Throwable $exception): Response
     {
-        $data = [];
+        if(($exception instanceof BusinessException) && ($response = $exception->render($request))) {
+            return $response;
+        }
 
         //处理通用消息异常
         if($exception instanceof MsgException) {
@@ -47,7 +49,10 @@ class HttpExceptionHandler extends ExceptionHandler
                 $code = $exception->getCode();
                 $message = $exception->getMessage();
                 if($request->isAjax()){
-                    $data = $exception->getTrace();
+                    $data = [
+                        'message' => $message,
+                        'trace' => $exception->getTraceAsString()
+                    ];
                 }else{
                     $message .= "\n". $exception->getTraceAsString();
                 }
@@ -58,16 +63,11 @@ class HttpExceptionHandler extends ExceptionHandler
         }
 
         if($request->isAjax()){
-            return ResponseService::jsonPack($code, $message, $data);
+            return ResponseService::jsonPack($code, $message, $data??[]);
         }else{
             return response($message);
         }
 
-//        if(($exception instanceof BusinessException) && ($response = $exception->render($request)))
-//        {
-//            return $response;
-//        }
-//
 //        return parent::render($request, $exception);
     }
 

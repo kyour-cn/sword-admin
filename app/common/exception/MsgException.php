@@ -1,13 +1,13 @@
 <?php
 
-namespace app\common\exception;
+namespace App\common\exception;
 
 use Throwable;
 
 class MsgException extends \Exception
 {
 
-    private $data = [];
+    private array $data = [];
 
     /**
      * 默认Code为1
@@ -17,7 +17,7 @@ class MsgException extends \Exception
      */
     public function __construct($message, int $code = 1, Throwable $previous = null)
     {
-        parent::__construct($message, $code);
+        parent::__construct($message, $code, $previous);
     }
 
     /**
@@ -31,11 +31,21 @@ class MsgException extends \Exception
     /**
      * @param mixed $data
      */
-    public function setData($data)
+    public function setData($data): MsgException
     {
         $this->data = $data;
 
         return $this;
+    }
+
+    /**
+     * 立马抛出该异常
+     * @return void
+     * @throws MsgException
+     */
+    public function throw()
+    {
+        throw $this;
     }
 
 }

@@ -1,8 +1,8 @@
 <?php declare (strict_types = 1);
 
-namespace app\common\service;
+namespace App\common\service;
 
-use app\common\model\RuleModel;
+use App\common\model\RuleModel;
 
 class RuleService
 {

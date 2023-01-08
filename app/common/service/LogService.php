@@ -1,10 +1,10 @@
 <?php
 
-namespace app\common\service;
+namespace App\common\service;
 
-use app\common\exception\MsgException;
-use app\common\model\LogLevelModel;
-use app\common\model\LogModel;
+use App\common\exception\MsgException;
+use App\common\model\LogLevelModel;
+use App\common\model\LogModel;
 use think\db\exception\DbException;
 use think\facade\Cache;
 use Tinywan\Jwt\JwtToken;
@@ -25,6 +25,9 @@ class LogService
 
     /**
      * 获取统计数据
+     * @param array $params
+     * @return array
+     * @throws DbException|MsgException
      */
     public function getCount(array $params): array
     {
@@ -45,10 +48,29 @@ class LogService
         }
 
         return LogModel::where($where)
-            ->field("from_unixtime(create_time, '%Y-%m-%d') dat, count(*) count,level_name")
-            ->group("from_unixtime(create_time, '%Y-%m-%d'),level_name")
+            ->field("from_unixtime(create_time, '%Y-%m-%d') date, count(*) count,level_name,level_id")
+            ->group("from_unixtime(create_time, '%Y-%m-%d'),level_name,level_id")
             ->select()
             ->toArray();
+    }
+
+    /**
+     * 获取给定时间范围内的日期列表数组
+     * @param $startTime
+     * @param $endTime
+     * @return array
+     */
+    public function getDateList($startTime, $endTime): array
+    {
+        $date_list = [];
+
+        while ($startTime <= $endTime) {
+            $date_list[] = date('Y-m-d', $startTime);
+//            $date_list[date('Y-m-d', $startTime)] = date('w', $startTime);
+            $startTime = strtotime('+1 day', $startTime);
+        }
+
+        return $date_list;
     }
 
     /**
@@ -79,6 +101,7 @@ class LogService
 
         $model = new LogModel();
         $list = $model->where($where)
+            ->order('id desc')
             ->paginate($pageSize);
 
         return [
@@ -135,7 +158,7 @@ class LogService
      */
     public static function getLevel(string $label, int $expire = 3600) :?array
     {
-        $cacheKey = __METHOD__. ":{$label}";
+        $cacheKey = __METHOD__. ":$label";
         return Cache::remember($cacheKey, function () use($label){
             $data = LogLevelModel::where('label', $label)->find();
             if(!$data) return null;
@@ -188,7 +211,7 @@ class LogService
      * @param string $value 日志数据
      * @param string $valueType 数据类型 text|json
      * @return LogModel
-     * @throws DbException
+     * @throws DbException|\Throwable
      */
     public static function debug($titleOrData, string $value = '', string $valueType = 'text'): LogModel
     {
@@ -212,7 +235,7 @@ class LogService
      * @param string $value 日志数据
      * @param string $valueType 数据类型 text|json
      * @return LogModel
-     * @throws DbException
+     * @throws DbException|\Throwable
      */
     public static function info($titleOrData, string $value = '', string $valueType = 'text'): LogModel
     {
@@ -236,7 +259,7 @@ class LogService
      * @param string $value 日志数据
      * @param string $valueType 数据类型 text|json
      * @return LogModel
-     * @throws DbException
+     * @throws DbException|\Throwable
      */
     public static function warn($titleOrData, string $value = '', string $valueType = 'text'): LogModel
     {
@@ -260,7 +283,7 @@ class LogService
      * @param string $value 日志数据
      * @param string $valueType 数据类型 text|json
      * @return LogModel
-     * @throws DbException
+     * @throws DbException|\Throwable
      */
     public static function error($titleOrData, string $value = '', string $valueType = 'text'): LogModel
     {
@@ -284,7 +307,7 @@ class LogService
      * @param string $value 日志数据
      * @param string $valueType 数据类型 text|json
      * @return LogModel
-     * @throws DbException
+     * @throws DbException|\Throwable
      */
     public static function falal($titleOrData, string $value = '', string $valueType = 'text'): LogModel
     {
@@ -309,7 +332,7 @@ class LogService
      * @param string $value 日志数据
      * @param string $valueType 数据类型 text|json
      * @return LogModel
-     * @throws DbException
+     * @throws DbException|\Throwable
      */
     public static function app(string $name, $titleOrData, string $value = '', string $valueType = 'text'): LogModel
     {

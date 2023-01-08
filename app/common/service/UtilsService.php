@@ -14,7 +14,7 @@ class UtilsService
      * @param int $expire 自动解锁时间 秒
      * @return bool
      */
-    public static function timeLock(string $key, int $expire = 1): bool
+    public static function setLock(string $key, int $expire = 1): bool
     {
         $key = config('app.app_key'). '_lock:'.$key;
 
@@ -23,13 +23,23 @@ class UtilsService
             return true;
         }
 
-        $res = Redis::setNx($key, 1);
+        $res = Redis::setNx($key, time());
         if($res){
             Redis::expire($key, $expire);
             return true;
         }else{
             return false;
         }
+    }
+
+    /**
+     * @param string $key
+     * @return string|bool
+     */
+    public static function getLock(string $key)
+    {
+        $key = config('app.app_key'). '_lock:'.$key;
+        return Redis::get($key);
     }
 
     /**

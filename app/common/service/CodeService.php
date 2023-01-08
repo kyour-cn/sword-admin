@@ -1,8 +1,8 @@
 <?php
 
-namespace app\common\service;
+namespace App\common\service;
 
-use app\common\exception\MsgException;
+use App\common\exception\MsgException;
 
 class CodeService
 {

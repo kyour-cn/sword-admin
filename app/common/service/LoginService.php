@@ -1,8 +1,8 @@
 <?php
 
-namespace app\common\service;
+namespace App\common\service;
 
-use app\common\model\UserModel;
+use App\common\model\UserModel;
 use think\db\exception\DbException;
 
 class LoginService extends BaseLoginService

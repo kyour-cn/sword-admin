@@ -1,6 +1,6 @@
 <?php
 
-namespace app\common\service;
+namespace App\common\service;
 
 /**
  * 登录服务基类

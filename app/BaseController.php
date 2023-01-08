@@ -1,8 +1,10 @@
 <?php declare (strict_types = 1);
 
-namespace app;
+namespace App;
 
-use app\common\service\ResponseService;
+use App\common\middleware\ControllerMiddlewareInterface;
+use App\common\service\ResponseService;
+use support\Response;
 
 /**
  * 控制器基础类
@@ -10,14 +12,17 @@ use app\common\service\ResponseService;
 abstract class BaseController
 {
 
-    public array $middleware = [];
+    /**
+     * @var ControllerMiddlewareInterface[]
+     */
+    const middleware = [];
 
     /**
      * api接口返回数据，封装统一规则
      * @param int|string $code 错误代码，0为无错误
      * @param string $message 响应提示文本
      * @param array|object $data 响应数据主体
-     * @return null
+     * @return array|Response
      */
     protected function withData($code = 0, string $message = '', $data = [])
     {

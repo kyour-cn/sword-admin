@@ -1,6 +1,6 @@
 <?php
 
-namespace app\common\service;
+namespace App\common\service;
 
 use support\Response;
 
@@ -13,7 +13,7 @@ class ResponseService
      * @param string $message 响应提示文本
      * @param array|object $data 响应数据主体
      * @param bool $isResponse 是否返回Response格式并添加header
-     * @return array|\support\Response
+     * @return array|Response
      */
     public static function jsonPack($code = 0, string $message = '', $data = [], bool $isResponse = true)
     {
