@@ -31,6 +31,9 @@ php server start -d
 php server stop
 ```
 
+启动项目后访问：
+`http://localhost:8080/index`
+
 ## 参与开发
 
 直接提交PR或者Issue即可
