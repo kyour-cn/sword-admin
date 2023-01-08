@@ -1,6 +1,6 @@
 <?php declare (strict_types = 1);
 
-namespace app\admin\model;
+namespace plugin\admin\app\model;
 
 use think\Model;
 

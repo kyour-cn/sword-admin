@@ -1,8 +1,10 @@
 <?php
 
-namespace app\admin\service;
+namespace plugin\admin\app\service;
 
-use app\admin\model\MenuModel;
+use App\common\model\RoleModel;
+use plugin\admin\app\model\MenuModel;
+use think\db\exception\DbException;
 
 class MenuService
 {
@@ -120,4 +122,62 @@ class MenuService
         return MenuModel::whereIn('id', $ids)
             ->delete();
     }
+
+    /**
+     * 获取超级管理员的后台菜单
+     * @param int $appId 应用ID
+     * @param array $exclude 需要排除掉的菜单
+     * @return array
+     */
+    public function getRootMenu(int $appId, array $exclude = []): array
+    {
+        $model = new MenuModel();
+
+        //需要排除掉的菜单
+        if($exclude)
+            $model = $model->whereNotIn('id', $exclude);
+
+        $list = $model->order('sort')
+            ->where('status', 1)
+            ->where('appid', $appId)
+            ->column('*','id');
+
+        return MenuService::recursionMenu($list, 0);
+    }
+
+    /**
+     * 获取用户的后台菜单
+     * @param int $roleId 角色ID
+     * @param array $exclude 需要排除掉的菜单
+     * @return array
+     * @throws DbException
+     */
+    public function getUserMenu(int $roleId, array $exclude = []): array
+    {
+        $model = new MenuModel();
+
+        //取出role的权限树
+        $role = RoleModel::where('id', $roleId)
+            ->where('status', 1)
+            ->field('id,rules,appid')
+            ->find();
+        if($role){
+            $rules = explode(',', $role->rules);
+            $model = $model->whereIn('rid', $rules)
+                ->where('appid', $role->appid);
+        }else{
+            return [];
+        }
+
+        //需要排除掉的菜单
+        if($exclude)
+            $model = $model->whereNotIn('id', $exclude);
+
+        $list = $model->order('sort')
+            ->where('status', 1)
+            ->column('*','id');
+
+        return MenuService::recursionMenu($list, 0);
+    }
+
 }

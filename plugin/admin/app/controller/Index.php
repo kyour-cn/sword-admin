@@ -1,13 +1,17 @@
 <?php
-namespace app\admin\controller;
+namespace plugin\admin\app\controller;
 
-use app\BaseController;
-use app\common\service\AuthService;
+use App\BaseController;
+use App\common\service\AuthService;
+use plugin\admin\app\service\MenuService;
 use Tinywan\Jwt\JwtToken;
 
 class Index extends BaseController
 {
-    public array $middleware = [];
+    /**
+     * 控制器中间件
+     */
+    const middleware = [];
 
     public function index()
     {
@@ -23,11 +27,12 @@ class Index extends BaseController
         $roleId = JwtToken::getExtendVal('role');
         $uid = JwtToken::getExtendVal('id');
 
-        $service = new AuthService();
-        if($service->isRootUser($uid)){
-            $menu = $service->getRootMenu(1);
+        $menuService = new MenuService();
+        $authService = new AuthService();
+        if($authService->isRootUser($uid)){
+            $menu = $menuService->getRootMenu(1);
         }else{
-            $menu = $service->getUserMenu($roleId);
+            $menu = $menuService->getUserMenu($roleId);
         }
 
         return $this->withData(0, 'success', [

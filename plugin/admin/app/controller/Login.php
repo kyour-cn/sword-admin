@@ -1,12 +1,13 @@
 <?php
-namespace app\admin\controller;
+namespace plugin\admin\app\controller;
 
-use app\BaseController;
-use app\common\exception\MsgException;
-use app\common\service\BaseLoginService;
+use App\BaseController;
+use App\common\exception\MsgException;
+use App\common\service\BaseLoginService;
 use App\common\service\CaptchaService;
-use app\common\service\LoginService;
-use app\common\service\LogService;
+use App\common\service\LoginService;
+use App\common\service\LogService;
+use App\common\service\UtilsService;
 use App\common\validate\LoginValidate;
 use support\Request;
 use Tinywan\Jwt\JwtToken;
@@ -21,6 +22,12 @@ class Login extends BaseController
         $validate = new LoginValidate();
         if (!$validate->check($params)) {
             throw new MsgException($validate->getError());
+        }
+
+        //限制登录频率 -验锁
+        if($lockTime = UtilsService::getLock("login:{$params['username']}")){
+            $lockTime = 5 - (time() - $lockTime);
+            throw new MsgException("请等待{$lockTime}秒后再试");
         }
 
         //密码转换
@@ -46,6 +53,8 @@ class Login extends BaseController
         }
 
         if(!isset($service) or !$service->success){
+            //限制登录频率 -加锁
+            UtilsService::setLock("login:{$params['username']}", 5);
             return $this->withData(1, '账号或密码不正确');
         }
 
@@ -57,6 +66,7 @@ class Login extends BaseController
             'title' => '用户登录',
             'request_user' => $service->userInfo['realname']??'',
             'request_user_id' => $service->userInfo['id']??0,
+            'value' => json_encode($service->jwtData, JSON_UNESCAPED_UNICODE)
         ]);
 
         return $this->withData(0, 'success', [

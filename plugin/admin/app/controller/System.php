@@ -1,18 +1,21 @@
 <?php
-namespace app\admin\controller;
+namespace plugin\admin\app\controller;
 
-use app\admin\service\MenuService;
-use app\BaseController;
-use app\common\service\AppService;
-use app\common\service\LogService;
-use app\common\service\RoleService;
-use app\common\service\RuleService;
-use app\common\service\UserService;
+use plugin\admin\app\service\MenuService;
+use App\BaseController;
+use App\common\service\AppService;
+use App\common\service\LogService;
+use App\common\service\RoleService;
+use App\common\service\RuleService;
+use App\common\service\UserService;
 use support\Request;
 
 class System extends BaseController
 {
-    public array $middleware = [
+    /**
+     * 控制器中间件
+     */
+    const middleware = [
         \App\common\middleware\AuthMiddleware::class
     ];
 
@@ -219,21 +222,46 @@ class System extends BaseController
 
         $service = new LogService();
         $levels = $service->getLevelList();
+        $levelIdMap = array_column($levels, null, 'id');
 
-        $levelArr = [
+        $levelGroup = [
             'system' => [],
             'app' => [],
         ];
 
+        //日志级别分类
         foreach ($levels as $item){
-            $levelArr[$item['id'] < 10 ? 'system' : 'app'][] = $item;
+            $levelGroup[$item['id'] < 10 ? 'system' : 'app'][] = $item;
         }
 
+        //根据时间范围返回日期数组
+        $dates = $service->getDateList(strtotime($params['start_time']), strtotime($params['end_time']));
+        $dateMaps = [];
+        foreach ($dates as $index => $item) {
+            $dateMaps[$item] = $index;
+        }
+
+        //获取统计数据
         $count = $service->getCount($params);
 
+        //组成图表所需数据
+        $levelMap = [];
+        foreach ($count as $item) {
+            $levelMap[$item['level_id']] = [
+                'id' => $item['level_id'],
+                'name' => $item['level_name'],
+                'color' => $levelIdMap[(string)$item['level_id']]['color'],
+                'data' => array_pad([], count($dates), 0)
+            ];
+        }
+        foreach ($count as $item) {
+            $levelMap[$item['level_id']]['data'][$dateMaps[$item['date']]] = $item['count'];
+        }
+
         return $this->withData(0, 'success', [
-            'levels' => $levelArr,
-            'count' => $count
+            'levels' => $levelGroup,
+            'dates' => $dates,
+            'map' => array_column($levelMap, null)
         ]);
     }
 
