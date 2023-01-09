@@ -63,13 +63,10 @@ class LogService
     public function getDateList($startTime, $endTime): array
     {
         $date_list = [];
-
         while ($startTime <= $endTime) {
             $date_list[] = date('Y-m-d', $startTime);
-//            $date_list[date('Y-m-d', $startTime)] = date('w', $startTime);
             $startTime = strtotime('+1 day', $startTime);
         }
-
         return $date_list;
     }
 
@@ -158,7 +155,7 @@ class LogService
      */
     public static function getLevel(string $label, int $expire = 3600) :?array
     {
-        $cacheKey = __METHOD__. ":$label";
+        $cacheKey = "log_level:{$label}:{$expire}";
         return Cache::remember($cacheKey, function () use($label){
             $data = LogLevelModel::where('label', $label)->find();
             if(!$data) return null;
