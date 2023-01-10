@@ -4,7 +4,7 @@
 </head>
 <body>
 
-<video autoplay id="sourcevid" style="width:320px;height:180px"></video>
+<video autoplay id="video" style="width:320px;height:180px"></video>
 <canvas id="output" style="display:none"></canvas>
 
 <script type="text/javascript" charset="utf-8">
@@ -15,7 +15,7 @@
 
     //返回一个用于在画布上绘图的环境。
     var backcontext = back.getContext('2d');
-    var video = document.getElementsByTagName('video')[0];
+    var video = document.getElementById('video');
 
     var success = function (stream) {
 

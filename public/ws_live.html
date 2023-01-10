@@ -8,11 +8,29 @@
 
 <script>
     const ws = new WebSocket('ws://tx.kyour.cn:8131/')
+    ws.binaryType = "arraybuffer";
+
+    function arrayBufferToBase64(buffer) {
+        var binary = '';
+        var bytes = new Uint8Array(buffer);
+        var len = bytes.byteLength;
+        for (var i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+    }
+
     ws.addEventListener('message', (event) => {
 
+        let url= arrayBufferToBase64(event.data);
+        document.getElementById('img').src='data:image/jpeg;base64,'+url;
+
+        return;
+
         if(event.data.length > 100){
-            document.getElementById('img')
-                .setAttribute( 'src', event.data)
+            // console.log(event.data)
+            // document.getElementById('img')
+            //     .setAttribute( 'src', event.data)
         }else{
             console.log('Message from server ', event.data);
         }
@@ -24,7 +42,7 @@
     });
     ws.onopen = () => {
         console.log("open")
-        ws.send("pull:live")
+        ws.send("logi:pull")
     }
     // ws.onmessage = (ws, msg) => {
     //     console.log('message:' + msg)
