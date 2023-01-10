@@ -1,0 +1,73 @@
+<html lang="zh">
+<head>
+    <title></title>
+</head>
+<body>
+
+<video autoplay id="sourcevid" style="width:320px;height:180px"></video>
+<canvas id="output" style="display:none"></canvas>
+
+<script type="text/javascript" charset="utf-8">
+
+    //创建一个+实例
+    const socket = new WebSocket('ws://tx.kyour.cn:8131/')
+    var back = document.getElementById('output');
+
+    //返回一个用于在画布上绘图的环境。
+    var backcontext = back.getContext('2d');
+    var video = document.getElementsByTagName('video')[0];
+
+    var success = function (stream) {
+
+        video.srcObject = stream
+        //获取视屏流，转换为url
+        // video.src = window.URL.createObjectURL(stream);
+
+    }
+
+    //打开socket
+    socket.onopen = function () {
+        socket.send("logi:push")
+        draw();
+        console.log("ws")
+    }
+
+    socket.addEventListener('message', (event) => {
+        if(event.data == 'push'){
+            draw();
+        }
+    })
+
+    // 将视频帧绘制到Canvas对象上,Canvas每100ms切换帧，形成肉眼视频效果
+
+    var draw = function () {
+        try {
+            backcontext.drawImage(video, 0, 0, back.width, back.height);
+        } catch (e) {
+            if (e.name == "NS_ERROR_NOT_AVAILABLE") {
+                return setTimeout(draw, 100);
+            } else {
+                throw e;
+            }
+        }
+        // if (video.src) {
+            let data = "push:"+back.toDataURL("image/jpeg", 0.5);
+            // Canvas的内容转化成PNG data URI并发送到服务器，0.5为和压缩系数
+            socket.send(data);
+            // console.log(data)
+        // }else{
+        //     console.log('src not')
+        // }
+        // setTimeout(draw, 20);
+    }
+
+    //调用设备的摄像头,并将资源放入video标签
+    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+    navigator.getUserMedia({video: true, audio: false}, success, console.log);
+
+</script>
+
+</body>
+</html>

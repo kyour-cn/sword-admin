@@ -1,0 +1,38 @@
+<html lang="zh">
+<head>
+    <title></title>
+</head>
+<body>
+
+<img id="img" src="" alt="">
+
+<script>
+    const ws = new WebSocket('ws://tx.kyour.cn:8131/')
+    ws.addEventListener('message', (event) => {
+
+        if(event.data.length > 100){
+            document.getElementById('img')
+                .setAttribute( 'src', event.data)
+        }else{
+            console.log('Message from server ', event.data);
+        }
+
+        // setTimeout(() => {
+        //     //向服务器请求下一帧图片
+        //     ws.send("pull:my")
+        // }, 500)
+    });
+    ws.onopen = () => {
+        console.log("open")
+        ws.send("pull:live")
+    }
+    // ws.onmessage = (ws, msg) => {
+    //     console.log('message:' + msg)
+    // }
+    ws.onclose = () => {
+        console.log('onclose')
+    }
+</script>
+
+</body>
+</html>

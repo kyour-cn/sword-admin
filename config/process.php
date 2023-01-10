@@ -42,7 +42,7 @@ return [
     'WsLive' => [
         // 这里指定进程类，就是上面定义的Pusher类
         'handler' => process\WsLive::class,
-        'listen'  => 'websocket://0.0.0.0:8888',
+        'listen'  => 'websocket://0.0.0.0:8131',
         'count'   => 1,
     ],
 ];
