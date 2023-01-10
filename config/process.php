@@ -38,5 +38,11 @@ return [
                 'enable_memory_monitor' => DIRECTORY_SEPARATOR === '/',
             ]
         ]
-    ]
+    ],
+    'WsLive' => [
+        // 这里指定进程类，就是上面定义的Pusher类
+        'handler' => process\WsLive::class,
+        'listen'  => 'websocket://0.0.0.0:8888',
+        'count'   => 1,
+    ],
 ];
