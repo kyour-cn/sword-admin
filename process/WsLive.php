@@ -3,11 +3,31 @@ namespace process;
 
 use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Websocket;
+use Workerman\Timer;
 
 class WsLive
 {
     public $puller = [];
     public $pusher = [];
+
+    public function onWorkerStart()
+    {
+        var_dump("启动进程");
+
+        //每5秒请求客户端上传一次图片
+        Timer::add(5, function()
+        {
+            if(count($this->puller) == 0){
+                foreach ($this->pusher as $id => $val){
+                    if(isset($connection->worker->connections[$id])){
+                        $connection->worker->connections[$id]->send("push");
+                    }
+                }
+            }
+//            echo "task run\n";
+        });
+
+    }
 
     public function onWebSocketConnect(TcpConnection $connection, $http_buffer)
     {
