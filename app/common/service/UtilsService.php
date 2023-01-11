@@ -50,6 +50,11 @@ class UtilsService
     public static function getRequestPath(Request $request): string
     {
         $appName = $request->app;
+        $path = $request->path();
+        //判断该请求是否为插件
+        if(substr($path, 0, 5) == "/app/"){
+            $appName = "app/". explode("/", $path)[2];
+        }
         $controller = explode('\\',$request->controller);
         $controller = $controller[count($controller) -1];
         $action = $request->action;
@@ -78,11 +83,6 @@ class UtilsService
     public static function getRequestSource(Request $request): string
     {
         return $request->method(). ':'. self::getRequestPath($request);
-    }
-
-    public static function cache()
-    {
-
     }
 
 }
