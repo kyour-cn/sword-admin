@@ -33,6 +33,7 @@ class UtilsService
     }
 
     /**
+     * 获取锁状态
      * @param string $key
      * @return string|bool
      */

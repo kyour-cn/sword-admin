@@ -2,6 +2,7 @@
 
 namespace App\common\service;
 
+use App\common\exception\HttpCode;
 use App\common\exception\MsgException;
 use App\common\model\RoleModel;
 use App\common\model\RuleModel;
@@ -30,7 +31,7 @@ class AuthService
         $path = UtilsService::getRequestPath($request);
 
         if(!$this->checkRulePath($roleId, $path)){
-            throw CodeService::makeException('API_AUTH_ERROR');
+            throw HttpCode::makeException('API_AUTH_ERROR');
         }
 
         return true;

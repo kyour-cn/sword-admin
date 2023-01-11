@@ -1,10 +1,8 @@
 <?php
 
-namespace App\common\service;
+namespace App\common\exception;
 
-use App\common\exception\MsgException;
-
-class CodeService
+class HttpCode
 {
     //Jwt验证失败 -未登录
     const JWT_AUTH_ERROR = [

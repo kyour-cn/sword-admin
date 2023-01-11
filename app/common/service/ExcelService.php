@@ -5,6 +5,7 @@ namespace App\common\service;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use support\Response;
 
 /**
  * 封装文件导入导出服务
@@ -63,11 +64,6 @@ class ExcelService
         $index = 0;
         foreach ($this->cols as $colName => $colWidth) {
             $key = $this->colsIndex[$index++];
-
-//            $this->excel->getActiveSheet()
-//                ->getStyle($key)
-//                ->getAlignment()
-//                ->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
             $this->sheet->setCellValue($key . '1', $colName);
             $this->sheet->getColumnDimension($key)->setWidth($colWidth);
@@ -130,10 +126,10 @@ class ExcelService
      * 直接下载表格文件
      * @param string $fileName
      * @param string $path
-     * @return \support\Response
+     * @return Response
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function downloadFile(string $fileName, string $path = ''): \support\Response
+    public function downloadFile(string $fileName, string $path = ''): Response
     {
         //TODO: 应改为文件流的形似，避免存到硬盘再去读取下载
         $save = $this->saveToFile($fileName, $path);

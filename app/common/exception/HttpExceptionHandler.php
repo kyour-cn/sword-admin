@@ -2,16 +2,15 @@
 
 namespace App\common\exception;
 
-use App\common\service\CodeService;
 use App\common\service\LogService;
 use App\common\service\ResponseService;
 use support\exception\BusinessException;
+use Throwable;
 use Tinywan\Jwt\Exception\JwtTokenException;
 use Tinywan\Jwt\Exception\JwtTokenExpiredException;
 use Webman\Exception\ExceptionHandler;
 use Webman\Http\Request;
 use Webman\Http\Response;
-use Throwable;
 
 class HttpExceptionHandler extends ExceptionHandler
 {
@@ -38,12 +37,12 @@ class HttpExceptionHandler extends ExceptionHandler
             $data = $exception->getData();
         }elseif($exception instanceof JwtTokenExpiredException) {
             // Jwt验证异常
-            $code = CodeService::JWT_EXPIRED_ERROR['code'];
-            $message = CodeService::JWT_EXPIRED_ERROR['message'];
+            $code = HttpCode::JWT_EXPIRED_ERROR['code'];
+            $message = HttpCode::JWT_EXPIRED_ERROR['message'];
         }elseif($exception instanceof JwtTokenException) {
             // Jwt验证异常
-            $code = CodeService::JWT_AUTH_ERROR['code'];
-            $message = CodeService::JWT_AUTH_ERROR['message'];
+            $code = HttpCode::JWT_AUTH_ERROR['code'];
+            $message = HttpCode::JWT_AUTH_ERROR['message'];
         }else{
             //错误提示消息
             if(env('APP_DEBUG')){

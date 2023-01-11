@@ -2,6 +2,7 @@
 
 namespace App\common\service;
 
+use App\common\exception\HttpCode;
 use support\Response;
 
 class ResponseService
@@ -18,7 +19,7 @@ class ResponseService
     public static function jsonPack($code = 0, string $message = '', $data = [], bool $isResponse = true)
     {
         if(gettype($code) == 'string') {
-            $codeData = CodeService::get($code);
+            $codeData = HttpCode::get($code);
             $code = $codeData['code'];
             $message or $message = $codeData['message'];
         }
