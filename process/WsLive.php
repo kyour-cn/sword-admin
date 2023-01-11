@@ -66,14 +66,14 @@ class WsLive
             default:
                 $hex = bin2hex($action);
                 if($hex == "ffd8ffe0") {
+                    if(count($this->puller)){
+                        $connection->send("push");
+                    }
 //                    echo ".";
                     foreach ($this->puller as $id => $val){
                         if(isset($connection->worker->connections[$id])){
                             $connection->worker->connections[$id]->send($res);
                         }
-                    }
-                    if(count($this->puller)){
-                        $connection->send("push");
                     }
                 }
                 break;

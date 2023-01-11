@@ -7,7 +7,7 @@
 <img id="img" src="" alt="">
 
 <script>
-    const ws = new WebSocket('ws://tx.kyour.cn:8131/')
+    let ws = new WebSocket('ws://tx.kyour.cn:8131/')
     ws.binaryType = "arraybuffer";
 
     function arrayBufferToBase64(buffer) {
@@ -22,10 +22,12 @@
 
     ws.addEventListener('message', (event) => {
 
+        document.getElementById('img').src=
+            window.URL.createObjectURL(new Blob([event.data]))
+        return;
+
         let url= arrayBufferToBase64(event.data);
         document.getElementById('img').src='data:image/jpeg;base64,'+url;
-
-        return;
 
         if(event.data.length > 100){
             // console.log(event.data)
@@ -49,6 +51,10 @@
     // }
     ws.onclose = () => {
         console.log('onclose')
+
+        setTimeout(() => {
+            location.reload()
+        }, 5000)
     }
 </script>
 
