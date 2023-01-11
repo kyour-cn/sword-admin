@@ -3,6 +3,7 @@
 namespace App\common\exception;
 
 use App\common\service\CodeService;
+use App\common\service\LogService;
 use App\common\service\ResponseService;
 use support\exception\BusinessException;
 use Tinywan\Jwt\Exception\JwtTokenException;
@@ -46,7 +47,7 @@ class HttpExceptionHandler extends ExceptionHandler
         }else{
             //错误提示消息
             if(env('APP_DEBUG')){
-                $code = $exception->getCode();
+                $code = $exception->getCode()?:1; //不能为0 因为jsonPack会响应success
                 $message = $exception->getMessage();
                 if($request->isAjax()){
                     $data = [
@@ -60,6 +61,12 @@ class HttpExceptionHandler extends ExceptionHandler
                 $code = 500;
                 $message = '系统发生错误';
             }
+
+            //向数据库插入错误日志
+            LogService::error([
+                'title' => mb_substr('Http异常: '. $exception->getMessage(), 0, 255),
+                'value' => $exception->getMessage(). "\n". $exception->getTraceAsString()
+            ]);
         }
 
         if($request->isAjax()){
