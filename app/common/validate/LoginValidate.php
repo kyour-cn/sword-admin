@@ -3,6 +3,7 @@
 namespace app\common\validate;
 
 use app\common\service\CaptchaService;
+use Psr\SimpleCache\InvalidArgumentException;
 
 class LoginValidate extends BaseValidate
 {
@@ -18,6 +19,7 @@ class LoginValidate extends BaseValidate
      * @param $rule
      * @param array $data
      * @return bool|string
+     * @throws InvalidArgumentException
      */
     protected function checkCode($value, $rule, array $data = [])
     {

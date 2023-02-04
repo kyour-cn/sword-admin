@@ -100,6 +100,7 @@ class MenuService
         isset($data['rid']) and $menu['rid'] = $data['rid'];
         isset($data['path']) and $menu['path'] = $data['path'];
         isset($data['sort']) and $menu['sort'] = $data['sort'];
+        isset($data['type']) and $menu['type'] = $data['type'];
         isset($data['component']) and $menu['component'] = $data['component'];
         if(isset($data['meta'])){
             $menu['meta'] = json_encode($data['meta'], JSON_UNESCAPED_UNICODE);

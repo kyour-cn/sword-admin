@@ -104,15 +104,4 @@ class AuthService
         return $uid == 1;
     }
 
-    /**
-     * @param $name
-     * @param $arguments
-     * @return mixed
-     */
-    public static function __callStatic($name, $arguments)
-    {
-        return static::instance()->{$name}(... $arguments);
-    }
-
-
 }

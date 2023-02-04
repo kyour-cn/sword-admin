@@ -2,6 +2,7 @@
 
 namespace app\common\service;
 
+use Psr\SimpleCache\InvalidArgumentException;
 use think\facade\Cache;
 use support\Response;
 use Webman\Captcha\CaptchaBuilder;
@@ -12,6 +13,9 @@ class CaptchaService
 
     /**
      * 输出验证码图像
+     * @param $key
+     * @return Response
+     * @throws InvalidArgumentException
      */
     public function captcha($key): Response
     {
@@ -43,6 +47,7 @@ class CaptchaService
      * @param string $input 输入的验证码
      * @param bool $isClean 是否立即清除缓存
      * @return bool
+     * @throws InvalidArgumentException
      */
     public function check(string $key, string $input, bool $isClean = true): bool
     {

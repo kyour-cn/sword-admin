@@ -13,7 +13,6 @@ use support\Response;
 class ExcelService
 {
 
-    private array $cols = [];
     private array $colsIndex = [];
     private int $lineIndex = 1; //当前写入行光标
 
@@ -27,7 +26,7 @@ class ExcelService
         $this->sheet = $this->spreadsheet->getActiveSheet();
 
         // 实例化excel
-        $this->excel = new Xlsx($this->spreadsheet);;
+        $this->excel = new Xlsx($this->spreadsheet);
 
     }
 
@@ -57,12 +56,11 @@ class ExcelService
      */
     public function setCols(array $cols): self
     {
-        $this->cols = $cols;
-        $this->colsIndex = $this->makeColumns(count($this->cols));
+        $this->colsIndex = $this->makeColumns(count($cols));
 
         // 对单元格设置居中效果
         $index = 0;
-        foreach ($this->cols as $colName => $colWidth) {
+        foreach ($cols as $colName => $colWidth) {
             $key = $this->colsIndex[$index++];
 
             $this->sheet->setCellValue($key . '1', $colName);

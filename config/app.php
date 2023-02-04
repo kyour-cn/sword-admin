@@ -35,10 +35,10 @@ return [
         'Access-Control-Allow-Headers' => '*'
     ],
 
-    //登录服务类注册 -按顺序进行登录验证
+    //自定义登录服务类注册 -按顺序进行登录验证
     'login_service' => [
-        //用户登录（系统默认）
-        \app\common\service\LoginService::class
+        //用户登录 -示例
+//        \app\common\service\LoginService::class
     ]
 
 ];

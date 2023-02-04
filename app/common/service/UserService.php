@@ -45,7 +45,7 @@ class UserService
      * 新增
      * @param array $data
      * @return UserModel
-     * @throws \Exception
+     * @throws MsgException
      */
     public function add(array $data): UserModel
     {

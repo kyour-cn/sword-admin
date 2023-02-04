@@ -32,7 +32,7 @@ class System extends BaseController
         $params = $request->all();
         $service = new AppService();
         $list = $service->getList($params);
-        return $this->withData(200, 'success', $list);
+        return $this->withData(0, 'success', $list);
     }
 
     /**
@@ -106,7 +106,7 @@ class System extends BaseController
         $params = $request->all();
         $service = new RuleService();
         $list = $service->getList($params);
-        return $this->withData(200, 'success', $list);
+        return $this->withData(0, 'success', $list);
     }
 
     /**
@@ -147,7 +147,7 @@ class System extends BaseController
         $params['is_auto'] = 0;
 
         $list = $service->getList($params);
-        return $this->withData(200, 'success', $list);
+        return $this->withData(0, 'success', $list);
     }
 
     /**
@@ -184,7 +184,7 @@ class System extends BaseController
         $params = $request->all();
         $service = new UserService();
         $list = $service->getList($params);
-        return $this->withData(200, 'success', $list);
+        return $this->withData(0, 'success', $list);
     }
 
     /**
@@ -270,6 +270,6 @@ class System extends BaseController
         $params = $request->all();
         $service = new LogService();
         $list = $service->getList($params);
-        return $this->withData(200, 'success', $list);
+        return $this->withData(0, 'success', $list);
     }
 }

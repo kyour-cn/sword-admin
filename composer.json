@@ -32,7 +32,7 @@
         "phpoffice/phpspreadsheet": "^1.25.2",
         "illuminate/redis": "^8.2.0",
         "topthink/think-validate": "^2.0",
-        "webman/think-cache": "*"
+        "webman/think-cache": "^1.0.2"
     },
     "autoload": {
         "psr-4": {

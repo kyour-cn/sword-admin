@@ -7,7 +7,10 @@ use Throwable;
 class MsgException extends \Exception
 {
 
-    private array $data = [];
+    /**
+     * @var mixed
+     */
+    private $data = [];
 
     /**
      * 默认Code为1
