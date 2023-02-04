@@ -2,12 +2,12 @@
 namespace plugin\admin\app\controller;
 
 use plugin\admin\app\service\MenuService;
-use App\BaseController;
-use App\common\service\AppService;
-use App\common\service\LogService;
-use App\common\service\RoleService;
-use App\common\service\RuleService;
-use App\common\service\UserService;
+use app\BaseController;
+use app\common\service\AppService;
+use app\common\service\LogService;
+use app\common\service\RoleService;
+use app\common\service\RuleService;
+use app\common\service\UserService;
 use support\Request;
 
 class System extends BaseController
@@ -16,7 +16,7 @@ class System extends BaseController
      * 控制器中间件
      */
     const middleware = [
-        \App\common\middleware\AuthMiddleware::class
+        \app\common\middleware\AuthMiddleware::class
     ];
 
     public function index()

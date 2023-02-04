@@ -1,8 +1,8 @@
 <?php
 
-namespace App\common\validate;
+namespace app\common\validate;
 
-use App\common\service\CaptchaService;
+use app\common\service\CaptchaService;
 
 class LoginValidate extends BaseValidate
 {

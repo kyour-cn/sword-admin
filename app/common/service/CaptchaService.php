@@ -1,6 +1,6 @@
 <?php
 
-namespace App\common\service;
+namespace app\common\service;
 
 use think\facade\Cache;
 use support\Response;

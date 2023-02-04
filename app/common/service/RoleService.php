@@ -1,8 +1,8 @@
 <?php
 
-namespace App\common\service;
+namespace app\common\service;
 
-use App\common\model\RoleModel;
+use app\common\model\RoleModel;
 use think\db\exception\DbException;
 
 class RoleService

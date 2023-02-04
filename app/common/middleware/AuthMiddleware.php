@@ -1,10 +1,10 @@
 <?php
 
-namespace App\common\middleware;
+namespace app\common\middleware;
 
-use App\common\exception\MsgException;
-use App\common\service\AuthService;
-use App\common\service\ResponseService;
+use app\common\exception\MsgException;
+use app\common\service\AuthService;
+use app\common\service\ResponseService;
 use Tinywan\Jwt\Exception\JwtTokenException;
 use Webman\Http\Request;
 use Webman\Http\Response;

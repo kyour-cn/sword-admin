@@ -12,7 +12,7 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-use App\common\exception\HttpExceptionHandler;
+use app\common\exception\HttpExceptionHandler;
 
 return [
     '' => HttpExceptionHandler::class,

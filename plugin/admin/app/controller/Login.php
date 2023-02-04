@@ -1,14 +1,14 @@
 <?php
 namespace plugin\admin\app\controller;
 
-use App\BaseController;
-use App\common\exception\MsgException;
-use App\common\service\BaseLoginService;
-use App\common\service\CaptchaService;
-use App\common\service\LoginService;
-use App\common\service\LogService;
-use App\common\service\UtilsService;
-use App\common\validate\LoginValidate;
+use app\BaseController;
+use app\common\exception\MsgException;
+use app\common\service\BaseLoginService;
+use app\common\service\CaptchaService;
+use app\common\service\LoginService;
+use app\common\service\LogService;
+use app\common\service\UtilsService;
+use app\common\validate\LoginValidate;
 use support\Request;
 use Tinywan\Jwt\JwtToken;
 

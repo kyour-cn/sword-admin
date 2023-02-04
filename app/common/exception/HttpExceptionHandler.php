@@ -1,9 +1,9 @@
 <?php
 
-namespace App\common\exception;
+namespace app\common\exception;
 
-use App\common\service\LogService;
-use App\common\service\ResponseService;
+use app\common\service\LogService;
+use app\common\service\ResponseService;
 use support\exception\BusinessException;
 use Throwable;
 use Tinywan\Jwt\Exception\JwtTokenException;

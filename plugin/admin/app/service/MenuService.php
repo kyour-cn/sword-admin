@@ -2,7 +2,7 @@
 
 namespace plugin\admin\app\service;
 
-use App\common\model\RoleModel;
+use app\common\model\RoleModel;
 use plugin\admin\app\model\MenuModel;
 use think\db\exception\DbException;
 

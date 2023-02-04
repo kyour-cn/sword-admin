@@ -1,7 +1,7 @@
 <?php
 
-use App\common\middleware\AccessControlMiddleware;
-use App\common\middleware\ControllerMiddleware;
+use app\common\middleware\AccessControlMiddleware;
+use app\common\middleware\ControllerMiddleware;
 
 return [
     '' => [

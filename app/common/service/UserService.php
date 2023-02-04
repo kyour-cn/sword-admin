@@ -1,10 +1,10 @@
 <?php
 
-namespace App\common\service;
+namespace app\common\service;
 
-use App\common\exception\MsgException;
-use App\common\model\RoleModel;
-use App\common\model\UserModel;
+use app\common\exception\MsgException;
+use app\common\model\RoleModel;
+use app\common\model\UserModel;
 use think\db\exception\DbException;
 
 class UserService

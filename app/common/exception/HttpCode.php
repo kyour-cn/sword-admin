@@ -1,6 +1,6 @@
 <?php
 
-namespace App\common\exception;
+namespace app\common\exception;
 
 class HttpCode
 {

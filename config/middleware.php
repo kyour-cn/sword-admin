@@ -12,8 +12,8 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-use App\common\middleware\AccessControlMiddleware;
-use App\common\middleware\ControllerMiddleware;
+use app\common\middleware\AccessControlMiddleware;
+use app\common\middleware\ControllerMiddleware;
 
 return [
     '' => [

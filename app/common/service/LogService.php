@@ -1,10 +1,10 @@
 <?php
 
-namespace App\common\service;
+namespace app\common\service;
 
-use App\common\exception\MsgException;
-use App\common\model\LogLevelModel;
-use App\common\model\LogModel;
+use app\common\exception\MsgException;
+use app\common\model\LogLevelModel;
+use app\common\model\LogModel;
 use think\db\exception\DbException;
 use think\facade\Cache;
 use Tinywan\Jwt\JwtToken;

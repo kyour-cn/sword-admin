@@ -1,6 +1,6 @@
 <?php
 
-namespace App\common\middleware;
+namespace app\common\middleware;
 
 use Webman\Http\Request;
 use Webman\Http\Response;

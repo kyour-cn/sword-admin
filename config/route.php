@@ -12,7 +12,7 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-use App\common\service\ResponseService;
+use app\common\service\ResponseService;
 use support\Response;
 use Webman\Route;
 use support\Request;

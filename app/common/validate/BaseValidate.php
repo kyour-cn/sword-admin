@@ -1,6 +1,6 @@
 <?php
 
-namespace App\common\validate;
+namespace app\common\validate;
 
 use think\Validate;
 

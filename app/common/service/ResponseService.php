@@ -1,8 +1,8 @@
 <?php
 
-namespace App\common\service;
+namespace app\common\service;
 
-use App\common\exception\HttpCode;
+use app\common\exception\HttpCode;
 use support\Response;
 
 class ResponseService

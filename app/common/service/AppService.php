@@ -1,8 +1,8 @@
 <?php
 
-namespace App\common\service;
+namespace app\common\service;
 
-use App\common\model\AppModel;
+use app\common\model\AppModel;
 use think\facade\Cache;
 use think\db\exception\DbException;
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\common\service;
+namespace app\common\service;
 
-use App\common\exception\HttpCode;
-use App\common\exception\MsgException;
-use App\common\model\RoleModel;
-use App\common\model\RuleModel;
+use app\common\exception\HttpCode;
+use app\common\exception\MsgException;
+use app\common\model\RoleModel;
+use app\common\model\RuleModel;
 use Tinywan\Jwt\Exception\JwtTokenException;
 use Tinywan\Jwt\JwtToken;
 use Webman\Http\Request;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\common\service;
+namespace app\common\service;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;

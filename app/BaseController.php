@@ -2,8 +2,8 @@
 
 namespace App;
 
-use App\common\middleware\ControllerMiddlewareInterface;
-use App\common\service\ResponseService;
+use app\common\middleware\ControllerMiddlewareInterface;
+use app\common\service\ResponseService;
 use support\Response;
 
 /**

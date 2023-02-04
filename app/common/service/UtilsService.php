@@ -1,6 +1,6 @@
 <?php
 
-namespace App\common\service;
+namespace app\common\service;
 
 use support\Redis;
 use Webman\Http\Request;

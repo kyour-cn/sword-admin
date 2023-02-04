@@ -1,8 +1,8 @@
 <?php
 namespace plugin\admin\app\controller;
 
-use App\BaseController;
-use App\common\service\AuthService;
+use app\BaseController;
+use app\common\service\AuthService;
 use plugin\admin\app\service\MenuService;
 use Tinywan\Jwt\JwtToken;
 
