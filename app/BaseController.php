@@ -1,6 +1,6 @@
 <?php declare (strict_types = 1);
 
-namespace App;
+namespace app;
 
 use app\common\middleware\ControllerMiddlewareInterface;
 use app\common\service\ResponseService;
