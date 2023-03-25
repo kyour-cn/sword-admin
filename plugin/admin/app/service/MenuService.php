@@ -164,6 +164,7 @@ class MenuService
             ->find();
         if($role){
             $rules = explode(',', $role->rules);
+            $rules[] = 0; //权限为0的菜单无需验证权限
             $model = $model->whereIn('rid', $rules)
                 ->where('appid', $role->appid);
         }else{

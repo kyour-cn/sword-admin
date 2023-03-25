@@ -6,6 +6,8 @@ use app\common\exception\HttpCode;
 use app\common\exception\MsgException;
 use app\common\model\RoleModel;
 use app\common\model\RuleModel;
+use app\common\model\UserModel;
+use think\facade\Cache;
 use Tinywan\Jwt\Exception\JwtTokenException;
 use Tinywan\Jwt\JwtToken;
 use Webman\Http\Request;
@@ -98,10 +100,13 @@ class AuthService
      * 判断用户是否为超级管理员
      * @param int $uid
      * @return bool
+     * @throws \Throwable
      */
     public function isRootUser(int $uid): bool
     {
-        return $uid == 1;
+        return Cache::remember("is_root_user_{$uid}", function () use ($uid) {
+            return UserModel::where('id', $uid)->value('role_id') == 1;
+        }, 600);
     }
 
 }
