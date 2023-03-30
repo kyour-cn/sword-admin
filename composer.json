@@ -20,7 +20,7 @@
     "require": {
         "php": ">=7.4",
         "ext-json": "*",
-        "workerman/webman-framework": "^1.4.3",
+        "workerman/webman-framework": "^1.5.0",
         "monolog/monolog": "^2.0",
         "psr/container": "^1.1.1",
         "webman/console": "^1.2",
