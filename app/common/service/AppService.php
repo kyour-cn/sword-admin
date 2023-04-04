@@ -78,7 +78,7 @@ class AppService
      */
     public static function getId(string $key, int $expire = 3600)
     {
-        $cacheKey = "appid_form_key:{$key}_{$expire}";
+        $cacheKey = "app_id_form_key:{$key}_{$expire}";
         return Cache::remember($cacheKey, function () use($key){
             return AppModel::where('key', $key)->value('id');
         }, $expire);

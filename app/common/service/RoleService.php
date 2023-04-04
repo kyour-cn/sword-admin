@@ -21,8 +21,8 @@ class RoleService
         $model = (new RoleModel())
             ->order('sort');
 
-        if(!empty($params['appid'])){
-            $model = $model->where('appid', $params['appid']);
+        if(!empty($params['app_id'])){
+            $model = $model->where('app_id', $params['app_id']);
         }
         if(!empty($params['name'])){
             $model = $model->where('name', 'like', "%{$params['name']}%");

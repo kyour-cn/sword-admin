@@ -20,8 +20,8 @@ class MenuService
             ->order('sort asc, id asc')
             ->where('status', 1);
 
-        if(!empty($params['appid'])){
-            $model = $model->where('appid', $params['appid']);
+        if(!empty($params['app_id'])){
+            $model = $model->where('app_id', $params['app_id']);
         }
 
         $list = $model->column('*','id');
@@ -46,7 +46,7 @@ class MenuService
                     'id' => $value['id'],
                     'name' => $value['name'],
                     'path' => $value['path'],
-                    'rid' => $value['rid'],
+                    'rule_id' => $value['rule_id'],
                     'component' => $value['component'],
                     'sort' => $value['sort'],
                     'meta' => json_decode($value['meta'], true)
@@ -71,7 +71,7 @@ class MenuService
 
         //新增
         $menu = [
-            'appid' => $data['appid']?? 0,
+            'app_id' => $data['app_id']?? 0,
             'pid' => $data['parentId']?: 0,
             'name' => $data['name'],
             'path' => $data['path'],
@@ -94,10 +94,10 @@ class MenuService
         $menu = [];
         empty($data['parentId']) and $data['parentId'] = 0;
         is_array($data['parentId']) and $data['parentId'] = $data['parentId'][count($data['parentId']) -1]; //适配编辑页
-        isset($data['appid']) and $menu['appid'] = $data['appid'];
+        isset($data['app_id']) and $menu['app_id'] = $data['app_id'];
         isset($data['parentId']) and $menu['pid'] = $data['parentId'];
         isset($data['name']) and $menu['name'] = $data['name'];
-        isset($data['rid']) and $menu['rid'] = $data['rid'];
+        isset($data['rule_id']) and $menu['rule_id'] = $data['rule_id'];
         isset($data['path']) and $menu['path'] = $data['path'];
         isset($data['sort']) and $menu['sort'] = $data['sort'];
         isset($data['type']) and $menu['type'] = $data['type'];
@@ -140,7 +140,7 @@ class MenuService
 
         $list = $model->order('sort')
             ->where('status', 1)
-            ->where('appid', $appId)
+            ->where('app_id', $appId)
             ->column('*','id');
 
         return MenuService::recursionMenu($list, 0);
@@ -160,13 +160,13 @@ class MenuService
         //取出role的权限树
         $role = RoleModel::where('id', $roleId)
             ->where('status', 1)
-            ->field('id,rules,appid')
+            ->field('id,rules,app_id')
             ->find();
         if($role){
             $rules = explode(',', $role->rules);
             $rules[] = 0; //权限为0的菜单无需验证权限
-            $model = $model->whereIn('rid', $rules)
-                ->where('appid', $role->appid);
+            $model = $model->whereIn('rule_id', $rules)
+                ->where('app_id', $role->app_id);
         }else{
             return [];
         }

@@ -17,8 +17,8 @@ class RuleService
         $model = (new RuleModel())
             ->order('sort asc, id asc');
 
-        if(!empty($params['appid'])){
-            $model = $model->where('appid', $params['appid']);
+        if(!empty($params['app_id'])){
+            $model = $model->where('app_id', $params['app_id']);
         }
 
         $list = $model->column('*','id');
@@ -67,7 +67,7 @@ class RuleService
 
         //新增
         $menu = [
-            'appid' => $data['appid']?? 0,
+            'app_id' => $data['app_id']?? 0,
             'pid' => $data['parentId']?: 0,
             'name' => $data['name'],
             'path' => $data['path']
@@ -87,7 +87,7 @@ class RuleService
         $menu = [];
         empty($data['parentId']) and $data['parentId'] = 0;
         is_array($data['parentId']) and $data['parentId'] = $data['parentId'][count($data['parentId']) -1]; //适配编辑页
-        isset($data['appid']) and $menu['appid'] = $data['appid'];
+        isset($data['app_id']) and $menu['app_id'] = $data['app_id'];
         isset($data['parentId']) and $menu['pid'] = $data['parentId'];
         isset($data['name']) and $menu['name'] = $data['name'];
         isset($data['alias']) and $menu['alias'] = $data['alias'];
