@@ -9,6 +9,8 @@ use support\Response;
 
 /**
  * 封装文件导入导出服务
+ * require: composer require phpoffice/phpspreadsheet:^1.28.0
+ * Class ExcelService
  */
 class ExcelService
 {
