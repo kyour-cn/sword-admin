@@ -2,17 +2,28 @@
 namespace plugin\admin\app\controller;
 
 use app\BaseController;
-use app\common\exception\MsgException;
-use app\common\service\BaseLoginService;
-use app\common\service\CaptchaService;
-use app\common\service\LogService;
+use app\exception\MsgException;
+use app\service\BaseLoginService;
 use Psr\SimpleCache\InvalidArgumentException;
 use support\Request;
+use support\Response;
+use sword\log\Log;
+use sword\service\CaptchaService;
+use think\db\exception\DbException;
 use Tinywan\Jwt\JwtToken;
 
+/**
+ * 后台登录控制器
+ * @api
+ */
 class Login extends BaseController
 {
-    public function index(Request $request)
+    /**
+     * @param Request $request
+     * @return Response
+     * @throws MsgException|DbException
+     */
+    public function index(Request $request): Response
     {
         $params = $request->all();
 
@@ -20,7 +31,6 @@ class Login extends BaseController
         $res = $loginService->checkLogin($params);
 
         if(count($res) == 1){
-
             //取出成功的登录服务
             $service = $res[0];
 
@@ -28,7 +38,7 @@ class Login extends BaseController
             $token = JwtToken::generateToken($service->jwtData);
 
             //记录登录日志
-            LogService::app('login', [
+            Log::log('login', [
                 'title' => '用户登录',
                 'request_user' => $service->userInfo['realname']??'',
                 'request_user_id' => $service->userInfo['id']??0,
@@ -50,10 +60,10 @@ class Login extends BaseController
      * 输出验证码图像
      * @throws InvalidArgumentException
      */
-    public function captcha(Request $request): \support\Response
+    public function captcha(Request $request): Response
     {
         $id = $request->get('number');
         $service = new CaptchaService();
-        return $service->captcha($id);
+        return $service->imgCaptcha($id);
     }
 }

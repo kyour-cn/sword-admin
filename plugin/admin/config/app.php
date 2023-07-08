@@ -1,9 +1,8 @@
 <?php
 
-use support\Request;
-
 return [
-    'debug' => true,
+    'debug' => env('APP_DEBUG', false),
     'controller_suffix' => '',
     'controller_reuse' => false,
+    'version' => '1.0.0'
 ];

@@ -2,37 +2,37 @@
 namespace plugin\admin\app\controller;
 
 use app\BaseController;
-use app\common\service\AuthService;
-use plugin\admin\app\service\MenuService;
+use app\service\AuthService;
+use plugin\admin\app\service\AdminRbacService;
+use support\Response;
+use think\db\exception\DbException;
 use Tinywan\Jwt\JwtToken;
 
 class Index extends BaseController
 {
-    /**
-     * 控制器中间件
-     */
-    const middleware = [];
 
-    public function index()
+    public function index(): string
     {
         return "hello admin.";
     }
 
     /**
      * 获取用户菜单
+     * @return Response
+     * @throws DbException
      */
-    public function menu()
+    public function menu(): Response
     {
         //获取当前用户角色
         $roleId = JwtToken::getExtendVal('role');
         $uid = JwtToken::getExtendVal('id');
 
-        $menuService = new MenuService();
+        $rbacService = new AdminRbacService();
         $authService = new AuthService();
         if($authService->isRootUser($uid)){
-            $menu = $menuService->getRootMenu(1);
+            $menu = $rbacService->getRootMenu(1);
         }else{
-            $menu = $menuService->getUserMenu($roleId);
+            $menu = $rbacService->getUserMenu($roleId);
         }
 
         return $this->withData(0, 'success', [

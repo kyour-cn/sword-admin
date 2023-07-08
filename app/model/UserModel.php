@@ -1,11 +1,25 @@
 <?php declare (strict_types = 1);
 
-namespace app\common\model;
+namespace app\model;
 
 use think\Model;
 use think\model\concern\SoftDelete;
-use think\model\relation\HasOne;
 
+/**
+ * 用户表
+ * @property int $id
+ * @property string $realname 姓名
+ * @property string $username 用户名
+ * @property string $mobile 手机号
+ * @property string $avatar 头像
+ * @property int $sex 性别 0=女 1=男
+ * @property string $password 密码 md5
+ * @property int $register_time 注册时间
+ * @property int $login_time 登录时间
+ * @property int $status 状态
+ * @property int $delete_time 删除时间
+ * @property int $role_id 角色ID
+ */
 class UserModel extends Model
 {
     use SoftDelete; //软删除
@@ -22,14 +36,5 @@ class UserModel extends Model
     protected $updateTime = false;
     //输出自动时间戳不自动格式化
     protected $dateFormat = false;
-
-    /**
-     * 角色模型管理
-     * @return HasOne
-     */
-//    public function role(): HasOne
-//    {
-//        return $this->hasOne(RoleModel::class);
-//    }
 
 }

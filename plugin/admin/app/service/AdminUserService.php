@@ -1,22 +1,23 @@
 <?php
 
-namespace app\common\service;
+namespace plugin\admin\app\service;
 
-use app\common\exception\MsgException;
-use app\common\model\RoleModel;
-use app\common\model\UserModel;
+use app\exception\MsgException;
+use app\model\RoleModel;
+use app\model\UserModel;
 use think\db\exception\DbException;
+use think\Paginator;
 
-class UserService
+class AdminUserService
 {
 
     /**
      * 获取表格数据
      * @param array $params
-     * @return array
+     * @return Paginator
      * @throws DbException
      */
-    public function getList(array $params): array
+    public function getList(array $params): Paginator
     {
         $pageSize = $params['pageSize']??10;
 
@@ -26,19 +27,12 @@ class UserService
             $model = $model->where('realname|username|mobile', 'like', "%{$params['keyword']}%");
         }
 
-        $list = $model->order('id', 'desc')
+        return $model->order('id', 'desc')
             ->paginate($pageSize)
             ->each(function($item){
                 $item['role_name'] = RoleModel::where('id', $item['role_id'])->value('name');
                 return $item;
             });
-
-        return [
-            'total' => $list->total(),
-            'page' => $list->currentPage(),
-            'pageSize' => $pageSize,
-            'rows' => $list->toArray()['data']
-        ];
     }
 
     /**
@@ -70,7 +64,7 @@ class UserService
      * 编辑或新增
      * @param array $data
      * @return UserModel
-     * @throws \Exception
+     * @throws MsgException
      */
     public function edit(array $data): UserModel
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace app\common\middleware;
+namespace app\middleware;
 
 use Webman\Http\Request;
 use Webman\Http\Response;
@@ -8,6 +8,8 @@ use Webman\MiddlewareInterface;
 
 /**
  * 跨域请求中间件
+ * Class AccessControlMiddleware
+ * @package app\common\middleware
  */
 class AccessControlMiddleware implements MiddlewareInterface
 {
@@ -17,7 +19,7 @@ class AccessControlMiddleware implements MiddlewareInterface
      * @param callable $handler
      * @return Response
      */
-    public function process(Request $request, callable $handler) : Response
+    public function process(Request $request, callable $handler): Response
     {
         // 如果是options请求则返回一个空的响应，否则继续向洋葱芯穿越，并得到一个响应
         $response = $request->method() == 'OPTIONS' ? response() : $handler($request);

@@ -1,202 +1,245 @@
 <?php
+
 namespace plugin\admin\app\controller;
 
-use plugin\admin\app\service\MenuService;
 use app\BaseController;
-use app\common\service\AppService;
-use app\common\service\LogService;
-use app\common\service\RoleService;
-use app\common\service\RuleService;
-use app\common\service\UserService;
+use app\exception\MsgException;
+use app\middleware\AuthMiddleware;
+use plugin\admin\app\service\AdminRbacService;
+use plugin\admin\app\service\AdminLogService;
+use plugin\admin\app\service\AdminUserService;
 use support\Request;
+use support\Response;
+use sword\http\middleware\MiddlewareAttr;
+use think\db\exception\DbException;
 
+/**
+ * 系统管理
+ * @api
+ */
+#[MiddlewareAttr(AuthMiddleware::class)]
 class System extends BaseController
 {
-    /**
-     * 控制器中间件
-     */
-    const middleware = [
-        \app\common\middleware\AuthMiddleware::class
-    ];
-
-    public function index()
-    {
-        echo "hello admin.";
-    }
 
     /**
      * 应用列表
+     * @param Request $request
+     * @return Response
+     * @throws DbException
+     * @api
      */
-    public function appList(Request $request)
+    public function appList(Request $request): Response
     {
         $params = $request->all();
-        $service = new AppService();
-        $list = $service->getList($params);
-        return $this->withData(0, 'success', $list);
+        $service = new AdminRbacService();
+        $list = $service->getAppList($params);
+        return $this->withData(data: $list);
     }
 
     /**
      * 编辑、新增应用
+     * @param Request $request
+     * @return Response
+     * @api
      */
-    public function editApp(Request $request)
+    public function editApp(Request $request): Response
     {
         $data = $request->all();
-        $service = new AppService();
-        if(!empty($data['id'])){
-            $res = $service->edit($data);
-        }else{
-            $res = $service->add($data);
+        $service = new AdminRbacService();
+        if (!empty($data['id'])) {
+            $res = $service->editApp($data);
+        } else {
+            $res = $service->addApp($data);
         }
         return $this->withData(0, '编辑成功', $res);
     }
 
     /**
      * 删除应用
+     * @param Request $request
+     * @return Response
+     * @api
      */
-    public function deleteApp(Request $request)
+    public function deleteApp(Request $request): Response
     {
         $ids = $request->post('ids');
-        $service = new AppService();
-        $res = $service->delete($ids);
+        $service = new AdminRbacService();
+        $res = $service->deleteApp($ids);
         return $this->withData(0, '删除成功', $res);
     }
 
     /**
      * 菜单列表
+     * @param Request $request
+     * @return Response
+     * @api
      */
-    public function menuList(Request $request)
+    public function menuList(Request $request): Response
     {
         $params = $request->all();
-        $service = new MenuService();
-        $menu = $service->getList($params);
-        return $this->withData(0, 'success', $menu);
+        $service = new AdminRbacService();
+        $menu = $service->getMenuList($params);
+        return $this->withData(data: $menu);
     }
 
     /**
      * 编辑、新增菜单
+     * @param Request $request
+     * @return Response
+     * @api
      */
-    public function editMenu(Request $request)
+    public function editMenu(Request $request): Response
     {
         $data = $request->all();
-        $service = new MenuService();
-        if(!empty($data['id'])){
-            $res = $service->edit($data);
-        }else{
-            $res = $service->add($data);
+        $service = new AdminRbacService();
+        if (!empty($data['id'])) {
+            $res = $service->editMenu($data);
+        } else {
+            $res = $service->addMenu($data);
         }
         return $this->withData(0, '编辑成功', $res);
     }
 
     /**
      * 删除菜单
+     * @param Request $request
+     * @return Response
+     * @api
      */
-    public function deleteMenu(Request $request)
+    public function deleteMenu(Request $request): Response
     {
         $ids = $request->post('ids');
-        $service = new MenuService();
-        $res = $service->delete($ids);
+        $service = new AdminRbacService();
+        $res = $service->deleteMenu($ids);
         return $this->withData(0, '删除成功', $res);
     }
 
     /**
      * 权限菜单
+     * @param Request $request
+     * @return Response
+     * @api
      */
-    public function ruleList(Request $request)
+    public function ruleList(Request $request): Response
     {
         $params = $request->all();
-        $service = new RuleService();
-        $list = $service->getList($params);
-        return $this->withData(0, 'success', $list);
+        $service = new AdminRbacService();
+        $list = $service->getRuleList($params);
+        return $this->withData(data: $list);
     }
 
     /**
      * 编辑、新增权限
+     * @param Request $request
+     * @return Response
+     * @api
      */
-    public function editRule(Request $request)
+    public function editRule(Request $request): Response
     {
         $data = $request->all();
-        $service = new RuleService();
-        if(!empty($data['id'])){
-            $res = $service->edit($data);
-        }else{
-            $res = $service->add($data);
+        $service = new AdminRbacService();
+        if (!empty($data['id'])) {
+            $res = $service->editRule($data);
+        } else {
+            $res = $service->addRule($data);
         }
         return $this->withData(0, '编辑成功', $res);
     }
 
     /**
      * 删除权限
+     * @param Request $request
+     * @return Response
+     * @api
      */
-    public function deleteRule(Request $request)
+    public function deleteRule(Request $request): Response
     {
         $ids = $request->post('ids');
-        $service = new RuleService();
-        $res = $service->delete($ids);
+        $service = new AdminRbacService();
+        $res = $service->deleteRule($ids);
         return $this->withData(0, '删除成功', $res);
     }
 
     /**
      * 角色菜单
+     * @param Request $request
+     * @return Response
+     * @throws DbException
+     * @api
      */
-    public function roleList(Request $request)
+    public function roleList(Request $request): Response
     {
         $params = $request->all();
-        $service = new RoleService();
+        $service = new AdminRbacService();
 
         //只显示手动创建的
         $params['is_auto'] = 0;
 
-        $list = $service->getList($params);
-        return $this->withData(0, 'success', $list);
+        $list = $service->getRoleList($params);
+        return $this->withData(data: $list);
     }
 
     /**
      * 编辑、新增角色
+     * @param Request $request
+     * @return Response
+     * @api
      */
-    public function editRole(Request $request)
+    public function editRole(Request $request): Response
     {
         $data = $request->all();
-        $service = new RoleService();
-        if(!empty($data['id'])){
-            $res = $service->edit($data);
-        }else{
-            $res = $service->add($data);
+        $service = new AdminRbacService();
+        if (!empty($data['id'])) {
+            $res = $service->editRole($data);
+        } else {
+            $res = $service->addRole($data);
         }
         return $this->withData(0, '编辑成功', $res);
     }
 
     /**
      * 删除角色
+     * @param Request $request
+     * @return Response
+     * @api
      */
-    public function deleteRole(Request $request)
+    public function deleteRole(Request $request): Response
     {
         $ids = $request->post('ids');
-        $service = new RoleService();
-        $res = $service->delete($ids);
+        $service = new AdminRbacService();
+        $res = $service->deleteRole($ids);
         return $this->withData(0, '删除成功', $res);
     }
 
     /**
      * 用户
+     * @param Request $request
+     * @return Response
+     * @throws DbException
+     * @api
      */
-    public function userList(Request $request)
+    public function userList(Request $request): Response
     {
         $params = $request->all();
-        $service = new UserService();
+        $service = new AdminUserService();
         $list = $service->getList($params);
-        return $this->withData(0, 'success', $list);
+        return $this->withData(data: $list);
     }
 
     /**
      * 编辑、新增用户
+     * @param Request $request
+     * @return Response
+     * @throws MsgException
+     * @api
      */
-    public function editUser(Request $request)
+    public function editUser(Request $request): Response
     {
         $data = $request->all();
-        $service = new UserService();
-        if(!empty($data['id'])){
+        $service = new AdminUserService();
+        if (!empty($data['id'])) {
             $res = $service->edit($data);
-        }else{
+        } else {
             $res = $service->add($data);
         }
         return $this->withData(0, '编辑成功', $res);
@@ -204,23 +247,30 @@ class System extends BaseController
 
     /**
      * 删除用户
+     * @param Request $request
+     * @return Response
+     * @api
      */
-    public function deleteUser(Request $request)
+    public function deleteUser(Request $request): Response
     {
         $ids = $request->post('ids');
-        $service = new UserService();
+        $service = new AdminUserService();
         $res = $service->delete($ids);
         return $this->withData(0, '删除成功', $res);
     }
 
     /**
      * 日志页数据
+     * @param Request $request
+     * @return Response
+     * @throws DbException|MsgException
+     * @api
      */
-    public function logPageInfo(Request $request)
+    public function logPageInfo(Request $request): Response
     {
         $params = $request->all();
 
-        $service = new LogService();
+        $service = new AdminLogService();
         $levels = $service->getLevelList();
         $levelIdMap = array_column($levels, null, 'id');
 
@@ -230,7 +280,7 @@ class System extends BaseController
         ];
 
         //日志级别分类
-        foreach ($levels as $item){
+        foreach ($levels as $item) {
             $levelGroup[$item['id'] < 10 ? 'system' : 'app'][] = $item;
         }
 
@@ -265,11 +315,18 @@ class System extends BaseController
         ]);
     }
 
-    public function logList(Request $request)
+    /**
+     * 日志列表
+     * @param Request $request
+     * @return Response
+     * @throws DbException|MsgException
+     * @api
+     */
+    public function logList(Request $request): Response
     {
         $params = $request->all();
-        $service = new LogService();
+        $service = new AdminLogService();
         $list = $service->getList($params);
-        return $this->withData(0, 'success', $list);
+        return $this->withData(data: $list);
     }
 }

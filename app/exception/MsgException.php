@@ -1,16 +1,20 @@
 <?php
 
-namespace app\common\exception;
+namespace app\exception;
 
+use Exception;
 use Throwable;
 
-class MsgException extends \Exception
+/**
+ * 响应消息异常类
+ */
+class MsgException extends Exception
 {
 
     /**
-     * @var mixed
+     * @var mixed 响应数据
      */
-    private $data = [];
+    protected mixed $data = [];
 
     /**
      * 默认Code为1
@@ -26,18 +30,18 @@ class MsgException extends \Exception
     /**
      * @return mixed
      */
-    public function getData()
+    public function getData(): mixed
     {
         return $this->data;
     }
 
     /**
      * @param mixed $data
+     * @return MsgException
      */
-    public function setData($data): MsgException
+    public function setData(mixed $data): MsgException
     {
         $this->data = $data;
-
         return $this;
     }
 
@@ -46,7 +50,7 @@ class MsgException extends \Exception
      * @return void
      * @throws MsgException
      */
-    public function throw()
+    public function throw(): void
     {
         throw $this;
     }

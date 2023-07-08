@@ -1,9 +1,11 @@
 <?php
 
-namespace app\common\service;
+namespace app\service;
 
-use app\common\exception\MsgException;
-use app\common\validate\LoginValidate;
+use app\exception\MsgException;
+use app\index\validate\LoginValidate;
+use app\model\UserModel;
+use sword\service\UtilsService;
 use think\db\exception\DbException;
 
 /**
@@ -12,6 +14,9 @@ use think\db\exception\DbException;
  */
 class BaseLoginService
 {
+
+    //登录类型
+    public string $loginType = 'user';
 
     //登录后保存到jwt中的数据
     public array $jwtData = [];
@@ -28,10 +33,39 @@ class BaseLoginService
     /**
      * 登录
      * @param array $params
-     * @return bool 登录是否成功
+     * @return bool
+     * @throws DbException
      */
     public function login(array $params): bool
     {
+        $field = 'id,username,realname,mobile,avatar,status,role_id';
+
+        //登录判断
+        $user = UserModel::where('username|mobile', $params['username'])
+            ->where('password', $params['password'])
+            ->field($field)
+            ->find();
+        if(!$user){
+            return false;
+        }
+
+        //更新登录时间
+        $user->save([
+            'login_time' => time()
+        ]);
+
+        $this->jwtData = [
+            'id' => $user->id,
+            'name' => $user->realname,
+            'role' => $user->role_id,
+            'login_type' => $this->loginType
+        ];
+
+        $this->userInfo = $user->toArray();
+        $this->userInfo['login_type'] = $this->loginType;
+
+        $this->success = true;
+
         return true;
     }
 
@@ -78,7 +112,7 @@ class BaseLoginService
 
         //没有成功的登录匹配 -默认登录服务
         if(!$res){
-            $service = new LoginService();
+            $service = new BaseLoginService();
             if($service->login($params)){
                 $res[] = $service;
             }

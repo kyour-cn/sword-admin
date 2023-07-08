@@ -1,13 +1,14 @@
 <?php
 
-namespace app\common\service;
+namespace app\service;
 
-use app\common\exception\HttpCode;
-use app\common\exception\MsgException;
-use app\common\model\RoleModel;
-use app\common\model\RuleModel;
-use app\common\model\UserModel;
-use think\facade\Cache;
+use app\enum\ResponseCode;
+use app\exception\MsgException;
+use app\model\RoleModel;
+use app\model\RuleModel;
+use app\model\UserModel;
+use sword\Cache\Facade\Cache;
+use sword\service\UtilsService;
 use Tinywan\Jwt\Exception\JwtTokenException;
 use Tinywan\Jwt\JwtToken;
 use Webman\Http\Request;
@@ -33,7 +34,8 @@ class AuthService
         $path = UtilsService::getRequestPath($request);
 
         if(!$this->checkRulePath($roleId, $path)){
-            throw HttpCode::makeException('API_AUTH_ERROR');
+            //没有权限
+            throw ResponseCode::makeException(ResponseCode::NoPermission);
         }
 
         return true;
@@ -48,7 +50,7 @@ class AuthService
         if(!request()) return false;
         try{
             JwtToken::getCurrentId();
-        }catch (JwtTokenException $e){
+        }catch (JwtTokenException){
             return false;
         }
         return true;
@@ -69,7 +71,7 @@ class AuthService
         if(!$ruleId) return false;
 
         $check = RoleModel::where('id', $roleId)
-            ->where("FIND_IN_SET('{$ruleId}',rules)")
+            ->where("FIND_IN_SET('$ruleId',rules)")
             ->value('id');
 
         return (bool) $check;
@@ -90,7 +92,7 @@ class AuthService
         if(!$ruleId) return false;
 
         $check = RoleModel::where('id', $roleId)
-            ->where("FIND_IN_SET('{$ruleId}',rules)")
+            ->where("FIND_IN_SET('$ruleId',rules)")
             ->value('id');
 
         return (bool) $check;
@@ -100,11 +102,10 @@ class AuthService
      * 判断用户是否为超级管理员
      * @param int $uid
      * @return bool
-     * @throws \Throwable
      */
     public function isRootUser(int $uid): bool
     {
-        return Cache::remember("is_root_user_{$uid}", function () use ($uid) {
+        return Cache::remember("is_root_user_$uid", function () use ($uid) {
             return UserModel::where('id', $uid)->value('role_id') == 1;
         }, 600);
     }
