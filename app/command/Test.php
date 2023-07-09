@@ -15,7 +15,7 @@ class Test extends Command
     /**
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->addArgument('name', InputArgument::OPTIONAL, 'Name description');
     }

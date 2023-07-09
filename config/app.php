@@ -1,16 +1,4 @@
 <?php
-/**
- * This file is part of webman.
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the MIT-LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @author    walkor<walkor@workerman.net>
- * @copyright walkor<walkor@workerman.net>
- * @link      http://www.workerman.net/
- * @license   http://www.opensource.org/licenses/mit-license.php MIT License
- */
 
 use support\Request;
 
@@ -19,13 +7,18 @@ return [
     'error_reporting' => E_ALL,
     'default_timezone' => 'Asia/Shanghai',
     'request_class' => Request::class,
-    'public_path' => base_path() . DIRECTORY_SEPARATOR . 'public',
-    'runtime_path' => base_path(false) . DIRECTORY_SEPARATOR . 'runtime',
+    'public_path' => base_path() . '/public',
+    'runtime_path' => base_path(false) . '/runtime',
     'controller_suffix' => '',
     'controller_reuse' => true, //控制器复用
 
     //AppKey应用唯一标识,作为缓存前缀避免冲突
-    'app_key' => 'rbac_srv',
+    'app_key' => 'rbac_app',
+
+    //是否开启数据传输加密
+    'data_encrypt' => false,
+    //加密密钥（AES-128-ECB）
+    'data_encrypt_key' => '123456782a4b4c5d',
 
     //响应跨域标识 (Access-Control-Allow-Origin)
     'response_cors' => [
@@ -38,7 +31,7 @@ return [
     //自定义登录服务类注册 -按顺序进行登录验证
     'login_service' => [
         //用户登录 -示例
-//        \app\common\service\LoginService::class
+//        \app\service\LoginService::class
     ]
 
 ];

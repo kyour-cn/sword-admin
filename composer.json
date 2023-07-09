@@ -18,25 +18,24 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.1",
         "ext-json": "*",
         "workerman/webman-framework": "^1.5.0",
-        "monolog/monolog": "^2.0",
-        "psr/container": "^1.1.1",
+        "monolog/monolog": "^3.3",
+        "psr/container": "^2.0",
         "webman/console": "^1.2",
         "webman/event": "^1.0",
-        "webman/think-orm": "^1.0",
-        "tinywan/jwt": "^1.5",
-        "vlucas/phpdotenv": "^5.4",
+        "webman/think-orm": "^1.1",
+        "tinywan/jwt": "^1.6",
+        "vlucas/phpdotenv": "^5.5",
         "webman/captcha": "^1.0",
-        "illuminate/redis": "^8.2.0",
-        "topthink/think-validate": "^2.0",
-        "webman/think-cache": "^1.0.2"
+        "php-sword/webman-cache": "^1.0",
+        "php-sword/webman-support": "dev-main",
+        "php-sword/sword-validate": "dev-main"
     },
     "autoload": {
         "psr-4": {
-            "": "./",
-            "app\\": "./app"
+            "": "./"
         },
         "files": [
             "./support/helpers.php"

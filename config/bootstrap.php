@@ -14,5 +14,4 @@
 
 return [
     Webman\ThinkOrm\ThinkOrm::class,
-    Webman\ThinkCache\ThinkCache::class
 ];

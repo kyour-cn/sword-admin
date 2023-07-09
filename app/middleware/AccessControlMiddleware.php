@@ -8,8 +8,6 @@ use Webman\MiddlewareInterface;
 
 /**
  * 跨域请求中间件
- * Class AccessControlMiddleware
- * @package app\common\middleware
  */
 class AccessControlMiddleware implements MiddlewareInterface
 {

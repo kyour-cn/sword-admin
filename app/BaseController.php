@@ -1,10 +1,10 @@
-<?php declare (strict_types = 1);
+<?php declare (strict_types=1);
 
 namespace app;
 
-use app\common\middleware\ControllerMiddlewareInterface;
-use app\common\service\ResponseService;
+use app\enum\ResponseCode;
 use support\Response;
+use sword\service\ResponseService;
 
 /**
  * 控制器基础类
@@ -13,19 +13,15 @@ abstract class BaseController
 {
 
     /**
-     * @var ControllerMiddlewareInterface[]
-     */
-    const middleware = [];
-
-    /**
      * api接口返回数据，封装统一规则
-     * @param int|string $code 错误代码，0为无错误
+     * @param int|ResponseCode $code 错误代码，0为无错误
      * @param string $message 响应提示文本
-     * @param array|object $data 响应数据主体
-     * @return array|Response
+     * @param mixed|array $data 响应数据主体
+     * @return Response
      */
-    protected function withData($code = 0, string $message = '', $data = [])
+    protected function withData(int|ResponseCode $code = 0, string $message = '', mixed $data = []): Response
     {
+        $message === '' and $code === 0 and $message = 'success';
         return ResponseService::jsonPack($code, $message, $data);
     }
 
