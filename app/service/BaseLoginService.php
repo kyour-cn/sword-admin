@@ -3,8 +3,8 @@
 namespace app\service;
 
 use app\exception\MsgException;
-use app\index\validate\LoginValidate;
 use app\model\UserModel;
+use plugin\admin\app\validate\LoginValidate;
 use sword\service\UtilsService;
 use think\db\exception\DbException;
 
