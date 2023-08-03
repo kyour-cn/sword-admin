@@ -4,6 +4,7 @@ namespace plugin\admin\app\controller;
 use app\BaseController;
 use app\exception\MsgException;
 use app\service\BaseLoginService;
+use plugin\admin\app\validate\LoginValidate;
 use Psr\SimpleCache\InvalidArgumentException;
 use support\Request;
 use support\Response;
@@ -26,6 +27,12 @@ class Login extends BaseController
     public function index(Request $request): Response
     {
         $params = $request->all();
+
+        //登录验证器
+        $validate = new LoginValidate();
+        if (!$validate->check($params)) {
+            throw new MsgException($validate->getError());
+        }
 
         $loginService = new BaseLoginService();
         $res = $loginService->checkLogin($params);

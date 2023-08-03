@@ -4,7 +4,6 @@ namespace app\service;
 
 use app\exception\MsgException;
 use app\model\UserModel;
-use plugin\admin\app\validate\LoginValidate;
 use sword\service\UtilsService;
 use think\db\exception\DbException;
 
@@ -64,6 +63,7 @@ class BaseLoginService
         $this->userInfo = $user->toArray();
         $this->userInfo['login_type'] = $this->loginType;
 
+        //表示登录成功
         $this->success = true;
 
         return true;
@@ -72,17 +72,12 @@ class BaseLoginService
     /**
      * 检查登录 并返回登录成功的Login服务对象
      * @param array $params
+     * @param array|null $serviceList
      * @return BaseLoginService[]
-     * @throws MsgException|DbException
+     * @throws DbException|MsgException
      */
-    public function checkLogin(array $params): array
+    public function checkLogin(array $params, ?array $serviceList = null): array
     {
-        //登录验证器
-        $validate = new LoginValidate();
-        if (!$validate->check($params)) {
-            throw new MsgException($validate->getError());
-        }
-
         //限制登录频率 -验锁
         if($lockTime = UtilsService::getLock("login:{$params['username']}")){
             $lockTime = $this->lockTime - (time() - $lockTime);
@@ -94,8 +89,10 @@ class BaseLoginService
             $params['password'] = md5($params['password']);
         }
 
-        //从配置中获取注册的登录服务
-        $serviceList = config('app.login_service', []);
+        //如果未指定登录服务，从配置中获取的登录服务
+        if(is_null($serviceList)) {
+            $serviceList = config('app.login_service', []);
+        }
 
         $res = [];
 
