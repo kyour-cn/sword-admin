@@ -68,7 +68,7 @@ class AuthService
         $ruleId = RuleModel::where('path', $path)
             ->where('status', 1)
             ->value('id');
-        if(!$ruleId) return false;
+        if(!$ruleId) return true;
 
         $check = RoleModel::where('id', $roleId)
             ->where("FIND_IN_SET('$ruleId',rules)")
