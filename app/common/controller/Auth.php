@@ -1,0 +1,68 @@
+<?php
+
+namespace app\common\controller;
+
+use app\BaseController;
+use app\common\service\AuthService;
+use support\Request;
+use support\Response;
+use Tinywan\Jwt\JwtToken;
+
+class Auth extends BaseController
+{
+    /**
+     * 登录
+     * @param Request $request
+     * @return Response
+     * @api
+     */
+    public function login(Request $request): Response
+    {
+        $params = $request->post();
+
+        //密码转换
+        if(empty($params['md5'])){
+            $params['password'] = md5($params['password']);
+        }
+
+        $auth = new AuthService();
+        try{
+            $user = $auth->login($params['username'], $params['password']);
+        }catch (\Exception $e){
+            return $this->withData(1, $e->getMessage());
+        }
+
+        if($user->status != 1){
+            return $this->withData(1, '账号异常或被锁定');
+        }
+
+        $apps = [];
+        foreach ($user->userRole as $item){
+            $apps[$item->role->app->id] = $item->role->app;
+        }
+
+        $expire = 86400;
+
+        // 生成token
+        $claims = [
+            'id' => $user->id,
+            'name'  => $user->nickname,
+            'access_exp' => $expire,
+        ];
+        $token = JwtToken::generateToken($claims);
+
+        return $this->withData(0, '登录成功', [
+            'userInfo' => $user,
+            'apps' => $apps,
+            'token' => $token['access_token'],
+            'expire' => $expire
+        ]);
+    }
+
+    public function menu(Request $request)
+    {
+        // TODO: 菜单获取待实现
+        return "111";
+    }
+
+}
