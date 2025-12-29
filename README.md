@@ -1,70 +1,53 @@
-<div style="padding:18px;max-width: 1024px;margin:0 auto;background-color:#fff;color:#333">
-<h1>webman</h1>
 
-基于<a href="https://www.workerman.net" target="__blank">workerman</a>开发的超高性能PHP框架
+SwordAdmin 1.0 Beta 2025
+===============
 
+> 基于Webman的PHP快速开发框架，让你更专注于业务代码的开发
 
-<h1>学习</h1>
+## 主要特性
+* 前后端分离
+* 集成RBAC权限管理
+* 基于Webman高性能框架
 
-<ul>
-  <li>
-    <a href="https://www.workerman.net/webman" target="__blank">主页 / Home page</a>
-  </li>
-  <li>
-    <a href="https://webman.workerman.net" target="__blank">文档 / Document</a>
-  </li>
-  <li>
-    <a href="https://www.workerman.net/doc/webman/install.html" target="__blank">安装 / Install</a>
-  </li>
-  <li>
-    <a href="https://www.workerman.net/questions" target="__blank">问答 / Questions</a>
-  </li>
-  <li>
-    <a href="https://www.workerman.net/apps" target="__blank">市场 / Apps</a>
-  </li>
-  <li>
-    <a href="https://www.workerman.net/sponsor" target="__blank">赞助 / Sponsors</a>
-  </li>
-  <li>
-    <a href="https://www.workerman.net/doc/webman/thanks.html" target="__blank">致谢 / Thanks</a>
-  </li>
-</ul>
+## 开始使用
 
-<div style="float:left;padding-bottom:30px;">
+- 通过Composer构建项目：
+```shell
+composer create-project kyour-cn/sword-admin admin
+```
 
-  <h1>赞助商</h1>
+## 启动项目
+```shell
+php server start
+```
 
-  <h4>特别赞助</h4>
-  <a href="https://www.crmeb.com/?form=workerman" target="__blank">
-    <img src="https://www.workerman.net/img/sponsors/6429/20230719111500.svg" width="200">
-  </a>
+守护进程（后台运行）:
+```shell
+php server start -d
+```
 
-  <h4>铂金赞助</h4>
-  <a href="https://www.fadetask.com/?from=workerman" target="__blank"><img src="https://www.workerman.net/img/sponsors/1/20230719084316.png" width="200"></a>
-  <a href="https://www.yilianyun.net/?from=workerman" target="__blank" style="margin-left:20px;"><img src="https://www.workerman.net/img/sponsors/6218/20230720114049.png" width="200"></a>
+停止运行：
+```shell
+php server stop
+```
 
+启动项目后访问：
+`http://localhost:8080/index`
 
-</div>
+## 参与开发
 
+直接提交PR或者Issue即可
 
-<div style="float:left;padding-bottom:30px;clear:both">
+## 更新记录
 
-  <h1>请作者喝咖啡</h1>
+[转到文档查看](https://github.com/kyour-cn/sword-admin/wiki)
 
-<img src="https://www.workerman.net/img/wx_donate.png" width="200">
-<img src="https://www.workerman.net/img/ali_donate.png" width="200">
-<br>
-<b>如果您觉得webman对您有所帮助，欢迎捐赠。</b>
+## 版权信息
 
+本项目遵循 MIT License 开源协议发布，并提供免费使用。
 
-</div>
+本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
+版权所有Copyright © 2020 by Kyour (https://www.kyour.cn) All rights reserved。
 
-<div style="clear: both">
-<h1>LICENSE</h1>
-The webman is open-sourced software licensed under the MIT.
-</div>
-
-</div>
-
-
+更多细节参阅 [LICENSE](LICENSE)
