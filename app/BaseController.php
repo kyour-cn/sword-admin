@@ -21,12 +21,12 @@ abstract class BaseController
     {
         $ret = [
             'code'   => $code,
-            'data'   => $data,
-            'message'=> $message
+            'message'=> $message,
+            'data'   => $data
         ];
         return new Response(200, [
             'Content-Type' => 'application/json'
-        ], json_encode($ret, JSON_UNESCAPED_UNICODE));
+        ], json_encode($ret, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
 }

@@ -22,7 +22,7 @@ return [
         'refresh_disable' => false,
 
         /** 令牌签发者 */
-        'iss' => 'webman.tinywan.cn',
+        'iss' => '',
 
         /** 某个时间点后才能访问，单位秒。（如：30 表示当前时间30秒后才能使用） */
         'nbf' => 0,

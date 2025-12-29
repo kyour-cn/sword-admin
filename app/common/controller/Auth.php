@@ -3,7 +3,9 @@
 namespace app\common\controller;
 
 use app\BaseController;
+use app\common\exception\BusinessException;
 use app\common\service\AuthService;
+use app\model\User;
 use support\Request;
 use support\Response;
 use Tinywan\Jwt\JwtToken;
@@ -59,10 +61,26 @@ class Auth extends BaseController
         ]);
     }
 
-    public function menu(Request $request)
+    public function menu(Request $request): Response
     {
-        // TODO: 菜单获取待实现
-        return "111";
+        $appID = $request->input('app_id', 0);
+        $claims = JwtToken::getExtend();
+
+        $userInfo = (new User)
+            ->with(['userRole', 'userRole.role'])
+            ->find($claims['id'] ?? 0);
+        if (empty($userInfo) or $userInfo->userRole->isEmpty()) {
+            throw new BusinessException('用户或角色不存在');
+        }
+
+        $auth = new AuthService();
+
+        $menu = $auth->getMenu($userInfo, (int)$appID);
+
+        return $this->withData(0, '登录成功', [
+            'menu' => $menu,
+            'permissions' => []
+        ]);
     }
 
 }
