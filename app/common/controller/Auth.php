@@ -5,10 +5,10 @@ namespace app\common\controller;
 use app\BaseController;
 use app\common\exception\BusinessException;
 use app\common\service\AuthService;
+use app\common\utils\JwtUtils;
 use app\model\User;
 use support\Request;
 use support\Response;
-use Tinywan\Jwt\JwtToken;
 
 class Auth extends BaseController
 {
@@ -51,12 +51,12 @@ class Auth extends BaseController
             'name'  => $user->nickname,
             'access_exp' => $expire,
         ];
-        $token = JwtToken::generateToken($claims);
+        $token = JwtUtils::encode($claims);
 
         return $this->withData(0, '登录成功', [
             'userInfo' => $user,
             'apps' => $apps,
-            'token' => $token['access_token'],
+            'token' => $token,
             'expire' => $expire
         ]);
     }
@@ -64,7 +64,8 @@ class Auth extends BaseController
     public function menu(Request $request): Response
     {
         $appID = $request->input('app_id', 0);
-        $claims = JwtToken::getExtend();
+
+        $claims = JwtUtils::decodeFromRequest($request);
 
         $userInfo = (new User)
             ->with(['userRole', 'userRole.role'])

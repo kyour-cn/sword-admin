@@ -7,7 +7,6 @@ use app\model\Menu;
 use app\model\MenuApi;
 use app\model\User;
 use support\Cache;
-use Tinywan\Jwt\JwtToken;
 
 class AuthService
 {
