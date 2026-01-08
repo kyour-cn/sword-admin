@@ -8,10 +8,12 @@
     "php": ">=8.4",
     "workerman/webman-framework": "^2.1",
     "monolog/monolog": "^2.0",
-    "webman/database": "^2.1",
+    "webman/database": "*",
     "vlucas/phpdotenv": "^5.6",
     "webman/cache": "^2.1",
-    "adhocore/jwt": "^1.1"
+    "adhocore/jwt": "^1.1",
+    "illuminate/pagination": "*",
+    "webman/console": "^2.1"
   },
   "suggest": {
     "ext-event": "For better performance. "

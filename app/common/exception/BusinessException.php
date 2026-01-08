@@ -32,11 +32,16 @@ class BusinessException extends RuntimeException
     {
         if ($request->expectsJson()) {
             $code = $this->getCode();
-            $json = ['code' => $code ?: 500, 'message' => $this->getMessage(), 'data' => $this->data];
-            return new Response(200, ['Content-Type' => 'application/json'],
-                json_encode($json, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $res = ['code' => $code ?: 500, 'message' => $this->getMessage(), 'data' => $this->data];
+            return new Response(200, [
+                'Content-Type' => 'application/json; charset=utf-8',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate'
+            ], json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
-        return new Response(200, [], $this->getMessage());
+        return new Response(200, [
+                'Content-Type' => 'text/plain; charset=utf-8',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate'
+        ], $this->getMessage());
     }
 
     /**

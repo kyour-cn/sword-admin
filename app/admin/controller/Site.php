@@ -4,8 +4,7 @@
 namespace app\admin\controller;
 
 use app\BaseController;
-use app\common\service\SiteService;
-use support\Request;
+use app\common\services\SiteService;
 use support\Response;
 
 /**
@@ -13,15 +12,15 @@ use support\Response;
  */
 class Site extends BaseController
 {
-    public function config(Request $req): Response
+    public function config(): Response
     {
         $res = new SiteService()->getConfig();
-        if(empty($res)){
-            return $this->withData(1, '配置不存在');
+        if (empty($res)) {
+            return $this->fail(1, '配置不存在');
         }
 
         $conf = json_decode($res->value, true);
 
-        return $this->withData(0, '', $conf);
+        return $this->success(data: $conf);
     }
 }

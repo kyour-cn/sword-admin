@@ -1,6 +1,6 @@
 <?php
 
-namespace app\common\service;
+namespace app\common\services;
 
 use app\common\exception\BusinessException;
 use app\model\Menu;
