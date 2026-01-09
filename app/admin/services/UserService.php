@@ -2,9 +2,10 @@
 
 namespace app\admin\services;
 
+use app\common\services\BaseService;
 use app\model\User;
 
-class UserService
+class UserService extends BaseService
 {
     /**
      * @param array $params

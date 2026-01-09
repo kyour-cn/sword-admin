@@ -2,9 +2,10 @@
 
 namespace app\admin\services;
 
+use app\common\services\BaseService;
 use app\model\App;
 
-class AppService
+class AppService extends BaseService
 {
 
     /**

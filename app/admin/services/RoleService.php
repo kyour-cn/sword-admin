@@ -2,9 +2,10 @@
 
 namespace app\admin\services;
 
+use app\common\services\BaseService;
 use app\model\Role;
 
-class RoleService
+class RoleService extends BaseService
 {
     /**
      * @param array $params

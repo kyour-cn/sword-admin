@@ -4,7 +4,7 @@ namespace app\common\services;
 
 use app\model\Config;
 
-class SiteService
+class SiteService extends BaseService
 {
 
     /**

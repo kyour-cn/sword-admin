@@ -2,13 +2,14 @@
 
 namespace app\common\services;
 
+use app\admin\services\MenuService;
 use app\common\exception\BusinessException;
 use app\model\Menu;
 use app\model\MenuApi;
 use app\model\User;
 use support\Cache;
 
-class AuthService
+class AuthService extends BaseService
 {
 
     /**
@@ -80,7 +81,7 @@ class AuthService
             $conditions[] = ['id', 'in', $mIds];
         }
 
-        $menus = (new Menu)
+        $menus = new Menu()
             ->with('menuApi')
             ->where($conditions)
             ->get();
@@ -89,7 +90,9 @@ class AuthService
         }
 
         $list = $menus->toArray();
-        return $this->recursionMenu($list, 0);
+
+        return MenuService::instance()
+            ->recursionMenu($list, 0);
     }
 
     public function getPermissions(User $userInfo, int $appID = 0): array
@@ -143,37 +146,4 @@ class AuthService
         return array_column($apis->toArray(), 'tag');
     }
 
-    /**
-     * 递归数组 -前端组件使用格式
-     * @param $arr
-     * @param $pid
-     * @return array
-     */
-    private function recursionMenu(&$arr, $pid): array
-    {
-        $data = [];
-        foreach($arr as $value){
-            if($value['pid'] == $pid){
-                $menu = [
-                    'pid' => $value['pid'],
-                    'id' => $value['id'],
-                    'name' => $value['name'],
-                    'title' => $value['title'],
-                    'path' => $value['path'],
-                    'component' => $value['component'],
-                    'sort' => $value['sort'],
-                    'meta' => json_decode($value['meta'], true),
-                    'appId' => $value['app_id'],
-                    'apiList' => $value['menu_api'],
-                ];
-
-                $children = $this->recursionMenu($arr, $value['id']);
-                if(!empty($children)){
-                    $menu['children'] = $children;
-                }
-                $data[] = $menu;
-            }
-        }
-        return $data;
-    }
 }
