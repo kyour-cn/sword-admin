@@ -12,6 +12,8 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+use app\common\exception\BusinessHandler;
+
 return [
-    '' => support\exception\Handler::class,
+    '' => BusinessHandler::class,
 ];

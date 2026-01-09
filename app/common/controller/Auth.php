@@ -3,9 +3,11 @@
 namespace app\common\controller;
 
 use app\BaseController;
+use app\common\exception\BusinessException;
 use app\common\services\AuthService;
 use app\common\utils\JwtUtils;
 use app\model\User;
+use Exception;
 use support\Request;
 use support\Response;
 
@@ -29,8 +31,10 @@ class Auth extends BaseController
         $auth = new AuthService();
         try {
             $user = $auth->login($params['username'], $params['password']);
-        } catch (\Exception $e) {
-            return $this->fail(1, $e->getMessage());
+        } catch (BusinessException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            return $this->fail(1, '登录失败', $e->getMessage());
         }
 
         if ($user->status != 1) {
@@ -60,6 +64,12 @@ class Auth extends BaseController
         ]);
     }
 
+    /**
+     * 获取菜单
+     * @param Request $request
+     * @return Response
+     * @api
+     */
     public function menu(Request $request): Response
     {
         $appID = $request->input('app_id', 0);
@@ -77,9 +87,11 @@ class Auth extends BaseController
 
         $menu = $auth->getMenu($userInfo, (int)$appID);
 
+        $permissions = $auth->getPermissions($userInfo, (int)$appID);
+
         return $this->success('登录成功', [
             'menu' => $menu,
-            'permissions' => []
+            'permissions' => $permissions
         ]);
     }
 

@@ -13,8 +13,6 @@
  */
 
 use Webman\Session\FileSessionHandler;
-use Webman\Session\RedisSessionHandler;
-use Webman\Session\RedisClusterSessionHandler;
 
 return [
 

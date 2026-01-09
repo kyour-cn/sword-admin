@@ -3,7 +3,6 @@
 namespace app\model;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use support\Model;
 
 /**
  * 菜单
@@ -19,22 +18,20 @@ use support\Model;
  * @property string $meta meta路由参数
  * @property MenuApi[] $menuApi MenuApi模型一对多关联
  */
-class Menu extends Model
+class Menu extends BaseModel
 {
 
     /**
      * The table associated with the model.
-     *
      * @var string
      */
     protected $table = 'menu';
 
     /**
-     * The primary key associated with the table.
-     *
-     * @var string
+     * The attributes that aren't mass assignable.
+     * @var array
      */
-    protected $primaryKey = 'id';
+    protected $guarded = ['id'];
 
     /**
      * 关联MenuApi

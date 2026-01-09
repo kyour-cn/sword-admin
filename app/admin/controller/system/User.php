@@ -2,42 +2,48 @@
 
 namespace app\admin\controller\system;
 
-use app\admin\services\AppService;
+use app\admin\services\UserService;
 use app\BaseController;
 use support\Request;
 use support\Response;
 
 /**
- * 应用管理
  * @api
  */
-class App extends BaseController
+class User extends BaseController
 {
     public function list(Request $req): Response
     {
-        $serv = new AppService();
+        $serv = new UserService();
         $res = $serv->getList($req->get());
         return $this->success(data: $res);
     }
 
     public function add(Request $req): Response
     {
-        $serv = new AppService();
+        $serv = new UserService();
         $serv->create($req->post());
         return $this->success();
     }
 
     public function edit(Request $req): Response
     {
-        $serv = new AppService();
+        $serv = new UserService();
         $serv->update($req->post());
         return $this->success();
     }
 
     public function delete(Request $req): Response
     {
-        $serv = new AppService();
+        $serv = new UserService();
         $serv->delete($req->post('ids'));
+        return $this->success();
+    }
+
+    public function resetPassword(Request $req): Response
+    {
+        $serv = new UserService();
+        $serv->resetPassword($req->post('id'), $req->post('new_password'));
         return $this->success();
     }
 }

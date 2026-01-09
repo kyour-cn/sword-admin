@@ -4,7 +4,6 @@ namespace app\model;
 
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use support\Model;
 
 /**
  * 用户角色
@@ -22,30 +21,27 @@ use support\Model;
  * @property string $deleted_at 删除时间
  * @property App $app App模型一对一关联
  */
-class Role extends Model
+class Role extends BaseModel
 {
     use SoftDeletes;
 
     /**
      * The table associated with the model.
-     *
      * @var string
      */
     protected $table = 'role';
 
     /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id';
-
-    /**
      * Indicates if the model should be timestamped.
-     *
      * @var bool
      */
-    public $timestamps = false;
+    public $timestamps = true;
+
+    /**
+     * The attributes that aren't mass assignable.
+     * @var array
+     */
+    protected $guarded = ['id'];
 
     public function app(): HasOne
     {

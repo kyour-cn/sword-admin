@@ -2,8 +2,6 @@
 
 namespace app\model;
 
-use support\Model;
-
 /**
  * 配置
  * @property int $id 
@@ -13,28 +11,25 @@ use support\Model;
  * @property string $type 数据类型
  * @property string $value 变量值
  */
-class Config extends Model
+class Config extends BaseModel
 {
 
     /**
      * The table associated with the model.
-     *
      * @var string
      */
     protected $table = 'config';
 
     /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id';
-
-    /**
      * Indicates if the model should be timestamped.
-     *
      * @var bool
      */
     public $timestamps = false;
+
+    /**
+     * The attributes that aren't mass assignable.
+     * @var array
+     */
+    protected $guarded = ['id'];
 
 }

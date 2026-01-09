@@ -46,12 +46,12 @@ class ModelDescGen
     public function genModeDesc(string $file): bool
     {
         if (pathinfo($file, PATHINFO_EXTENSION) !== 'php') {
-            echo "文件不是PHP文件: {$file}\n";
+            echo "文件不是PHP文件: $file\n";
             return false;
         }
         
         if (!file_exists($file)) {
-            echo "文件不存在: {$file}\n";
+            echo "文件不存在: $file\n";
             return false;
         }
         
@@ -72,7 +72,7 @@ class ModelDescGen
 
         //查询表备注
         try{
-            $tableComment = Db::select("SELECT TABLE_COMMENT FROM information_schema.TABLES WHERE table_name = '{$table}'");
+            $tableComment = Db::select("SELECT TABLE_COMMENT FROM information_schema.TABLES WHERE table_name = '$table'");
             if ($tableComment && !empty($tableComment[0]->TABLE_COMMENT)){
                 $tableComment = " * {$tableComment[0]->TABLE_COMMENT}\n";
             } else {
@@ -96,7 +96,7 @@ class ModelDescGen
                 default => 'string',
             };
 
-            $res .= " * @property $type \${$v['name']} {$comment}\n";
+            $res .= " * @property $type \${$v['name']} $comment\n";
         }
         $res .= " */";
 
@@ -115,14 +115,14 @@ class ModelDescGen
         $className = $this->extractClassName($content);
         
         if (!$namespace || !$className) {
-            echo "无法解析文件: {$filePath}\n";
+            echo "无法解析文件: $filePath\n";
             return;
         }
         
         // 获取表名
         $tableName = $this->extractTableName($content);
         if (!$tableName) {
-            echo "无法获取表名，跳过: {$filePath}\n";
+            echo "无法获取表名，跳过: $filePath\n";
             return;
         }
         
@@ -140,9 +140,9 @@ class ModelDescGen
         
         if ($updatedContent !== $content) {
             file_put_contents($filePath, $updatedContent);
-            echo "已更新: {$filePath}\n";
+            echo "已更新: $filePath\n";
         } else {
-            echo "无需更新: {$filePath}\n";
+            echo "无需更新: $filePath\n";
         }
     }
     
@@ -212,7 +212,7 @@ class ModelDescGen
      */
     private function extractMethodBody(string $content, string $methodName): ?string
     {
-        $pattern = '/public\s+function\s+' . $methodName . '\s*\([^)]*\)\s*:[^\n]*\n\s*\{([^}]*)\}/';
+        $pattern = '/public\s+function\s+' . $methodName . '\s*\([^)]*\)\s*:[^\n]*\n\s*\{([^}]*)}/';
         
         if (preg_match($pattern, $content, $matches)) {
             return $matches[1];
@@ -256,7 +256,7 @@ class ModelDescGen
                 $displayPropertyType = substr($propertyType, strlen($namespace) + 1);
             }
             
-            return " * @property {$displayPropertyType} \${$methodName} {$displayModel}模型{$relationDesc}\n";
+            return " * @property $displayPropertyType \$$methodName {$displayModel}模型$relationDesc\n";
         }
         
         return null;
@@ -267,16 +267,10 @@ class ModelDescGen
      */
     private function getRelationPropertyType(string $relationType, string $relatedModel): string
     {
-        switch ($relationType) {
-            case 'hasMany':
-            case 'belongsToMany':
-                return $relatedModel . '[]';
-            case 'hasOne':
-            case 'belongsTo':
-                return $relatedModel;
-            default:
-                return $relatedModel;
-        }
+        return match ($relationType) {
+            'hasMany', 'belongsToMany' => $relatedModel . '[]',
+            default => $relatedModel,
+        };
     }
     
     /**

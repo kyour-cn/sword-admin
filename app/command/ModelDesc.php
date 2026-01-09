@@ -6,21 +6,24 @@ use app\common\utils\ModelDescGen;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * 生成模型注释
+ * @param string $model 模型文件路径，如：app/model/App.php
+ * @api
+ */
 #[AsCommand('model:desc', '生成模型注释')]
 class ModelDesc extends Command
 {
     /**
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('生成模型注释')
-             ->addArgument('model', InputArgument::OPTIONAL, '模型文件路径，如：app/model/App.php')
-             ->addOption('all', null, InputOption::VALUE_NONE, '生成全部模型注释');
+             ->addArgument('model', InputArgument::OPTIONAL, '模型文件路径，如：app/model/App.php');
     }
 
     /**
@@ -34,11 +37,10 @@ class ModelDesc extends Command
         
         // 获取参数和选项
         $modelFile = $input->getArgument('model');
-        $allModels = $input->getOption('all');
-        
+
         if ($modelFile) {
             // 生成单个模型文件注释
-            $output->writeln("正在生成模型文件注释: {$modelFile}");
+            $output->writeln("正在生成模型文件注释: $modelFile");
             
             // 处理相对路径
             if (!file_exists($modelFile)) {
@@ -49,9 +51,9 @@ class ModelDesc extends Command
             }
             
             if ($modelDescGen->genModeDesc($modelFile)) {
-                $output->writeln("<info>模型文件注释生成成功: {$modelFile}</info>");
+                $output->writeln("<info>模型文件注释生成成功: $modelFile</info>");
             } else {
-                $output->writeln("<error>模型文件注释生成失败: {$modelFile}</error>");
+                $output->writeln("<error>模型文件注释生成失败: $modelFile</error>");
                 return self::FAILURE;
             }
         } else {

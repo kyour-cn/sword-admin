@@ -2,8 +2,6 @@
 
 namespace app\model;
 
-use support\Model;
-
 /**
  * 应用列表
  * @property int $id 
@@ -13,28 +11,25 @@ use support\Model;
  * @property int $status 状态
  * @property int $sort 排序 ASC
  */
-class App extends Model
+class App extends BaseModel
 {
 
     /**
      * The table associated with the model.
-     *
      * @var string
      */
     protected $table = 'app';
 
     /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id';
-
-    /**
      * Indicates if the model should be timestamped.
-     *
      * @var bool
      */
     public $timestamps = false;
+
+    /**
+     * The attributes that aren't mass assignable.
+     * @var array
+     */
+    protected $guarded = ['id'];
 
 }

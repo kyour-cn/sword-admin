@@ -2,8 +2,6 @@
 
 namespace app\model;
 
-use support\Model;
-
 /**
  * 菜单权限接口
  * @property int $id 
@@ -12,21 +10,19 @@ use support\Model;
  * @property string $path API路由地址
  * @property string $tag 标识
  */
-class MenuApi extends Model
+class MenuApi extends BaseModel
 {
 
     /**
      * The table associated with the model.
-     *
      * @var string
      */
     protected $table = 'menu_api';
 
     /**
-     * The primary key associated with the table.
-     *
-     * @var string
+     * The attributes that aren't mass assignable.
+     * @var array
      */
-    protected $primaryKey = 'id';
+    protected $guarded = ['id'];
 
 }

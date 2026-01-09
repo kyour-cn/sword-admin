@@ -6,6 +6,7 @@
   "description": "High performance HTTP Service Framework.",
   "require": {
     "php": ">=8.4",
+    "ext-pdo": "*",
     "workerman/webman-framework": "^2.1",
     "monolog/monolog": "^2.0",
     "webman/database": "*",

@@ -2,41 +2,40 @@
 
 namespace app\admin\controller\system;
 
-use app\admin\services\AppService;
+use app\admin\services\RoleService;
 use app\BaseController;
 use support\Request;
 use support\Response;
 
 /**
- * 应用管理
  * @api
  */
-class App extends BaseController
+class Role extends BaseController
 {
     public function list(Request $req): Response
     {
-        $serv = new AppService();
+        $serv = new RoleService();
         $res = $serv->getList($req->get());
         return $this->success(data: $res);
     }
 
     public function add(Request $req): Response
     {
-        $serv = new AppService();
+        $serv = new RoleService();
         $serv->create($req->post());
         return $this->success();
     }
 
     public function edit(Request $req): Response
     {
-        $serv = new AppService();
+        $serv = new RoleService();
         $serv->update($req->post());
         return $this->success();
     }
 
     public function delete(Request $req): Response
     {
-        $serv = new AppService();
+        $serv = new RoleService();
         $serv->delete($req->post('ids'));
         return $this->success();
     }

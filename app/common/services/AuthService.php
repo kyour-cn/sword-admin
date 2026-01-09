@@ -92,7 +92,7 @@ class AuthService
         return $this->recursionMenu($list, 0);
     }
 
-    public function getPermission(User $userInfo, int $appID = 0): array
+    public function getPermissions(User $userInfo, int $appID = 0): array
     {
         $isAdmin = false;
 
