@@ -58,5 +58,10 @@ return [
                 'enable_memory_monitor' => DIRECTORY_SEPARATOR === '/',
             ]
         ]
+    ],
+
+    // 异步任务
+    'task' => [
+        'handler' => app\process\Task::class,
     ]
 ];

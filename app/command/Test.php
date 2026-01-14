@@ -2,6 +2,7 @@
 
 namespace app\command;
 
+use app\model\Task;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,7 +28,14 @@ class Test extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $name = $input->getArgument('name');
+
+        Task::create([
+            'title' => '测试任务',
+            'label' => 'Test',
+            'type' => 'import',
+            'params' => json_encode([]),
+        ]);
+
         $output->writeln('Hello test');
         return self::SUCCESS;
     }
