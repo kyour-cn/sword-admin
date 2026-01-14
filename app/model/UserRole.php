@@ -28,7 +28,7 @@ class UserRole extends BaseModel
      * Indicates if the model should be timestamped.
      * @var bool
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * The attributes that aren't mass assignable.

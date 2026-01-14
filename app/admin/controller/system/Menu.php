@@ -30,7 +30,11 @@ class Menu extends BaseController
     public function add(Request $req): Response
     {
         $serv = new MenuService();
-        $serv->create($req->post());
+        $data = $req->post();
+        $data['title'] = $data['meta']['title'];
+        $data['type'] = $data['meta']['type'];
+        $data['meta'] = json_encode($data['meta'], JSON_UNESCAPED_UNICODE);
+        $serv->create($data);
         return $this->success();
     }
 
