@@ -19,6 +19,13 @@ class User extends BaseController
         return $this->success(data: $res);
     }
 
+    public function export(Request $req): Response
+    {
+        $serv = new UserService();
+        $res = $serv->export($req->get());
+        return $this->success(data: $res);
+    }
+
     public function add(Request $req): Response
     {
         $serv = new UserService();

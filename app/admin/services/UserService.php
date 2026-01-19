@@ -3,6 +3,8 @@
 namespace app\admin\services;
 
 use app\common\services\BaseService;
+use app\common\utils\JwtUtils;
+use app\model\Task;
 use app\model\User;
 
 class UserService extends BaseService
@@ -32,6 +34,24 @@ class UserService extends BaseService
             'page' => $row->currentPage(),
             'page_size' => $row->perPage()
         ];
+    }
+
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public function export(array $params): mixed
+    {
+        $claims = JwtUtils::decodeFromRequest(request());
+
+        return Task::create([
+            'title' => '用户列表导出',
+            'group' => 'user',
+            'user_id' => $claims['id']??0,
+            'type' => 'export',
+            'label' => 'export_user',
+            'content' => json_encode($params, JSON_UNESCAPED_UNICODE),
+        ]);
     }
 
     /**

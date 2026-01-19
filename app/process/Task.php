@@ -5,6 +5,7 @@ namespace app\process;
 use app\model\Task as TaskModel;
 use app\task\TaskException;
 use app\task\TaskHandlerInterface;
+use Throwable;
 
 /**
  * 异步任务
@@ -12,12 +13,17 @@ use app\task\TaskHandlerInterface;
 class Task
 {
 
-    public function onWorkerStart()
+    /**
+     * 任务处理进程
+     * @api
+     * @return void
+     */
+    public function onWorkerStart(): void
     {
         while (true) {
             // 从数据库中获取待处理任务
             $task = TaskModel::where('status', 0)
-                ->orderBy('id', 'asc')
+                ->orderBy('id')
                 ->first();
             if (!$task) {
                 sleep(5);
@@ -28,7 +34,7 @@ class Task
             $taskClass = 'app\task\\' . $this->underscoreToCamelCase($task->label);
             if (!class_exists($taskClass)) {
                 $task->status = -1;
-                $task->result = '任务类不存在';
+                $task->result = '任务类不存在:' . $taskClass;
                 $task->save();
                 continue;
             }
@@ -47,7 +53,7 @@ class Task
                 $task->status = -1;
                 $task->result = $e->getMessage();
                 $task->save();
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $task->status = -1;
                 $task->result = $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine() .
                     "\n" . $e->getTraceAsString();
@@ -58,7 +64,8 @@ class Task
         }
     }
 
-    private function underscoreToCamelCase($string) {
+    private function underscoreToCamelCase($string): string
+    {
         // 将下划线分隔的单词转换为首字母大写
         $words = explode('_', $string);
         $camelCase = '';
