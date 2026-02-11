@@ -2,7 +2,6 @@
 
 namespace app\common\exception;
 
-use RuntimeException;
 use Throwable;
 use Webman\Http\Request;
 use Webman\Http\Response;
@@ -10,18 +9,22 @@ use Webman\Http\Response;
 /**
  * Class BusinessException
  */
-class BusinessException extends RuntimeException
+class BusinessException extends \support\exception\BusinessException
 {
 
     /**
      * @var mixed
      */
-    protected mixed $data = null;
+    protected $data = null {
+        get {
+            return $this->data;
+        }
+    }
 
     /**
      * @var bool
      */
-    protected bool $debug = false;
+    protected $debug = false;
 
     /**
      * Render an exception into an HTTP response.
@@ -53,15 +56,6 @@ class BusinessException extends RuntimeException
     {
         $this->data = $data;
         return $this;
-    }
-
-    /**
-     * Get data.
-     * @return array
-     */
-    public function getData(): array
-    {
-        return $this->data;
     }
 
     /**

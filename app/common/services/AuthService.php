@@ -39,7 +39,7 @@ class AuthService extends BaseService
             ->first();
         if (empty($user)) {
             Cache::set($key, $lock + 1, 10);
-            throw new BusinessException('用户不存在');
+            throw new BusinessException('账号或密码不正确');
         }
 
         // 登录成功，清空锁
