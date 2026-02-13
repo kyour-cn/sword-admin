@@ -5,6 +5,7 @@ namespace app\common\controller;
 use app\BaseController;
 use app\common\exception\BusinessException;
 use app\common\services\AuthService;
+use app\common\utils\DbLog;
 use app\common\utils\JwtUtils;
 use app\model\User;
 use Exception;
@@ -55,6 +56,14 @@ class Auth extends BaseController
             'access_exp' => $expire,
         ];
         $token = JwtUtils::encode($claims);
+
+        // 记录日志
+        DbLog::login([
+            'title' => '用户登录',
+            'request_user_id' => $user->id,
+            'request_user' => $user->nickname,
+            'value' => $token,
+        ]);
 
         return $this->success('登录成功', [
             'userInfo' => $user,

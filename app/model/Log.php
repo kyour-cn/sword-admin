@@ -2,8 +2,6 @@
 
 namespace app\model;
 
-use Illuminate\Database\Eloquent\Relations\HasOne;
-
 /**
  * 日志表
  * @property int $id 
@@ -20,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $status 状态 0=未处理 1=已查看 2=已处理
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
- * @property MenuApi $menuApi MenuApi模型一对一关联
  */
 class Log extends BaseModel
 {
@@ -32,17 +29,15 @@ class Log extends BaseModel
     protected $table = 'log';
 
     /**
+     * Indicates if the model should be timestamped.
+     * @var bool
+     */
+    public $timestamps = true;
+
+    /**
      * The attributes that aren't mass assignable.
      * @var array
      */
     protected $guarded = ['id'];
-
-    /**
-     * 关联MenuApi
-     */
-    public function menuApi(): HasOne
-    {
-        return $this->hasOne(MenuApi::class, 'menu_id', 'id');
-    }
 
 }
