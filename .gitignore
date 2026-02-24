@@ -8,3 +8,5 @@
 /tests/.phpunit.result.cache
 
 /composer.lock
+
+/public/uploads/*

@@ -15,6 +15,6 @@ interface TaskHandlerInterface
      * @return mixed
      * @throws TaskException
      */
-    public function run(Task $task);
+    public function run(Task $task): string;
 
 }
