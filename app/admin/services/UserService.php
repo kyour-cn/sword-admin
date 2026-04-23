@@ -26,7 +26,8 @@ class UserService extends BaseService
         }
 
         $row = User::where($conds)
-            ->paginate(perPage : $params['page_size'] ?? 10,page: $params['page'] ?? 1);
+            ->with(['userRole.role.app'])
+            ->paginate(perPage: $params['page_size'] ?? 10, page: $params['page'] ?? 1);
 
         return [
             'rows' => $row->items(),
