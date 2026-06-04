@@ -2,7 +2,7 @@
 
 namespace app\admin\controller;
 
-use app\common\controller\Auth as BaseAuth;
+use app\common\controller\BaseAuth;
 
 class Auth extends BaseAuth
 {

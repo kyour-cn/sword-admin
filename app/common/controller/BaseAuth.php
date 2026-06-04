@@ -12,7 +12,7 @@ use Exception;
 use support\Request;
 use support\Response;
 
-class Auth extends BaseController
+class BaseAuth extends BaseController
 {
     /**
      * 登录
@@ -82,6 +82,19 @@ class Auth extends BaseController
     public function menu(Request $request): Response
     {
         $appID = $request->input('app_id', 0);
+        $appKey = $request->input('app_key', '');
+
+        if ($appID <= 0 && empty($appKey)) {
+            return $this->fail(102, 'app_id或app_key不能为空');
+        }
+
+        if ($appID <= 0) {
+            $app = \app\model\App::where('key', $appKey)->first();
+            if (empty($app)) {
+                return $this->fail(103, '获取应用信息失败');
+            }
+            $appID = $app->id;
+        }
 
         $claims = JwtUtils::decodeFromRequest($request);
 

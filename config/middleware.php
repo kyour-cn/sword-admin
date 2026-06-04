@@ -17,5 +17,9 @@ return [
     '' => [
         // ... 这里省略其它中间件
         app\middleware\AccessControlMiddleware::class,
+    ],
+    // admin应用中间件
+    'admin' => [
+        app\middleware\AuthJwtMiddleware::class,
     ]
 ];
