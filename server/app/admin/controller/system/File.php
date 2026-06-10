@@ -30,8 +30,15 @@ class File extends BaseController
 
     public function menuDelete(Request $req): Response
     {
+        $id = $req->post('id');
+        if (empty($id)) {
+            return $this->fail(message: '请选择文件夹');
+        }
+
         $serv = new FileService();
-        $serv->deleteMenu($req->post('ids'));
+        if (!$serv->deleteMenu((int)$id)) {
+            return $this->fail(message: '文件夹不存在');
+        }
         return $this->success();
     }
 

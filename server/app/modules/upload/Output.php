@@ -31,13 +31,8 @@ class Output
     public string $hash;
 
     /**
-     * @var string 存储类型（对应file_storage表的key）
+     * @var string 存储类型（上传器 key，如 local / s3）
      */
     public string $storage;
-
-    /**
-     * @var string 存储类型ID（对应file_storage表的id）
-     */
-    public string $storageID;
 
 }

@@ -169,12 +169,11 @@
             param.onProgress({percent: complete})
           }
         }).then(res => {
-          console.log("12121", res)
           const response = config.parseData(res);
           if (response.code === config.successCode) {
             param.onSuccess(res)
           } else {
-            param.onError(response.message || "未知错误")
+            param.onError(response.msg || "未知错误")
           }
         }).catch(err => {
           param.onError(err)

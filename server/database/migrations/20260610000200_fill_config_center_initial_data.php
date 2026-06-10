@@ -44,8 +44,8 @@ final class FillConfigCenterInitialData extends AbstractMigration
         }
 
         $siteForm = $this->fetchRow("select `id`, `key` from `config_form` where `key` = 'site' limit 1");
-        if ($siteForm && !$this->fetchRow("select `id` from `config_value` where `form_key` = 'site' limit 1")) {
-            $this->table('config_value')->insert([
+        if ($siteForm && !$this->fetchRow("select `id` from `config` where `form_key` = 'site' limit 1")) {
+            $this->table('config')->insert([
                 [
                     'form_id' => $siteForm['id'],
                     'form_key' => $siteForm['key'],
@@ -58,6 +58,7 @@ final class FillConfigCenterInitialData extends AbstractMigration
             ])->saveData();
         }
 
+        $this->insertUploaderConfigs($now);
         $this->insertMenus();
     }
 
@@ -65,8 +66,175 @@ final class FillConfigCenterInitialData extends AbstractMigration
     {
         $this->execute("delete from `menu_api` where `tag` like 'admin.system.config%'");
         $this->execute("delete from `menu` where `name` in ('config', 'config_form', 'config_list', 'config_detail', 'config_save', 'config_form_list', 'config_form_add', 'config_form_edit', 'config_form_delete')");
-        $this->execute("delete from `config_value` where `form_key` = 'site'");
-        $this->execute("delete from `config_form` where `key` = 'site'");
+        $this->execute("delete from `config` where `form_key` in ('site', 'uploader_local', 'uploader_s3')");
+        $this->execute("delete from `config_form` where `key` in ('site', 'uploader_local', 'uploader_s3')");
+    }
+
+    private function insertUploaderConfigs(string $now): void
+    {
+        $forms = [
+            [
+                'key' => 'uploader_local',
+                'title' => '本地上传',
+                'sort' => 10,
+                'remark' => '本地磁盘存储上传参数',
+                'schema' => $this->localConfigSchema(),
+                'value' => $this->localDefaultValue(),
+            ],
+            [
+                'key' => 'uploader_s3',
+                'title' => 'S3上传',
+                'sort' => 20,
+                'remark' => 'S3及兼容对象存储上传参数',
+                'schema' => $this->s3ConfigSchema(),
+                'value' => $this->s3DefaultValue(),
+            ],
+        ];
+
+        foreach ($forms as $item) {
+            if (!$this->fetchRow("select `id` from `config_form` where `key` = '{$item['key']}' limit 1")) {
+                $this->table('config_form')->insert([
+                    [
+                        'key' => $item['key'],
+                        'title' => $item['title'],
+                        'group_key' => 'upload',
+                        'group_title' => '上传配置',
+                        'schema' => json_encode($item['schema'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                        'status' => 1,
+                        'sort' => $item['sort'],
+                        'remark' => $item['remark'],
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                        'deleted_at' => null,
+                    ],
+                ])->saveData();
+            }
+
+            $form = $this->fetchRow("select `id`, `key` from `config_form` where `key` = '{$item['key']}' limit 1");
+            if ($form && !$this->fetchRow("select `id` from `config` where `form_key` = '{$item['key']}' limit 1")) {
+                $this->table('config')->insert([
+                    [
+                        'form_id' => $form['id'],
+                        'form_key' => $form['key'],
+                        'value' => json_encode($item['value'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                        'version' => 1,
+                        'status' => 1,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ],
+                ])->saveData();
+            }
+        }
+    }
+
+    private function localDefaultValue(): array
+    {
+        return [
+            'enabled' => true,
+            'domain' => '',
+            'root' => '',
+            'max_size' => 10,
+            'allow_ext' => '',
+        ];
+    }
+
+    private function s3DefaultValue(): array
+    {
+        return [
+            'enabled' => false,
+            'access_key' => '',
+            'secret_key' => '',
+            'session_token' => '',
+            'region' => 'us-east-1',
+            'bucket' => '',
+            'endpoint' => '',
+            'custom_domain' => '',
+            'root' => '',
+            'use_path_style_endpoint' => false,
+            'acl' => '',
+            'max_size' => 10,
+            'allow_ext' => '',
+        ];
+    }
+
+    private function localConfigSchema(): array
+    {
+        return [
+            'labelWidth' => '160px',
+            'labelPosition' => 'left',
+            'formItems' => [
+                $this->switchItem('enabled', '启用', false, '开启后作为默认上传器；多个启用时按排序取第一个'),
+                $this->inputItem('domain', '访问域名', '', '如 https://cdn.xx.com，留空则返回相对路径'),
+                $this->inputItem('root', '存储子目录', '', '如填写 app，则文件保存到 public/app/uploads 下'),
+                $this->numberItem('max_size', '大小限制(MB)', 10, '单文件最大体积，0 表示不限制'),
+                $this->inputItem('allow_ext', '允许的扩展名', '', '逗号分隔，如 jpg,png,pdf；留空不限制'),
+            ],
+        ];
+    }
+
+    private function s3ConfigSchema(): array
+    {
+        return [
+            'labelWidth' => '160px',
+            'labelPosition' => 'left',
+            'formItems' => [
+                $this->switchItem('enabled', '启用', false, '开启后作为默认上传器；多个启用时按排序取第一个'),
+                $this->inputItem('access_key', 'Access Key', '', '留空时使用服务端默认凭证链'),
+                $this->inputItem('secret_key', 'Secret Key', '', '与Access Key需同时填写'),
+                $this->inputItem('session_token', 'Session Token', '', '临时凭证可填写'),
+                $this->inputItem('region', 'Region', 'us-east-1', 'AWS区域或兼容服务区域', [['required' => true, 'message' => '请输入Region']]),
+                $this->inputItem('bucket', 'Bucket', '', '对象存储桶名称', [['required' => true, 'message' => '请输入Bucket']]),
+                $this->inputItem('endpoint', 'Endpoint', '', 'S3兼容服务地址，AWS官方S3可留空'),
+                $this->inputItem('custom_domain', '访问域名', '', 'CDN或自定义域名，留空时按endpoint或AWS默认域名生成'),
+                $this->inputItem('root', '存储前缀', '', '如填写 app，则文件保存到 app/uploads 目录下'),
+                $this->switchItem('use_path_style_endpoint', '路径风格Endpoint', false, 'MinIO等服务通常需要开启'),
+                $this->inputItem('acl', 'ACL', '', '如public-read；留空则不设置ACL'),
+                $this->numberItem('max_size', '大小限制(MB)', 10, '单文件最大体积，0 表示不限制'),
+                $this->inputItem('allow_ext', '允许的扩展名', '', '逗号分隔，如 jpg,png,pdf；留空不限制'),
+            ],
+        ];
+    }
+
+    private function inputItem(string $name, string $label, mixed $value, string $message, array $rules = []): array
+    {
+        return [
+            'name' => $name,
+            'label' => $label,
+            'component' => 'input',
+            'value' => $value,
+            'span' => 24,
+            'options' => [],
+            'rules' => $rules,
+            'message' => $message,
+        ];
+    }
+
+    private function switchItem(string $name, string $label, bool $value, string $message): array
+    {
+        return [
+            'name' => $name,
+            'label' => $label,
+            'component' => 'switch',
+            'value' => $value,
+            'span' => 24,
+            'options' => [],
+            'rules' => [],
+            'message' => $message,
+        ];
+    }
+
+    private function numberItem(string $name, string $label, int $value, string $message): array
+    {
+        return [
+            'name' => $name,
+            'label' => $label,
+            'component' => 'number',
+            'value' => $value,
+            'span' => 24,
+            'options' => [],
+            'rules' => [],
+            'message' => $message,
+        ];
     }
 
     private function insertMenus(): void

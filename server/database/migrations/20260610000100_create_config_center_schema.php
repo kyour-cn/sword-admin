@@ -10,8 +10,7 @@ final class CreateConfigCenterSchema extends AbstractMigration
     public function up(): void
     {
         $this->createConfigFormTable();
-        $this->createConfigValueTable();
-        $this->createConfigChangeLogTable();
+        $this->createConfigTable();
     }
 
     public function down(): void
@@ -19,8 +18,7 @@ final class CreateConfigCenterSchema extends AbstractMigration
         $this->execute('set foreign_key_checks = 0');
 
         foreach ([
-            'config_change_log',
-            'config_value',
+            'config',
             'config_form',
         ] as $table) {
             if ($this->hasTable($table)) {
@@ -56,13 +54,13 @@ final class CreateConfigCenterSchema extends AbstractMigration
             ->create();
     }
 
-    private function createConfigValueTable(): void
+    private function createConfigTable(): void
     {
-        if ($this->hasTable('config_value')) {
+        if ($this->hasTable('config')) {
             return;
         }
 
-        $this->table('config_value', $this->tableOptions('配置值'))
+        $this->table('config', $this->tableOptions('配置值'))
             ->addColumn('id', 'integer', $this->idOptions())
             ->addColumn('form_id', 'integer', ['signed' => false, 'null' => false, 'comment' => '配置表单ID'])
             ->addColumn('form_key', 'string', ['limit' => 50, 'default' => '', 'null' => false, 'comment' => '表单唯一标识'])
@@ -71,29 +69,9 @@ final class CreateConfigCenterSchema extends AbstractMigration
             ->addColumn('status', 'integer', ['limit' => MysqlAdapter::INT_TINY, 'default' => 1, 'null' => false, 'comment' => '状态 1=生效 0=停用'])
             ->addColumn('created_at', 'datetime', ['null' => false, 'comment' => '创建时间'])
             ->addColumn('updated_at', 'datetime', ['null' => false, 'comment' => '更新时间'])
-            ->addForeignKey('form_id', 'config_form', 'id', ['constraint' => 'config_value_form_id_fk'])
-            ->addIndex(['form_key'], ['unique' => true, 'name' => 'config_value_form_key_unique'])
-            ->addIndex(['form_id'], ['name' => 'config_value_form_id_index'])
-            ->create();
-    }
-
-    private function createConfigChangeLogTable(): void
-    {
-        if ($this->hasTable('config_change_log')) {
-            return;
-        }
-
-        $this->table('config_change_log', $this->tableOptions('配置变更日志'))
-            ->addColumn('id', 'integer', $this->idOptions())
-            ->addColumn('form_id', 'integer', ['signed' => false, 'null' => false, 'comment' => '配置表单ID'])
-            ->addColumn('form_key', 'string', ['limit' => 50, 'default' => '', 'null' => false, 'comment' => '表单唯一标识'])
-            ->addColumn('before_value', 'json', ['null' => true, 'comment' => '修改前配置'])
-            ->addColumn('after_value', 'json', ['null' => true, 'comment' => '修改后配置'])
-            ->addColumn('operator_id', 'integer', ['signed' => false, 'default' => 0, 'null' => false, 'comment' => '操作人ID'])
-            ->addColumn('operator_name', 'string', ['limit' => 50, 'default' => '', 'null' => false, 'comment' => '操作人名称'])
-            ->addColumn('created_at', 'datetime', ['null' => false, 'comment' => '创建时间'])
-            ->addIndex(['form_key', 'created_at'], ['name' => 'config_change_log_form_key_created_at_index'])
-            ->addIndex(['operator_id'], ['name' => 'config_change_log_operator_id_index'])
+            ->addForeignKey('form_id', 'config_form', 'id', ['constraint' => 'config_form_id_fk'])
+            ->addIndex(['form_key'], ['unique' => true, 'name' => 'config_form_key_unique'])
+            ->addIndex(['form_id'], ['name' => 'config_form_id_index'])
             ->create();
     }
 

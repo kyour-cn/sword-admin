@@ -13,9 +13,11 @@ export default {
   max: 99,
   uploadParseData: function (res) {
     return {
-      id: res.data.id,
-      fileName: res.data.fileName,
-      url: res.data.src
+      code: res.code,
+      id: res.data?.id,
+      fileName: res.data?.fileName,
+      url: res.data?.src,
+      msg: res.message
     }
   },
   listParseData: function (res) {

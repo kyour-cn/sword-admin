@@ -13,8 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $file_size 文件大小（字节）
  * @property string $url 链接地址
  * @property string $file_path 存储路径
- * @property int $menu_id 
- * @property int $storage_id 存储方式id
+ * @property int $menu_id
  * @property string $storage_key 储存方式key
  * @property string $hash_md5 文件内容的MD5
  * @property int $user_id 上传用户id

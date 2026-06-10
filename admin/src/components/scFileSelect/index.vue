@@ -195,26 +195,36 @@ const getMenu = async () => {
 }
 
 const addMenu = () => {
+  state.dialogMenuName = ''
   state.dialogMenuVisible = true
 }
 const delMenu = async () => {
+  const menu = state.menu.find(item => item[state.treeProps.key] === state.menuId)
+  if (!menu) {
+    ElNotification.error('请选择文件夹')
+    return
+  }
+
   try {
-    await ElMessageBox.confirm(`确定删除文件夹 ${state.menu[state.menuId].name} 吗？`, '提示', {
+    await ElMessageBox.confirm(`确定删除文件夹 ${menu.name} 吗？文件不会被删除，会移出该分组。`, '提示', {
       type: 'warning',
       confirmButtonText: '删除',
       confirmButtonClass: 'el-button--danger'
     })
     // 调用删除接口
     const res = await config.deleteMenuApiObj.post({
-      id: state.menu[state.menuId].id
+      id: menu.id
     })
     if (res.code !== config.successCode) {
       ElNotification.error(res.message || '删除失败')
       return
     }
     ElNotification.success('删除成功')
-    // 刷新文件夹列表
+    state.menuId = 0
+    state.currentPage = 1
+    // 刷新文件夹和文件列表
     await getMenu()
+    await getData()
   }catch (e) {
   }
 }
@@ -234,6 +244,7 @@ const addMenuConfirm = async () => {
     return
   }
   ElNotification.success('添加成功')
+  state.dialogMenuName = ''
   // 刷新文件夹列表
   await getMenu()
 }
@@ -359,7 +370,12 @@ const uploadRequest = (param) => {
       param.onProgress(e)
     }
   }).then(res => {
-    param.onSuccess(res)
+    const response = config.uploadParseData(res)
+    if (response.code === config.successCode) {
+      param.onSuccess(res)
+    } else {
+      param.onError(response.msg || '上传失败')
+    }
   }).catch(err => {
     param.onError(err)
   })

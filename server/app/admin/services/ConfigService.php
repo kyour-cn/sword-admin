@@ -4,10 +4,8 @@ namespace app\admin\services;
 
 use app\common\exception\BusinessException;
 use app\common\services\BaseService;
-use app\model\ConfigChangeLog;
+use app\model\Config as ConfigModel;
 use app\model\ConfigForm;
-use app\model\ConfigValue;
-use support\Db;
 
 class ConfigService extends BaseService
 {
@@ -18,7 +16,7 @@ class ConfigService extends BaseService
             ->orderBy('id')
             ->get();
 
-        $values = ConfigValue::whereIn('form_key', $forms->pluck('key')->toArray())
+        $values = ConfigModel::whereIn('form_key', $forms->pluck('key')->toArray())
             ->where('status', 1)
             ->get()
             ->keyBy('form_key');
@@ -58,7 +56,7 @@ class ConfigService extends BaseService
         $form = $this->getEnabledForm($key);
         $formService = new ConfigFormService();
         $schema = $formService->decodeSchema($form->schema);
-        $value = ConfigValue::where('form_key', $form->key)->where('status', 1)->first();
+        $value = ConfigModel::where('form_key', $form->key)->where('status', 1)->first();
 
         return [
             'id' => $form->id,
@@ -75,37 +73,18 @@ class ConfigService extends BaseService
         $schema = (new ConfigFormService())->decodeSchema($form->schema);
         $nextValue = $this->filterValue($schema, $value);
 
-        Db::transaction(function () use ($form, $nextValue, $claims) {
-            $configValue = ConfigValue::where('form_key', $form->key)->first();
-            $beforeValue = [];
-            if (!$configValue) {
-                $configValue = new ConfigValue();
-                $configValue->form_id = $form->id;
-                $configValue->form_key = $form->key;
-                $configValue->version = 0;
-                $configValue->status = 1;
-            } else {
-                $beforeValue = $this->decodeValue($configValue->value);
-            }
+        $config = ConfigModel::where('form_key', $form->key)->first();
+        if (!$config) {
+            $config = new ConfigModel();
+            $config->form_key = $form->key;
+            $config->version = 0;
+        }
 
-            $configValue->form_id = $form->id;
-            $configValue->value = json_encode($nextValue, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            $configValue->version = ((int)$configValue->version) + 1;
-            $configValue->status = 1;
-            $configValue->save();
-
-            $log = new ConfigChangeLog();
-            $log->fill([
-                'form_id' => $form->id,
-                'form_key' => $form->key,
-                'before_value' => json_encode($beforeValue, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-                'after_value' => json_encode($nextValue, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-                'operator_id' => (int)($claims['id'] ?? 0),
-                'operator_name' => (string)($claims['name'] ?? ''),
-                'created_at' => date('Y-m-d H:i:s'),
-            ]);
-            $log->save();
-        });
+        $config->form_id = $form->id;
+        $config->value = json_encode($nextValue, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $config->version = ((int)$config->version) + 1;
+        $config->status = 1;
+        $config->save();
     }
 
     public function getByKey(string $key): array
@@ -116,7 +95,7 @@ class ConfigService extends BaseService
         }
 
         $schema = (new ConfigFormService())->decodeSchema($form->schema);
-        $value = ConfigValue::where('form_key', $key)->where('status', 1)->first();
+        $value = ConfigModel::where('form_key', $key)->where('status', 1)->first();
         return $this->mergeDefaultValue($schema, $value ? $this->decodeValue($value->value) : []);
     }
 

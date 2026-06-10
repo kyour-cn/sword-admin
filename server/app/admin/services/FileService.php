@@ -8,6 +8,7 @@ use app\model\File;
 use app\model\FileMenu;
 use app\modules\upload\Input;
 use Illuminate\Database\Eloquent\Collection;
+use support\Db;
 use Webman\Http\UploadFile;
 
 class FileService extends BaseService
@@ -32,7 +33,12 @@ class FileService extends BaseService
         if (!$menu) {
             return false;
         }
-        return $menu->delete();
+
+        return Db::transaction(function () use ($id, $menu) {
+            // 删除文件夹只移除分组，不删除文件，避免误删已上传的文件资产。
+            File::where('menu_id', $id)->update(['menu_id' => 0]);
+            return $menu->delete();
+        });
     }
 
     /**
@@ -45,6 +51,9 @@ class FileService extends BaseService
 
         if (!empty($params['keyword'])) {
             $conds[] = ['key', 'like', "%{$params['keyword']}%"];
+        }
+        if (!empty($params['menu_id'])) {
+            $conds[] = ['menu_id', '=', (int)$params['menu_id']];
         }
 
         $row = File::where($conds)
@@ -82,7 +91,6 @@ class FileService extends BaseService
             'file_ext' => $uploadFile->getUploadExtension(),
             'url' => $output->url,
             'file_path' => $output->path,
-            'storage_id' => $output->storageID,
             'storage_key' => $output->storage,
             'hash_md5' => $output->hash,
             'user_id' => $claims['id'],

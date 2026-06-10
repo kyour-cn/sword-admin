@@ -10,9 +10,7 @@ final class CreateInitialSchema extends AbstractMigration
     public function up(): void
     {
         $this->createAppTable();
-        $this->createConfigTable();
         $this->createFileMenuTable();
-        $this->createFileStorageTable();
         $this->createFileTable();
         $this->createLogTypeTable();
         $this->createLogTable();
@@ -38,9 +36,7 @@ final class CreateInitialSchema extends AbstractMigration
             'log',
             'log_type',
             'file',
-            'file_storage',
             'file_menu',
-            'config',
             'app',
         ] as $table) {
             if ($this->hasTable($table)) {
@@ -63,36 +59,11 @@ final class CreateInitialSchema extends AbstractMigration
             ->create();
     }
 
-    private function createConfigTable(): void
-    {
-        $this->table('config', $this->tableOptions('配置'))
-            ->addColumn('id', 'integer', $this->idOptions())
-            ->addColumn('key', 'string', ['limit' => 50, 'default' => '', 'null' => false, 'comment' => '标签'])
-            ->addColumn('title', 'string', ['limit' => 30, 'default' => '', 'null' => false, 'comment' => '名称'])
-            ->addColumn('group', 'string', ['limit' => 30, 'default' => '', 'null' => false, 'comment' => '分组'])
-            ->addColumn('type', 'string', ['limit' => 30, 'default' => '', 'null' => false, 'comment' => '数据类型'])
-            ->addColumn('value', 'text', ['limit' => MysqlAdapter::TEXT_LONG, 'null' => true, 'comment' => '变量值'])
-            ->create();
-    }
-
     private function createFileMenuTable(): void
     {
         $this->table('file_menu', $this->tableOptions('文件分组'))
             ->addColumn('id', 'integer', $this->idOptions())
             ->addColumn('name', 'string', ['limit' => 255, 'null' => false, 'comment' => '名称'])
-            ->create();
-    }
-
-    private function createFileStorageTable(): void
-    {
-        $this->table('file_storage', $this->tableOptions('文件存储'))
-            ->addColumn('id', 'integer', $this->idOptions())
-            ->addColumn('name', 'string', ['limit' => 255, 'null' => false, 'comment' => '名称'])
-            ->addColumn('key', 'string', ['limit' => 20, 'null' => false, 'comment' => '唯一标识'])
-            ->addColumn('config', 'json', ['null' => true, 'comment' => '配置'])
-            ->addColumn('is_default', 'integer', ['limit' => MysqlAdapter::INT_TINY, 'default' => 0, 'null' => false, 'comment' => '是否默认'])
-            ->addColumn('status', 'integer', ['limit' => MysqlAdapter::INT_TINY, 'signed' => false, 'default' => 0, 'null' => false, 'comment' => '状态 1=正常 0=停用'])
-            ->addIndex(['key'], ['unique' => true, 'name' => 'key'])
             ->create();
     }
 
@@ -107,7 +78,6 @@ final class CreateInitialSchema extends AbstractMigration
             ->addColumn('url', 'string', ['limit' => 255, 'null' => false, 'comment' => '链接地址'])
             ->addColumn('file_path', 'string', ['limit' => 1024, 'null' => false, 'comment' => '存储路径'])
             ->addColumn('menu_id', 'integer', ['signed' => false, 'default' => 0, 'null' => false])
-            ->addColumn('storage_id', 'integer', ['signed' => false, 'null' => false, 'comment' => '存储方式id'])
             ->addColumn('storage_key', 'string', ['limit' => 20, 'null' => false, 'comment' => '储存方式key'])
             ->addColumn('hash_md5', 'string', ['limit' => 32, 'default' => '', 'null' => false, 'comment' => '文件内容的MD5'])
             ->addColumn('user_id', 'integer', ['signed' => false, 'default' => 0, 'null' => false, 'comment' => '上传用户id'])
@@ -115,7 +85,6 @@ final class CreateInitialSchema extends AbstractMigration
             ->addColumn('created_at', 'datetime', ['null' => false, 'comment' => '创建时间'])
             ->addColumn('updated_at', 'datetime', ['null' => false, 'comment' => '更新时间'])
             ->addColumn('deleted_at', 'datetime', ['null' => true, 'comment' => '删除时间'])
-            ->addForeignKey('storage_id', 'file_storage', 'id', ['constraint' => 'file_file_storage_id_fk'])
             ->create();
     }
 

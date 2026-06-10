@@ -16,7 +16,8 @@
     "illuminate/pagination": "*",
     "webman/console": "^2.1",
     "openspout/openspout": "^5.2",
-    "robmorgan/phinx": "^0.16"
+    "robmorgan/phinx": "^0.16",
+    "aws/aws-sdk-php": ">=3.300 <4.0"
   },
   "suggest": {
     "ext-event": "For better performance. "

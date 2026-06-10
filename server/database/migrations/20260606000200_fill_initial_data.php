@@ -16,14 +16,6 @@ final class FillInitialData extends AbstractMigration
             ['id' => 1, 'name' => '系统后台', 'key' => 'admin', 'remark' => '系统总后台', 'status' => 1, 'sort' => 0],
         ])->saveData();
 
-        $this->table('config')->insert([
-            ['key' => 'site', 'title' => '站点配置', 'group' => 'base', 'type' => 'json', 'value' => json_encode(['admin_captcha_switch' => false], JSON_UNESCAPED_UNICODE)],
-        ])->saveData();
-
-        $this->table('file_storage')->insert([
-            ['id' => 1, 'name' => '本地储存', 'key' => 'local', 'config' => null, 'is_default' => 1, 'status' => 1],
-        ])->saveData();
-
         $this->table('log_type')->insert($this->logTypes())->saveData();
         $this->table('menu')->insert($this->menus())->saveData();
         $this->table('menu_api')->insert($this->menuApis())->saveData();
@@ -71,8 +63,6 @@ final class FillInitialData extends AbstractMigration
         $this->execute('delete from `menu_api` where `app_id` = 1');
         $this->execute('delete from `menu` where `app_id` = 1');
         $this->execute('delete from `log_type` where `id` in (1, 2, 3, 4, 10)');
-        $this->execute('delete from `file_storage` where `id` = 1');
-        $this->execute("delete from `config` where `key` = 'site'");
         $this->execute('delete from `app` where `id` = 1');
     }
 
