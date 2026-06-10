@@ -15,7 +15,8 @@
     "adhocore/jwt": "^1.1",
     "illuminate/pagination": "*",
     "webman/console": "^2.1",
-    "openspout/openspout": "^5.2"
+    "openspout/openspout": "^5.2",
+    "robmorgan/phinx": "^0.16"
   },
   "suggest": {
     "ext-event": "For better performance. "

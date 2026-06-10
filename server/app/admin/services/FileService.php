@@ -84,7 +84,7 @@ class FileService extends BaseService
             'file_path' => $output->path,
             'storage_id' => $output->storageID,
             'storage_key' => $output->storage,
-            'hash' => $output->hash,
+            'hash_md5' => $output->hash,
             'user_id' => $claims['id'],
             'menu_id' => $data['menu_id'] ?? 0
         ]);

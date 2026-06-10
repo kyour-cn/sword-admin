@@ -24,13 +24,15 @@ class MenuService extends BaseService
 
     /**
      * @param array $data
-     * @return void
+     * @return Menu
      */
-    public function create(array $data): void
+    public function create(array $data): Menu
     {
         $app = new Menu();
         $app->fill($data);
         $app->save();
+
+        return $app->refresh();
     }
 
     public function update(array $data): void

@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $menu_id 
  * @property int $storage_id 存储方式id
  * @property string $storage_key 储存方式key
- * @property string $hash 文件的哈希值
+ * @property string $hash_md5 文件内容的MD5
  * @property int $user_id 上传用户id
  * @property int $status 状态 1=正常 0=停用
  * @property string $created_at 创建时间

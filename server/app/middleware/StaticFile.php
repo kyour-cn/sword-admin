@@ -14,9 +14,9 @@
 
 namespace app\middleware;
 
-use Webman\MiddlewareInterface;
-use Webman\Http\Response;
 use Webman\Http\Request;
+use Webman\Http\Response;
+use Webman\MiddlewareInterface;
 
 /**
  * Class StaticFile
@@ -24,19 +24,29 @@ use Webman\Http\Request;
  */
 class StaticFile implements MiddlewareInterface
 {
+    /**
+     * 需要长期缓存的静态资源后缀。
+     */
+    protected array $cacheExtensions = [
+        'css', 'js', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'ico', 'woff', 'woff2', 'ttf', 'eot'
+    ];
+
     public function process(Request $request, callable $handler): Response
     {
-        // Access to files beginning with. Is prohibited
-        if (str_contains($request->path(), '/.')) {
-            return response('<h1>403 forbidden</h1>', 403);
-        }
+        $path = $request->path();
+
         /** @var Response $response */
         $response = $handler($request);
-        // Add cross domain HTTP header
-        /*$response->withHeaders([
-            'Access-Control-Allow-Origin'      => '*',
-            'Access-Control-Allow-Credentials' => 'true',
-        ]);*/
+
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+        if (in_array($extension, $this->cacheExtensions, true)) {
+            // 静态资源一般带 hash 或版本号，设置缓存可减少重复请求。
+            $response->withHeaders([
+                'Cache-Control' => 'public, max-age=604800',
+            ]);
+        }
+
         return $response;
     }
 }

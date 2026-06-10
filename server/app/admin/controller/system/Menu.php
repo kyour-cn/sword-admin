@@ -30,18 +30,20 @@ class Menu extends BaseController
     public function add(Request $req): Response
     {
         $serv = new MenuService();
-        $data = $req->post();
-        $data['title'] = $data['meta']['title'];
-        $data['type'] = $data['meta']['type'];
-        $data['meta'] = json_encode($data['meta'], JSON_UNESCAPED_UNICODE);
-        $serv->create($data);
-        return $this->success();
+        $data = $this->formatSaveData($req->post());
+        $menu = $serv->create($data);
+        $menu->load('menuApi');
+
+        $res = $menu->toArray();
+        $res['menu_api'] = empty($res['menu_api']) ? null : $res['menu_api'];
+
+        return $this->success('success', $res);
     }
 
     public function edit(Request $req): Response
     {
         $serv = new MenuService();
-        $serv->update($req->post());
+        $serv->update($this->formatSaveData($req->post()));
         return $this->success();
     }
 
@@ -50,5 +52,39 @@ class Menu extends BaseController
         $serv = new MenuService();
         $serv->delete($req->post('ids'));
         return $this->success();
+    }
+
+    private function formatSaveData(array $data): array
+    {
+        $meta = $data['meta'] ?? [];
+        if (is_string($meta)) {
+            $meta = json_decode($meta, true) ?: [];
+        }
+
+        $meta = array_merge([
+            'title' => $data['name'] ?? '',
+            'icon' => '',
+            'active' => '',
+            'color' => '',
+            'type' => 'menu',
+            'fullPage' => false,
+            'tag' => '',
+            'affix' => false,
+            'hidden' => false,
+            'hiddenBreadcrumb' => false,
+        ], $meta);
+
+        if (is_array($data['pid'] ?? null)) {
+            $data['pid'] = empty($data['pid']) ? 0 : end($data['pid']);
+        }
+        $data['pid'] = empty($data['pid']) ? 0 : (int)$data['pid'];
+        $data['sort'] = is_numeric($data['sort'] ?? null) ? (int)$data['sort'] : 0;
+        $data['title'] = $meta['title'];
+        $data['type'] = $meta['type'];
+        $data['meta'] = json_encode($meta, JSON_UNESCAPED_UNICODE);
+
+        unset($data['apiList'], $data['menu_api'], $data['children'], $data['appId']);
+
+        return $data;
     }
 }

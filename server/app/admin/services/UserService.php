@@ -56,6 +56,22 @@ class UserService extends BaseService
     }
 
     /**
+     * 获取当前登录用户的任务列表
+     * @return array
+     */
+    public function getTaskList(): array
+    {
+        $claims = JwtUtils::decodeFromRequest(request());
+
+        return Task::where('group', 'user')
+            ->where('user_id', $claims['id'] ?? 0)
+            ->orderByDesc('id')
+            ->limit(20)
+            ->get()
+            ->toArray();
+    }
+
+    /**
      * @param array $data
      * @return void
      */
