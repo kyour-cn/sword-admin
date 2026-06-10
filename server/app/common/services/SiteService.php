@@ -2,17 +2,17 @@
 
 namespace app\common\services;
 
-use app\model\Config;
+use app\admin\services\ConfigService;
 
 class SiteService extends BaseService
 {
 
     /**
-     * @return Config|null
+     * @return array
      */
-    public function getConfig(): ?Config
+    public function getConfig(): array
     {
-        return Config::where('key', 'site')->first();
+        return ConfigService::instance()->getByKey('site');
     }
 
 }

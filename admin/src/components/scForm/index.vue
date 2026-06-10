@@ -45,7 +45,8 @@
             <template v-else-if="item.component === 'upload'" >
               <el-col v-for="(_item, _index) in item.options.items" :key="_index">
                 <el-form-item :prop="_item.name">
-                  <sc-upload v-model="form[_item.name]" :title="_item.label"></sc-upload>
+                  <sc-upload v-if="item.name" v-model="form[item.name][_item.name]" :title="_item.label"></sc-upload>
+                  <sc-upload v-else v-model="form[_item.name]" :title="_item.label"></sc-upload>
                 </el-form-item>
               </el-col>
             </template>

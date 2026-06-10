@@ -202,5 +202,58 @@ export default {
         return await http.post(this.url, data);
       }
     }
+  },
+  config: {
+    list: {
+      url: `${config.API_URL}/admin/system/config/list`,
+      name: "系统配置列表",
+      get: async function (params = {}) {
+        return await http.get(this.url, params);
+      }
+    },
+    detail: {
+      url: `${config.API_URL}/admin/system/config/detail`,
+      name: "系统配置详情",
+      get: async function (params = {}) {
+        return await http.get(this.url, params);
+      }
+    },
+    save: {
+      url: `${config.API_URL}/admin/system/config/save`,
+      name: "保存系统配置",
+      post: async function (data = {}) {
+        return await http.post(this.url, data);
+      }
+    }
+  },
+  configForm: {
+    add: {
+      url: `${config.API_URL}/admin/system/configForm/add`,
+      name: "新增配置表单",
+      post: async function (data = {}) {
+        return await http.post(this.url, data);
+      }
+    },
+    list: {
+      url: `${config.API_URL}/admin/system/configForm/list`,
+      name: "配置表单列表",
+      get: async function (params = {}) {
+        return await http.get(this.url, params);
+      }
+    },
+    edit: {
+      url: `${config.API_URL}/admin/system/configForm/edit`,
+      name: "修改配置表单",
+      post: async function (data = {}) {
+        return await http.post(this.url, data);
+      }
+    },
+    delete: {
+      url: `${config.API_URL}/admin/system/configForm/delete`,
+      name: "删除配置表单",
+      post: async function (data = {}) {
+        return await http.post(this.url, data);
+      }
+    }
   }
 }
