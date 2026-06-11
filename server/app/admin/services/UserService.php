@@ -15,17 +15,7 @@ class UserService extends BaseService
      */
     public function getList(array $params): array
     {
-        $conds = [];
-
-        if (!empty($params['keyword'])) {
-            $conds[] = ['username', 'like', "%{$params['keyword']}%"];
-        }
-
-        if (!empty($params['status'])) {
-            $conds[] = ['status', '=', $params['status']];
-        }
-
-        $row = User::where($conds)
+        $row = $this->buildQuery($params)
             ->with(['userRole.role.app'])
             ->paginate(perPage: $params['page_size'] ?? 10, page: $params['page'] ?? 1);
 
@@ -35,6 +25,35 @@ class UserService extends BaseService
             'page' => $row->currentPage(),
             'page_size' => $row->perPage()
         ];
+    }
+
+    /**
+     * 构建用户列表筛选查询
+     * @param array $params
+     * @return mixed
+     */
+    public function buildQuery(array $params): mixed
+    {
+        $query = User::query();
+
+        if (!empty($params['keyword'])) {
+            $keyword = trim((string)$params['keyword']);
+            $query->where(function ($query) use ($keyword) {
+                $query->where('username', 'like', "%{$keyword}%")
+                    ->orWhere('nickname', 'like', "%{$keyword}%")
+                    ->orWhere('mobile', 'like', "%{$keyword}%");
+            });
+        }
+
+        if (isset($params['status']) && $params['status'] !== '') {
+            $query->where('status', '=', $params['status']);
+        }
+
+        if (!empty($params['start_time']) && !empty($params['end_time'])) {
+            $query->whereBetween('created_at', [$params['start_time'], $params['end_time']]);
+        }
+
+        return $query;
     }
 
     /**

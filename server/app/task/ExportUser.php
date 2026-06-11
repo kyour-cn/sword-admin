@@ -3,9 +3,9 @@
 namespace app\task;
 
 
+use app\admin\services\UserService;
 use app\common\utils\ExcelUtils;
 use app\model\Task;
-use app\model\User;
 use OpenSpout\Common\Exception\IOException;
 use OpenSpout\Writer\Exception\WriterNotOpenedException;
 
@@ -58,18 +58,11 @@ class ExportUser implements TaskHandlerInterface
             '最后登录时间' => 20
         ]);
 
-        $conds = [];
-        if (!empty($params['keyword'])) {
-            $conds[] = ['username', 'like', "%{$params['keyword']}%"];
-        }
-
-        if (!empty($params['status'])) {
-            $conds[] = ['status', '=', $params['status']];
-        }
+        $query = (new UserService())->buildQuery($params ?: []);
         
         $count = 0;
 
-        User::where($conds)
+        $query
             ->orderBy('id')
             ->chunkById(200, function ($users) use ($eu, &$count) {
                 foreach ($users as $user) {
