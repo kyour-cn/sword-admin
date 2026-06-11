@@ -1,0 +1,4 @@
+interface:
+  display_name: "后台 CRUD 列表页"
+  short_description: "为 sword-admin 统一后台增删查改列表页布局和交互规范"
+  default_prompt: "Use $admin-crud-list-page to standardize an admin CRUD list page layout."
