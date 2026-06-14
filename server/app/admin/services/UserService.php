@@ -2,10 +2,13 @@
 
 namespace app\admin\services;
 
+use app\common\exception\BusinessException;
 use app\common\services\BaseService;
 use app\common\utils\JwtUtils;
 use app\model\Task;
 use app\model\User;
+use app\model\UserRole;
+use support\Db;
 
 class UserService extends BaseService
 {
@@ -96,30 +99,48 @@ class UserService extends BaseService
      */
     public function create(array $data): void
     {
-        $user = new User();
-        
+        $roleIds = $this->formatRoleIds($data['roles'] ?? []);
+        $userData = $this->filterUserData($data);
+
         // 处理密码加密
-        if (!empty($data['password'])) {
-            $data['password'] = md5($data['password']);
+        if (!empty($userData['password'])) {
+            $userData['password'] = md5($userData['password']);
         }
-        
-        $user->fill($data);
-        $user->save();
+
+        Db::transaction(function () use ($userData, $roleIds) {
+            $user = new User();
+            $user->fill($userData);
+            $user->save();
+
+            $this->syncRoles($user->id, $roleIds);
+        });
     }
 
     public function update(array $data): void
     {
-        $user = User::find($data['id']);
-        
+        $roleIds = array_key_exists('roles', $data) ? $this->formatRoleIds($data['roles']) : null;
+        $userData = $this->filterUserData($data);
+
         // 如果密码为空，则不更新密码字段
-        if (isset($data['password']) && empty($data['password'])) {
-            unset($data['password']);
-        } elseif (!empty($data['password'])) {
-            $data['password'] = md5($data['password']);
+        if (isset($userData['password']) && empty($userData['password'])) {
+            unset($userData['password']);
+        } elseif (!empty($userData['password'])) {
+            $userData['password'] = md5($userData['password']);
         }
-        
-        $user->fill($data);
-        $user->save();
+
+        Db::transaction(function () use ($data, $userData, $roleIds) {
+            $user = User::find((int)($data['id'] ?? 0));
+            if (!$user) {
+                throw new BusinessException('用户不存在');
+            }
+
+            $user->fill($userData);
+            $user->save();
+
+            if ($roleIds !== null) {
+                $this->syncRoles($user->id, $roleIds);
+            }
+        });
     }
 
     public function delete(array $ids): void
@@ -134,5 +155,46 @@ class UserService extends BaseService
             $user->password = md5($newPassword);
             $user->save();
         }
+    }
+
+    private function filterUserData(array $data): array
+    {
+        $fields = ['nickname', 'username', 'mobile', 'avatar', 'password', 'status'];
+        return array_intersect_key($data, array_flip($fields));
+    }
+
+    private function formatRoleIds(mixed $roles): array
+    {
+        if (!is_array($roles)) {
+            return [];
+        }
+
+        $roleIds = [];
+        foreach ($roles as $role) {
+            $roleId = is_array($role) ? (int)($role['id'] ?? 0) : (int)$role;
+            if ($roleId > 0) {
+                $roleIds[$roleId] = $roleId;
+            }
+        }
+
+        return array_values($roleIds);
+    }
+
+    private function syncRoles(int $userId, array $roleIds): void
+    {
+        UserRole::where('user_id', $userId)->delete();
+
+        if ($roleIds === []) {
+            return;
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $rows = array_map(static fn (int $roleId) => [
+            'user_id' => $userId,
+            'role_id' => $roleId,
+            'created_at' => $now,
+        ], $roleIds);
+
+        UserRole::insert($rows);
     }
 }

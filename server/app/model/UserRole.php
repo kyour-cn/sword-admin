@@ -25,12 +25,6 @@ class UserRole extends BaseModel
     protected $table = 'user_role';
 
     /**
-     * Indicates if the model should be timestamped.
-     * @var bool
-     */
-    public $timestamps = true;
-
-    /**
      * The attributes that aren't mass assignable.
      * @var array
      */
