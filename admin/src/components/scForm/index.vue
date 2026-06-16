@@ -123,7 +123,7 @@ import http from "@/utils/request"
 import ScTitle from "@/components/scTitle"
 import ScUpload from "@/components/scUpload"
 
-const TableSelectRender = defineAsyncComponent(() => import('./items/tableSelect'))
+const TableSelectRender = defineAsyncComponent(() => import('./items/tableselect'))
 
 // Props定义
 const props = defineProps({
