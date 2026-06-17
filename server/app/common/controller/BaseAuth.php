@@ -5,7 +5,7 @@ namespace app\common\controller;
 use app\BaseController;
 use app\common\exception\BusinessException;
 use app\common\services\AuthService;
-use app\common\utils\DbLog;
+use app\common\utils\AuditLog;
 use app\common\utils\JwtUtils;
 use app\model\User;
 use Exception;
@@ -57,12 +57,17 @@ class BaseAuth extends BaseController
         ];
         $token = JwtUtils::encode($claims);
 
-        // 记录日志
-        DbLog::login([
-            'title' => '用户登录',
-            'request_user_id' => $user->id,
-            'request_user' => $user->nickname,
-            'value' => $token,
+        // 记录操作审计，避免将 token 等敏感信息写入数据库
+        AuditLog::success('login', 'auth', '用户登录', [
+            'actor_id' => $user->id,
+            'actor_name' => $user->nickname,
+            'resource_type' => 'user',
+            'resource_id' => (string)$user->id,
+            'description' => "用户 {$user->nickname} 登录后台",
+            'context' => [
+                'username' => $user->username,
+                'app_ids' => array_keys($apps),
+            ],
         ]);
 
         return $this->success('登录成功', [

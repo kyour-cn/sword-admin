@@ -14,7 +14,6 @@ final class FillBaselineData extends AbstractMigration
     public function up(): void
     {
         $this->insertMissingRows('app', 'id', $this->apps());
-        $this->insertMissingRows('log_type', 'id', $this->logTypes());
         $this->insertMenusAndApis();
         $this->insertAdminRoleAndUser();
         $this->insertConfigFormsAndValues();
@@ -29,7 +28,6 @@ final class FillBaselineData extends AbstractMigration
         $this->deleteIn('menu', 'id', array_column($this->menus(), 'id'));
         $this->deleteIn('config', 'form_key', $this->configKeys());
         $this->deleteIn('config_form', 'key', $this->configKeys());
-        $this->deleteIn('log_type', 'id', [1, 2, 3, 4, 10]);
         $this->deleteIn('app', 'id', [self::APP_ID]);
     }
 
@@ -44,17 +42,6 @@ final class FillBaselineData extends AbstractMigration
                 'status' => 1,
                 'sort' => 0,
             ],
-        ];
-    }
-
-    private function logTypes(): array
-    {
-        return [
-            ['id' => 1, 'app_id' => 0, 'name' => '调试', 'label' => 'debug', 'remark' => '调试信息', 'status' => 1, 'color' => '#333333'],
-            ['id' => 2, 'app_id' => 0, 'name' => '信息', 'label' => 'info', 'remark' => '一般信息', 'status' => 1, 'color' => '#3498db'],
-            ['id' => 3, 'app_id' => 0, 'name' => '警告', 'label' => 'warn', 'remark' => '警告，非错误的异常情况', 'status' => 1, 'color' => '#f1c40f'],
-            ['id' => 4, 'app_id' => 0, 'name' => '错误', 'label' => 'error', 'remark' => '运行时错误，记录并非紧急的问题', 'status' => 1, 'color' => '#d63031'],
-            ['id' => 10, 'app_id' => self::APP_ID, 'name' => '登录日志', 'label' => 'login', 'remark' => '用户登录时记录的日志', 'status' => 1, 'color' => '#23e279'],
         ];
     }
 
@@ -81,7 +68,7 @@ final class FillBaselineData extends AbstractMigration
             $this->menu(7, 3, 'user', '用户管理', '/admin/system/user', 'admin/system/user', 4, 'el-icon-avatar'),
             $this->menu(8, 3, 'config', '系统配置', '/admin/system/config', 'admin/system/config', 5, 'el-icon-setting'),
             $this->menu(9, 3, 'config_form', '配置表单管理', '/admin/system/config-form', 'admin/system/config-form', 6, 'el-icon-document-copy'),
-            $this->menu(10, 3, 'log', '系统日志', '/admin/system/log', 'admin/system/log', 7, 'el-icon-document'),
+            $this->menu(10, 3, 'audit_log', '操作审计', '/admin/system/audit-log', 'admin/system/audit-log', 7, 'el-icon-document'),
             $this->menu(11, 3, 'file', '文件管理', '/admin/system/file', 'admin/system/file', 8, 'el-icon-folder-opened'),
             $this->menu(12, 1, 'user_center', '用户中心', '/admin/home/user_center', 'admin/home/user_center', 0, 'el-icon-avatar', ['hidden' => true]),
         ];
@@ -173,9 +160,9 @@ final class FillBaselineData extends AbstractMigration
             $this->rule(37, 'config_form', 'config_form_edit', '编辑配置表单', 3, 'admin.system.configForm.edit', ['/admin/system/configForm/edit']),
             $this->rule(38, 'config_form', 'config_form_delete', '删除配置表单', 4, 'admin.system.configForm.delete', ['/admin/system/configForm/delete']),
 
-            $this->rule(39, 'log', 'log_list', '查询日志', 1, 'admin.system.log.list', ['/admin/system/log/list']),
-            $this->rule(40, 'log', 'log_stat', '日志统计', 2, 'admin.system.log.stat', ['/admin/system/log/logStat']),
-            $this->rule(41, 'log', 'log_type_list', '日志类型', 3, 'admin.system.log.typeList', ['/admin/system/log/typeList']),
+            $this->rule(39, 'audit_log', 'audit_log_list', '查询操作审计', 1, 'admin.system.auditLog.list', ['/admin/system/auditLog/list']),
+            $this->rule(40, 'audit_log', 'audit_log_stat', '操作审计统计', 2, 'admin.system.auditLog.stat', ['/admin/system/auditLog/stat']),
+            $this->rule(41, 'audit_log', 'audit_log_actions', '操作审计动作', 3, 'admin.system.auditLog.actions', ['/admin/system/auditLog/actions']),
 
             $this->rule(42, 'file', 'file_list', '查询文件', 1, 'admin.system.file.list', ['/admin/system/file/list']),
             $this->rule(43, 'file', 'file_upload', '上传文件', 2, 'admin.system.file.upload', ['/admin/system/file/upload']),

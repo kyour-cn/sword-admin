@@ -11,8 +11,7 @@ final class CreateBaselineSchema extends AbstractMigration
         $this->createAppTable();
         $this->createFileMenuTable();
         $this->createFileTable();
-        $this->createLogTypeTable();
-        $this->createLogTable();
+        $this->createAuditLogTable();
         $this->createMenuTable();
         $this->createMenuApiTable();
         $this->createRoleTable();
@@ -79,46 +78,31 @@ final class CreateBaselineSchema extends AbstractMigration
             ->create();
     }
 
-    private function createLogTypeTable(): void
+    private function createAuditLogTable(): void
     {
-        $this->table('log_type', $this->tableOptions('日志级别'))
-            ->addColumn('id', 'integer', $this->idOptions(['comment' => '<10为系统日志']))
-            ->addColumn('app_id', 'integer', ['signed' => false, 'default' => 0, 'null' => false, 'comment' => '应用ID 0为通用'])
-            ->addColumn('name', 'string', ['limit' => 32, 'default' => '', 'null' => false, 'comment' => '中文名称'])
-            ->addColumn('label', 'string', ['limit' => 32, 'default' => '', 'null' => false, 'comment' => '英文别名'])
-            ->addColumn('remark', 'string', ['limit' => 255, 'default' => '', 'null' => false, 'comment' => '备注'])
-            ->addColumn('status', 'tinyinteger', ['default' => 1, 'null' => false, 'comment' => '日志开启状态'])
-            ->addColumn('color', 'string', ['limit' => 255, 'default' => '', 'null' => false, 'comment' => '日志颜色 #ff0000'])
-            ->addIndex(['app_id', 'label'], ['unique' => true, 'name' => 'log_type_app_label_unique'])
-            ->addIndex(['status'], ['name' => 'log_type_status_index'])
-            ->create();
-    }
-
-    private function createLogTable(): void
-    {
-        $this->table('log', $this->tableOptions('日志表'))
+        $this->table('audit_log', $this->tableOptions('操作审计日志'))
             ->addColumn('id', 'integer', $this->idOptions())
             ->addColumn('app_id', 'integer', ['signed' => false, 'default' => 0, 'null' => false, 'comment' => '应用ID 0为未知'])
-            ->addColumn('type_id', 'integer', ['signed' => false, 'default' => 1, 'null' => false, 'comment' => '日志级别 <10为系统日志'])
-            ->addColumn('type_name', 'string', ['limit' => 32, 'default' => '', 'null' => false, 'comment' => '日志级别名称'])
-            ->addColumn('title', 'string', ['limit' => 500, 'default' => '', 'null' => false, 'comment' => '标题'])
-            ->addColumn('value', 'text', ['null' => true, 'comment' => '日志内容'])
-            ->addColumn('value_type', 'string', ['limit' => 32, 'default' => 'text', 'null' => false, 'comment' => '日志类型  text,json,html'])
-            ->addColumn('request_source', 'string', ['limit' => 255, 'default' => '', 'null' => false, 'comment' => '请求来源'])
-            ->addColumn('request_ip', 'string', ['limit' => 64, 'default' => '', 'null' => false, 'comment' => '请求来源IP'])
-            ->addColumn('request_user_id', 'integer', ['signed' => false, 'default' => 0, 'null' => false, 'comment' => '操作人ID'])
-            ->addColumn('request_user', 'string', ['limit' => 255, 'default' => '', 'null' => false, 'comment' => '操作人'])
-            ->addColumn('status', 'tinyinteger', ['signed' => false, 'default' => 0, 'null' => false, 'comment' => '状态 0=未处理 1=已查看 2=已处理'])
+            ->addColumn('actor_id', 'integer', ['signed' => false, 'default' => 0, 'null' => false, 'comment' => '操作人ID 0为匿名或系统'])
+            ->addColumn('actor_name', 'string', ['limit' => 64, 'default' => '', 'null' => false, 'comment' => '操作人名称'])
+            ->addColumn('action', 'string', ['limit' => 64, 'default' => '', 'null' => false, 'comment' => '操作动作'])
+            ->addColumn('module', 'string', ['limit' => 64, 'default' => '', 'null' => false, 'comment' => '业务模块'])
+            ->addColumn('resource_type', 'string', ['limit' => 64, 'default' => '', 'null' => false, 'comment' => '资源类型'])
+            ->addColumn('resource_id', 'string', ['limit' => 64, 'default' => '', 'null' => false, 'comment' => '资源ID'])
+            ->addColumn('title', 'string', ['limit' => 255, 'default' => '', 'null' => false, 'comment' => '审计标题'])
+            ->addColumn('description', 'string', ['limit' => 500, 'default' => '', 'null' => false, 'comment' => '操作摘要'])
+            ->addColumn('method', 'string', ['limit' => 10, 'default' => '', 'null' => false, 'comment' => 'HTTP方法'])
+            ->addColumn('path', 'string', ['limit' => 255, 'default' => '', 'null' => false, 'comment' => '请求路径'])
+            ->addColumn('ip', 'string', ['limit' => 64, 'default' => '', 'null' => false, 'comment' => '请求IP'])
+            ->addColumn('user_agent', 'string', ['limit' => 500, 'default' => '', 'null' => false, 'comment' => '客户端信息'])
+            ->addColumn('status', 'tinyinteger', ['signed' => false, 'default' => 1, 'null' => false, 'comment' => '结果状态 1=成功 0=失败'])
+            ->addColumn('context', 'json', ['null' => true, 'comment' => '结构化补充信息'])
             ->addColumn('created_at', 'datetime', ['null' => false, 'comment' => '创建时间'])
-            ->addColumn('updated_at', 'datetime', ['null' => false, 'comment' => '更新时间'])
-            ->addForeignKey('type_id', 'log_type', 'id', [
-                'constraint' => 'log_type_id_fk',
-                'delete' => 'RESTRICT',
-                'update' => 'CASCADE',
-            ])
-            ->addIndex(['type_id'], ['name' => 'log_type_id_index'])
-            ->addIndex(['request_user_id'], ['name' => 'log_request_user_id_index'])
-            ->addIndex(['created_at'], ['name' => 'log_created_at_index'])
+            ->addIndex(['created_at'], ['name' => 'audit_log_created_at_index'])
+            ->addIndex(['actor_id', 'created_at'], ['name' => 'audit_log_actor_created_at_index'])
+            ->addIndex(['module', 'action', 'created_at'], ['name' => 'audit_log_module_action_created_at_index'])
+            ->addIndex(['resource_type', 'resource_id'], ['name' => 'audit_log_resource_index'])
+            ->addIndex(['status', 'created_at'], ['name' => 'audit_log_status_created_at_index'])
             ->create();
     }
 
@@ -335,8 +319,7 @@ final class CreateBaselineSchema extends AbstractMigration
             'role',
             'menu_api',
             'menu',
-            'log',
-            'log_type',
+            'audit_log',
             'file',
             'file_menu',
             'app',

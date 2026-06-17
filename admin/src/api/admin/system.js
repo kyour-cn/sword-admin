@@ -32,24 +32,24 @@ export default {
       }
     }
   },
-  log: {
-    typeList: {
-      url: `${config.API_URL}/admin/system/log/typeList`,
-      name: "日志类型列表",
+  auditLog: {
+    actions: {
+      url: `${config.API_URL}/admin/system/auditLog/actions`,
+      name: "操作审计筛选字典",
       get: async function (params) {
         return await http.get(this.url, params);
       }
     },
     list: {
-      url: `${config.API_URL}/admin/system/log/list`,
-      name: "日志列表",
+      url: `${config.API_URL}/admin/system/auditLog/list`,
+      name: "操作审计列表",
       get: async function (params) {
         return await http.get(this.url, params);
       }
     },
-    logStat: {
-      url: `${config.API_URL}/admin/system/log/logStat`,
-      name: "日志页详情",
+    stat: {
+      url: `${config.API_URL}/admin/system/auditLog/stat`,
+      name: "操作审计统计",
       get: async function (params) {
         return await http.get(this.url, params);
       }

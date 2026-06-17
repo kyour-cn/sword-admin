@@ -21,5 +21,6 @@ return [
     // admin应用中间件
     'admin' => [
         app\middleware\AuthJwtMiddleware::class,
+        app\middleware\AuditLogMiddleware::class,
     ]
 ];
