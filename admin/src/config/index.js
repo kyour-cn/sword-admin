@@ -2,6 +2,9 @@ const DEFAULT_CONFIG = {
   //标题
   APP_NAME: "GourdAdmin",
 
+  //Logo
+  APP_LOGO: "/admin/img/logo.png",
+
   //首页地址
   DASHBOARD_URL: "/dashboard",
 
@@ -23,6 +26,12 @@ const DEFAULT_CONFIG = {
 
   //是否开启行为验证登录
   LOGIN_VERIFY: true,
+
+  //是否开放账号注册
+  ACCOUNT_REGISTER: true,
+
+  //是否开放密码重置
+  PASSWORD_RESET: true,
 
   //TokenName
   TOKEN_NAME: "Authorization",

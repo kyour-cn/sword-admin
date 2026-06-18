@@ -278,11 +278,21 @@ final class FillBaselineData extends AbstractMigration
                     'labelWidth' => '120px',
                     'labelPosition' => 'left',
                     'formItems' => [
+                        $this->inputItem('site_name', '站点名称', 'GourdAdmin', '用于浏览器标题、登录页和后台左上角品牌名称'),
+                        $this->inputItem('site_logo', '站点Logo', '/admin/img/logo.png', '支持完整URL或站点内图片路径，如 /admin/img/logo.png'),
+                        $this->numberItem('token_expire', 'Token有效期(秒)', 86400, '登录令牌有效期，建议不低于 300 秒'),
                         $this->switchItem('admin_captcha_switch', '登录验证码', false, '开启后后台登录需要完成验证码校验'),
+                        $this->switchItem('account_register_switch', '开放账号注册', true, '关闭后隐藏注册入口并禁止访问注册页'),
+                        $this->switchItem('password_reset_switch', '开放密码重置', true, '关闭后隐藏找回密码入口并禁止访问重置密码页'),
                     ],
                 ],
                 'value' => [
+                    'site_name' => 'GourdAdmin',
+                    'site_logo' => '/admin/img/logo.png',
+                    'token_expire' => 86400,
                     'admin_captcha_switch' => false,
+                    'account_register_switch' => true,
+                    'password_reset_switch' => true,
                 ],
             ],
             [

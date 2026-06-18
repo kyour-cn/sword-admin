@@ -2,8 +2,8 @@
   <el-card shadow="hover" header="欢迎">
     <div class="welcome">
       <div class="logo">
-        <img src="/admin/img/logo.png">
-        <h2>欢迎体验 Gourd Admin</h2>
+        <img :src="$CONFIG.APP_LOGO">
+        <h2>欢迎体验 {{ $CONFIG.APP_NAME }}</h2>
       </div>
       <div class="tips">
         <div class="tips-item">

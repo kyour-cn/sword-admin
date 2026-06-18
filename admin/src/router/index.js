@@ -5,6 +5,7 @@ import tool from '@/utils/tool';
 import systemRouter from './systemRouter';
 import userRoutes from '@/config/route';
 import {afterEach, beforeEach} from './scrollBehavior';
+import {loadSiteConfig} from "@/utils/siteConfig"
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../views/**/*.vue')
@@ -36,6 +37,7 @@ document.title = config.APP_NAME
 var isGetRouter = false;
 
 router.beforeEach(async (to, from, next) => {
+  await loadSiteConfig()
 
   //动态标题
   document.title = to.meta.title ? `${to.meta.title} - ${config.APP_NAME}` : `${config.APP_NAME}`
@@ -49,6 +51,20 @@ router.beforeEach(async (to, from, next) => {
     routes_404_r()
     isGetRouter = false;
     next();
+    return false;
+  }
+
+  if(to.path === "/user_register" && !config.ACCOUNT_REGISTER){
+    next({
+      path: '/login'
+    });
+    return false;
+  }
+
+  if(to.path === "/reset_password" && !config.PASSWORD_RESET){
+    next({
+      path: '/login'
+    });
     return false;
   }
 

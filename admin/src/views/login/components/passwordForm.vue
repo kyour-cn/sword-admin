@@ -22,7 +22,7 @@
       <el-col :span="12">
         <el-checkbox :label="$t('login.rememberMe')" v-model="state.form.autologin"></el-checkbox>
       </el-col>
-      <el-col :span="12" class="login-forgot">
+      <el-col v-if="config.PASSWORD_RESET" :span="12" class="login-forgot">
         <router-link to="/reset_password">{{ $t('login.forgetPassword') }}？</router-link>
       </el-col>
     </el-form-item>
@@ -44,7 +44,7 @@
         </template>
       </el-popover>
     </el-form-item>
-    <div class="login-reg">
+    <div v-if="config.ACCOUNT_REGISTER" class="login-reg">
       {{ $t('login.noAccount') }}
       <router-link to="/user_register">{{ $t('login.createAccount') }}</router-link>
     </div>

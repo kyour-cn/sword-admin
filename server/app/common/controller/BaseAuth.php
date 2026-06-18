@@ -5,6 +5,7 @@ namespace app\common\controller;
 use app\BaseController;
 use app\common\exception\BusinessException;
 use app\common\services\AuthService;
+use app\common\services\SiteService;
 use app\common\utils\AuditLog;
 use app\common\utils\JwtUtils;
 use app\model\User;
@@ -47,7 +48,8 @@ class BaseAuth extends BaseController
             $apps[$item->role->app->id] = $item->role->app;
         }
 
-        $expire = 86400;
+        $siteConfig = SiteService::instance()->getConfig();
+        $expire = max(300, (int)($siteConfig['token_expire'] ?? 86400));
 
         // 生成token
         $claims = [
@@ -55,7 +57,7 @@ class BaseAuth extends BaseController
             'name' => $user->nickname,
             'access_exp' => $expire,
         ];
-        $token = JwtUtils::encode($claims);
+        $token = JwtUtils::encode($claims, $expire);
 
         // 记录操作审计，避免将 token 等敏感信息写入数据库
         AuditLog::success('login', 'auth', '用户登录', [

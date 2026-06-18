@@ -10,7 +10,7 @@ import tool from '@/utils/tool'
 import sysConfig from "@/config"
 import {computed, onMounted} from "vue"
 import {useI18n} from "vue-i18n";
-import siteApi from "@/api/common/site.js"
+import {loadSiteConfig} from "@/utils/siteConfig"
 
 const {locale, messages} = useI18n();
 
@@ -34,14 +34,7 @@ let localeVal = computed(() => {
 onMounted(() => {
 
   // 从接口获取站点配置
-  siteApi.config.get().then(res => {
-    if (res.code === 0) {
-      // 登录验证开关
-      sysConfig.LOGIN_VERIFY = Boolean(res.data.admin_captcha_switch)
-    }
-  }).catch(err => {
-    console.error(err)
-  })
+  loadSiteConfig()
 
   //设置主题颜色
   const app_color = sysConfig.COLOR || tool.data.get('APP_COLOR')

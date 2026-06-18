@@ -3,7 +3,7 @@
     <el-header style="height:50px;">
       <div class="common-header-left">
         <div class="common-header-logo">
-          <img :alt="$CONFIG.APP_NAME" src="/admin/img/logo.png">
+          <img :alt="$CONFIG.APP_NAME" :src="$CONFIG.APP_LOGO">
           <label>{{$CONFIG.APP_NAME}}</label>
         </div>
         <div class="common-header-title">{{props.title}}</div>

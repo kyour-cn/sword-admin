@@ -4,7 +4,7 @@
     <header class="adminui-header">
       <div class="adminui-header-left">
         <div class="logo-bar">
-          <img class="logo" src="/admin/img/logo.png">
+          <img class="logo" :src="config.APP_LOGO">
           <span>{{ config.APP_NAME }}</span>
         </div>
         <ul v-if="!ismobile" class="nav">
@@ -55,7 +55,7 @@
     <header class="adminui-header">
       <div class="adminui-header-left">
         <div class="logo-bar">
-          <img class="logo" src="/admin/img/logo.png">
+          <img class="logo" :src="config.APP_LOGO">
           <span>{{ config.APP_NAME }}</span>
         </div>
       </div>
@@ -97,7 +97,7 @@
     <header class="adminui-header">
       <div class="adminui-header-left">
         <div class="logo-bar">
-          <img class="logo" src="/admin/img/logo.png">
+          <img class="logo" :src="config.APP_LOGO">
           <span>{{ config.APP_NAME }}</span>
         </div>
       </div>
@@ -132,7 +132,7 @@
       <div v-if="!ismobile" class="aminui-side-split">
         <div class="aminui-side-split-top">
           <router-link :to="config.DASHBOARD_URL">
-            <img class="logo" :title="config.APP_NAME" src="/admin/img/logo.png" alt="">
+            <img class="logo" :title="config.APP_NAME" :src="config.APP_LOGO" alt="">
           </router-link>
         </div>
         <div class="adminui-side-split-scroll">

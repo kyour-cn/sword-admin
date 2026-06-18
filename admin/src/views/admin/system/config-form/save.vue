@@ -96,14 +96,14 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column label="默认值" width="80">
+            <el-table-column label="默认值" width="175">
               <template #default="scope">
                 <el-switch v-if="scope.row.component === 'switch'" v-model="scope.row.value"/>
                 <el-input-number v-else-if="scope.row.component === 'number'" v-model="scope.row.value" controls-position="right"/>
                 <el-input v-else v-model="scope.row.value" placeholder="默认值"/>
               </template>
             </el-table-column>
-            <el-table-column label="选项" min-width="160">
+            <el-table-column label="选项" min-width="180">
               <template #default="scope">
                 <el-input
                   v-if="hasOptions(scope.row.component)"
@@ -115,12 +115,12 @@
                 <span v-else class="muted">无需配置</span>
               </template>
             </el-table-column>
-            <el-table-column label="必填" width="80" align="center">
+            <el-table-column label="必填" width="60" align="center">
               <template #default="scope">
                 <el-checkbox v-model="scope.row.required" :disabled="scope.row.component === 'title'"/>
               </template>
             </el-table-column>
-            <el-table-column label="提示" width="160">
+            <el-table-column label="提示" width="200">
               <template #default="scope">
                 <el-input v-model="scope.row.message" placeholder="字段说明"/>
               </template>

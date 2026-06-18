@@ -8,12 +8,12 @@ use Webman\Http\Request;
 
 class JwtUtils
 {
-    protected static function instance(): JWT
+    protected static function instance(?int $expire = null): JWT
     {
         return new JWT(
             config('jwt.secret'),      // 密钥
             config('jwt.alg'),         // 算法
-            config('jwt.exp')          // 过期时间（秒）
+            $expire ?? config('jwt.exp')          // 过期时间（秒）
         );
     }
 
@@ -22,9 +22,9 @@ class JwtUtils
      * @param array $payload
      * @return string
      */
-    public static function encode(array $payload): string
+    public static function encode(array $payload, ?int $expire = null): string
     {
-        return self::instance()->encode($payload);
+        return self::instance($expire)->encode($payload);
     }
 
      /**

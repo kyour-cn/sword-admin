@@ -14,7 +14,7 @@
     <el-form-item>
       <el-button type="primary" style="width: 100%;" :loading="state.islogin" round @click="login">{{ $t('login.signIn') }}</el-button>
     </el-form-item>
-    <div class="login-reg">
+    <div v-if="config.ACCOUNT_REGISTER" class="login-reg">
       {{$t('login.noAccount')}} <router-link to="/user_register">{{$t('login.createAccount')}}</router-link>
     </div>
   </el-form>
@@ -23,6 +23,7 @@
 <script setup>
 import { getCurrentInstance, reactive, ref, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import config from "@/config"
 
 const proxy = getCurrentInstance().proxy
 
