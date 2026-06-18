@@ -19,7 +19,17 @@
         <el-empty v-if="!current" description="当前分组暂无可配置项" />
         <template v-else>
           <div v-if="current.remark" class="config-remark">{{ current.remark }}</div>
-          <el-card shadow="never" class="config-panel">
+          <component
+            v-if="currentRenderer"
+            :is="currentRenderer"
+            ref="formRef"
+            :key="current.key"
+            v-model="state.formValue"
+            :config="current"
+            :saving="state.saving"
+            @submit="save"
+          />
+          <el-card v-else shadow="never" class="config-panel">
             <sc-form
               ref="formRef"
               v-model="state.formValue"
@@ -43,6 +53,7 @@ import {computed, onMounted, reactive, ref} from "vue"
 import {ElMessage, ElMessageBox} from "element-plus"
 import ScForm from "@/components/scForm"
 import systemApi from "@/api/admin/system.js"
+import configRenderers from "./renderers"
 
 defineOptions({
   name: "config",
@@ -73,6 +84,10 @@ const currentGroup = computed(() => {
 
 const currentForms = computed(() => {
   return currentGroup.value?.forms || []
+})
+
+const currentRenderer = computed(() => {
+  return configRenderers[current.value?.key] || null
 })
 
 const getList = async () => {
@@ -150,6 +165,10 @@ const save = async () => {
 
 const validateForm = () => {
   return new Promise(resolve => {
+    if (!formRef.value?.validate) {
+      resolve(true)
+      return
+    }
     formRef.value.validate((valid) => {
       resolve(valid)
     })

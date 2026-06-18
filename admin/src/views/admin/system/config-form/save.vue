@@ -26,6 +26,9 @@
             <el-col :span="12">
               <el-form-item label="标识" prop="key">
                 <el-input v-model="state.form.key" placeholder="请输入唯一标识" clearable/>
+                <div class="el-form-item-msg">
+                  标识会作为配置表单唯一KEY；如需自定义配置页与 renderers/index.js 中组件映射KEY一致。
+                </div>
               </el-form-item>
             </el-col>
             <el-col :span="12">
