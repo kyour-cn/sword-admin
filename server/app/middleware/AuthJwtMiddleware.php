@@ -4,6 +4,7 @@ namespace app\middleware;
 
 use app\common\services\AuthService;
 use app\common\utils\JwtUtils;
+use app\common\utils\ResponseUtils;
 use Webman\Http\Request;
 use Webman\Http\Response;
 use Webman\MiddlewareInterface;
@@ -40,25 +41,21 @@ class AuthJwtMiddleware implements MiddlewareInterface
             // 从请求头中解析JWT token
             $claims = JwtUtils::decodeFromRequest($request);
         } catch (\Exception $e) {
-            return new Response(401, [
-                'Content-Type' => 'application/json; charset=utf-8',
-            ], json_encode([
+            return ResponseUtils::json([
                 'code'    => 401,
                 'message' => 'Invalid JWT token: ' . $e->getMessage(),
                 'data'    => null,
-            ], JSON_UNESCAPED_UNICODE));
+            ], 401);
         }
 
         // 验证接口权限
         $authService = new AuthService();
         if (!$authService->checkPath($claims, $request)) {
-            return new Response(403, [
-                'Content-Type' => 'application/json; charset=utf-8',
-            ], json_encode([
+            return ResponseUtils::json([
                 'code'    => 403,
                 'message' => 'Forbidden',
                 'data'    => null,
-            ], JSON_UNESCAPED_UNICODE));
+            ], 403);
         }
 
         // 将JWT claims存入request属性中，供后续控制器使用

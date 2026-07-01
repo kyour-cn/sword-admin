@@ -2,6 +2,7 @@
 
 namespace app\common\exception;
 
+use app\common\utils\ResponseUtils;
 use Throwable;
 use Webman\Exception\ExceptionHandler;
 use Webman\Http\Request;
@@ -31,8 +32,7 @@ class BusinessHandler extends ExceptionHandler
         if ($request->expectsJson()) {
             $json = ['code' => $code ?: 500, 'message' => $this->debug ? $exception->getMessage() : 'Server internal error'];
             $this->debug && $json['traces'] = (string)$exception;
-            return new Response(200, ['Content-Type' => 'application/json'],
-                json_encode($json, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            return ResponseUtils::json($json);
         }
         $error = $this->debug ? nl2br((string)$exception) : 'Server internal error';
         return new Response(500, [], $error);

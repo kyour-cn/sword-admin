@@ -2,6 +2,7 @@
 
 namespace app;
 
+use app\common\utils\ResponseUtils;
 use support\Response;
 
 /**
@@ -47,10 +48,7 @@ abstract class BaseController
             'message'=> $message,
             'data'   => $data
         ];
-        return new Response(200, [
-            'Content-Type' => 'application/json; charset=utf-8',
-            'Cache-Control' => 'no-cache, no-store, must-revalidate'
-        ], json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        return ResponseUtils::json($res);
     }
 
 }

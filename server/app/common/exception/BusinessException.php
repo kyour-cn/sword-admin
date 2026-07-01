@@ -2,6 +2,7 @@
 
 namespace app\common\exception;
 
+use app\common\utils\ResponseUtils;
 use Throwable;
 use Webman\Http\Request;
 use Webman\Http\Response;
@@ -36,10 +37,7 @@ class BusinessException extends \support\exception\BusinessException
         if ($request->expectsJson()) {
             $code = $this->getCode();
             $res = ['code' => $code ?: 500, 'message' => $this->getMessage(), 'data' => $this->data];
-            return new Response(200, [
-                'Content-Type' => 'application/json; charset=utf-8',
-                'Cache-Control' => 'no-cache, no-store, must-revalidate'
-            ], json_encode($res, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            return ResponseUtils::json($res);
         }
         return new Response(200, [
                 'Content-Type' => 'text/plain; charset=utf-8',
