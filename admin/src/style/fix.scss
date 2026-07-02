@@ -101,12 +101,38 @@ body .tox-tinymce-aux {z-index: 5700;}
   margin: 5px;
   padding: 0 5px;
   height: 40px !important;
+  line-height: 40px;
 }
 .el-menu-item.is-active {
   background: #eaeced !important;
 }
+.el-menu:not(.el-menu--horizontal) .el-sub-menu__title:hover {
+  background: var(--el-menu-hover-bg-color);
+}
 html.dark .el-menu-item.is-active {
   background: #3c3c3c !important;
+}
+.aminui-side .el-menu:not(.el-menu--horizontal) .el-sub-menu__title {
+  border-radius: 5px;
+  padding: 0 5px;
+  height: 40px !important;
+  line-height: 40px;
+}
+.aminui-side .el-menu:not(.el-menu--horizontal) {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 5px 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.aminui-side .el-sub-menu .el-menu:not(.el-menu--horizontal) {
+  padding: 0;
+}
+// 避免折叠动画计算高度时受垂直 margin 影响，侧边栏菜单间距统一交给 gap。
+.aminui-side .el-menu:not(.el-menu--horizontal) .el-menu-item,
+.aminui-side .el-menu:not(.el-menu--horizontal) .el-sub-menu__title {
+  margin: 0 5px;
 }
 /* 功能页面区域样式 */
 .adminui-main > .el-container {
