@@ -1,0 +1,134 @@
+version: '3'
+
+silent: true
+
+tasks:
+  admin:install:
+    desc: 安装 admin 前端依赖
+    dir: admin
+    cmds:
+      - pnpm install --frozen-lockfile
+
+  admin:build:
+    desc: 编译 admin 前端
+    dir: admin
+    cmds:
+      - pnpm build
+
+  admin:publish:
+    desc: 发布 admin 编译产物到 server/public
+    cmds:
+      - |
+        node -e "
+        const fs = require('fs');
+        const path = require('path');
+        const dist = path.join('admin', 'dist');
+        const indexFile = path.join(dist, 'index.html');
+        const distAdmin = path.join(dist, 'admin');
+        const publicDir = path.join('server', 'public');
+        const publicAdmin = path.join(publicDir, 'admin');
+        if (!fs.existsSync(indexFile)) {
+          console.error('admin/dist/index.html 不存在，请先执行 task admin:build');
+          process.exit(1);
+        }
+        if (!fs.existsSync(distAdmin)) {
+          console.error('admin/dist/admin 不存在，请检查 vite build 输出目录');
+          process.exit(1);
+        }
+        fs.mkdirSync(publicDir, { recursive: true });
+        fs.copyFileSync(indexFile, path.join(publicDir, 'index.html'));
+        // 只覆盖 admin 前端产物，避免误删 uploads、export 等运行期目录。
+        fs.rmSync(publicAdmin, { recursive: true, force: true });
+        fs.cpSync(distAdmin, publicAdmin, { recursive: true });
+        "
+
+  admin:release:
+    desc: 安装依赖、编译并发布 admin
+    cmds:
+      - task: admin:install
+      - task: admin:build
+      - task: admin:publish
+
+  deploy:auto:
+    desc: 检测远端更新，有更新时拉取代码并发布 admin
+    cmds:
+      - |
+        node -e "
+        const fs = require('fs');
+        const os = require('os');
+        const path = require('path');
+        const { execFileSync } = require('child_process');
+        const branch = process.env.BRANCH || 'goods_lib_collect';
+        const lockFile = process.env.LOCK_FILE || path.join(os.tmpdir(), 'juxie-admin-deploy.lock');
+        const lockTtlMs = Number(process.env.LOCK_TTL_MS || 30 * 60 * 1000);
+        let lockFd;
+        const run = (cmd, args, options = {}) => execFileSync(cmd, args, { stdio: 'inherit', ...options });
+        const output = (cmd, args) => execFileSync(cmd, args, { encoding: 'utf8' }).trim();
+        const isProcessRunning = (pid) => {
+          try {
+            process.kill(pid, 0);
+            return true;
+          } catch (error) {
+            return error.code === 'EPERM';
+          }
+        };
+        const removeStaleLock = () => {
+          if (!fs.existsSync(lockFile)) {
+            return false;
+          }
+          const stat = fs.statSync(lockFile);
+          const lockContent = fs.readFileSync(lockFile, 'utf8').trim();
+          const isExpired = Date.now() - stat.mtimeMs > lockTtlMs;
+          if (lockContent) {
+            try {
+              const lockInfo = JSON.parse(lockContent);
+              if (lockInfo.pid && isProcessRunning(lockInfo.pid)) {
+                return false;
+              }
+            } catch (error) {
+              if (!isExpired) {
+                return false;
+              }
+            }
+          } else if (!isExpired) {
+            return false;
+          }
+          console.log('检测到过期部署锁，自动清理：' + lockFile);
+          fs.rmSync(lockFile, { force: true });
+          return true;
+        };
+        try {
+          try {
+            lockFd = fs.openSync(lockFile, 'wx');
+          } catch (error) {
+            if (error.code !== 'EEXIST' || !removeStaleLock()) {
+              throw error;
+            }
+            lockFd = fs.openSync(lockFile, 'wx');
+          }
+          fs.writeFileSync(lockFd, JSON.stringify({ pid: process.pid, branch, startedAt: new Date().toISOString() }));
+        } catch (error) {
+          if (error.code === 'EEXIST') {
+            console.log('已有部署任务正在运行，跳过本次执行：' + lockFile);
+            process.exit(0);
+          }
+          throw error;
+        }
+        try {
+          run('git', ['fetch', 'origin', branch]);
+          const localCommit = output('git', ['rev-parse', 'HEAD']);
+          const remoteCommit = output('git', ['rev-parse', 'origin/' + branch]);
+          if (localCommit === remoteCommit) {
+            console.log('远端无更新，跳过发布');
+          } else {
+            console.log('检测到更新：' + localCommit + ' -> ' + remoteCommit);
+            run('git', ['pull', '--ff-only', 'origin', branch]);
+            run('task', ['admin:release']);
+          }
+        } finally {
+          if (lockFd !== undefined) {
+            fs.closeSync(lockFd);
+          }
+          fs.rmSync(lockFile, { force: true });
+        }
+        "

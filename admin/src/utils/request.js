@@ -74,6 +74,11 @@ axios.interceptors.response.use(
           message: error.message || `Status:${error.response.status}，未知错误！`
         });
       }
+    } else if (error.code === 'ECONNABORTED') {
+      ElNotification.error({
+        title: '请求超时',
+        message: "请求处理时间过长，请稍后重试！"
+      });
     } else {
       ElNotification.error({
         title: '请求错误',

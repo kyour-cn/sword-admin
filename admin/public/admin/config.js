@@ -11,4 +11,7 @@ const APP_CONFIG = {
   // 资源文件地址
   RES_URL: window.location.origin,
 
+  // 请求超时
+  TIMEOUT: 10000,
+
 }
