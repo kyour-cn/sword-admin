@@ -1,6 +1,6 @@
 <template>
   <div class="login_bg"
-       style="background-image: url(/admin/img/login_bg.png);background-size: auto 100%;background-repeat: no-repeat;">
+       style="background-image: url(/admin/img/loginbg.svg);background-size: auto 100%;background-repeat: no-repeat;">
     <div class="login_config">
       <el-button :icon="config.dark?'el-icon-sunny':'el-icon-moon'" circle type="info" @click="configDark"></el-button>
       <el-dropdown trigger="click" placement="bottom-end" @command="configLang">
