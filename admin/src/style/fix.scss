@@ -134,6 +134,11 @@ html.dark .el-menu-item.is-active {
 .aminui-side .el-menu:not(.el-menu--horizontal) .el-sub-menu__title {
   margin: 0 5px;
 }
+// 统一侧边栏一级普通菜单和一级父级菜单的图标、文字起始位置。
+.aminui-side:not(.isCollapse) .side-menu > .el-menu-item,
+.aminui-side:not(.isCollapse) .side-menu > .el-sub-menu > .el-sub-menu__title {
+  padding-left: 20px !important;
+}
 /* 功能页面区域样式 */
 .adminui-main > .el-container {
   background: #fff;
