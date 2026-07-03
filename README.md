@@ -21,7 +21,7 @@ task admin:publish
 task deploy:auto
 ```
 
-`task deploy:auto` 默认检测 `goods_lib_collect` 分支，如需指定其他分支：
+`task deploy:auto` 默认检测 `origin/HEAD` 指向的分支，如需指定其他分支：
 
 ```bash
 BRANCH=main task deploy:auto

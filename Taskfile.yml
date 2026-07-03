@@ -54,81 +54,37 @@ tasks:
     cmds:
       - |
         node -e "
-        const fs = require('fs');
-        const os = require('os');
-        const path = require('path');
         const { execFileSync } = require('child_process');
-        const branch = process.env.BRANCH || 'goods_lib_collect';
-        const lockFile = process.env.LOCK_FILE || path.join(os.tmpdir(), 'juxie-admin-deploy.lock');
-        const lockTtlMs = Number(process.env.LOCK_TTL_MS || 30 * 60 * 1000);
-        let lockFd;
         const run = (cmd, args, options = {}) => execFileSync(cmd, args, { stdio: 'inherit', ...options });
         const output = (cmd, args) => execFileSync(cmd, args, { encoding: 'utf8' }).trim();
-        const isProcessRunning = (pid) => {
+        const resolveBranch = () => {
+          const configuredBranch = (process.env.BRANCH || '').trim();
+          if (configuredBranch) {
+            return configuredBranch;
+          }
           try {
-            process.kill(pid, 0);
-            return true;
-          } catch (error) {
-            return error.code === 'EPERM';
-          }
-        };
-        const removeStaleLock = () => {
-          if (!fs.existsSync(lockFile)) {
-            return false;
-          }
-          const stat = fs.statSync(lockFile);
-          const lockContent = fs.readFileSync(lockFile, 'utf8').trim();
-          const isExpired = Date.now() - stat.mtimeMs > lockTtlMs;
-          if (lockContent) {
-            try {
-              const lockInfo = JSON.parse(lockContent);
-              if (lockInfo.pid && isProcessRunning(lockInfo.pid)) {
-                return false;
-              }
-            } catch (error) {
-              if (!isExpired) {
-                return false;
-              }
+            const originHead = output('git', ['symbolic-ref', '--short', 'refs/remotes/origin/HEAD']);
+            if (originHead.startsWith('origin/')) {
+              return originHead.slice('origin/'.length);
             }
-          } else if (!isExpired) {
-            return false;
-          }
-          console.log('检测到过期部署锁，自动清理：' + lockFile);
-          fs.rmSync(lockFile, { force: true });
-          return true;
-        };
-        try {
-          try {
-            lockFd = fs.openSync(lockFile, 'wx');
           } catch (error) {
-            if (error.code !== 'EEXIST' || !removeStaleLock()) {
-              throw error;
-            }
-            lockFd = fs.openSync(lockFile, 'wx');
+            // 部分服务器克隆目录可能没有 origin/HEAD，退回当前本地分支作为部署分支。
           }
-          fs.writeFileSync(lockFd, JSON.stringify({ pid: process.pid, branch, startedAt: new Date().toISOString() }));
-        } catch (error) {
-          if (error.code === 'EEXIST') {
-            console.log('已有部署任务正在运行，跳过本次执行：' + lockFile);
-            process.exit(0);
+          const currentBranch = output('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
+          if (!currentBranch || currentBranch === 'HEAD') {
+            throw new Error('无法自动识别部署分支，请通过 BRANCH=main task deploy:auto 指定分支');
           }
-          throw error;
-        }
-        try {
-          run('git', ['fetch', 'origin', branch]);
-          const localCommit = output('git', ['rev-parse', 'HEAD']);
-          const remoteCommit = output('git', ['rev-parse', 'origin/' + branch]);
-          if (localCommit === remoteCommit) {
-            console.log('远端无更新，跳过发布');
-          } else {
-            console.log('检测到更新：' + localCommit + ' -> ' + remoteCommit);
-            run('git', ['pull', '--ff-only', 'origin', branch]);
-            run('task', ['admin:release']);
-          }
-        } finally {
-          if (lockFd !== undefined) {
-            fs.closeSync(lockFd);
-          }
-          fs.rmSync(lockFile, { force: true });
+          return currentBranch;
+        };
+        const branch = resolveBranch();
+        run('git', ['fetch', 'origin', branch]);
+        const localCommit = output('git', ['rev-parse', 'HEAD']);
+        const remoteCommit = output('git', ['rev-parse', 'origin/' + branch]);
+        if (localCommit === remoteCommit) {
+          console.log('远端无更新，跳过发布');
+        } else {
+          console.log('检测到更新：' + localCommit + ' -> ' + remoteCommit);
+          run('git', ['pull', '--ff-only', 'origin', branch]);
+          run('task', ['admin:release']);
         }
         "
