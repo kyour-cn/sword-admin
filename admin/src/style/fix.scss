@@ -134,10 +134,15 @@ html.dark .el-menu-item.is-active {
 .aminui-side .el-menu:not(.el-menu--horizontal) .el-sub-menu__title {
   margin: 0 5px;
 }
-// 统一侧边栏一级普通菜单和一级父级菜单的图标、文字起始位置。
-.aminui-side:not(.isCollapse) .side-menu > .el-menu-item,
-.aminui-side:not(.isCollapse) .side-menu > .el-sub-menu > .el-sub-menu__title {
-  padding-left: 20px !important;
+// 一级普通菜单默认缩进比父级菜单更深，这里拉回到同一左起点。
+.aminui-side:not(.isCollapse) .side-menu > .el-menu-item {
+  padding-left: 5px !important;
+}
+.aminui-side:not(.isCollapse) .side-menu > .el-sub-menu > .el-sub-menu__title .el-sub-menu__icon-arrow {
+  right: 12px;
+}
+.aminui-side:not(.isCollapse) .side-menu > .el-sub-menu > .el-menu .el-menu-item {
+  padding-left: 28px !important;
 }
 /* 功能页面区域样式 */
 .adminui-main > .el-container {
