@@ -13,6 +13,26 @@ use support\Response;
  */
 class User extends BaseController
 {
+    public function info(Request $req): Response
+    {
+        $serv = new UserService();
+
+        if ($req->method() === 'POST') {
+            $serv->updateCurrentUser($req->post());
+            return $this->success('保存成功', $serv->getCurrentUser());
+        }
+
+        return $this->success(data: $serv->getCurrentUser());
+    }
+
+    public function password(Request $req): Response
+    {
+        $serv = new UserService();
+        $serv->updateCurrentPassword($req->post());
+
+        return $this->success('密码修改成功');
+    }
+
     public function taskList(Request $req): Response
     {
         $serv = new UserService();

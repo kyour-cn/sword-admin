@@ -278,7 +278,7 @@ defineExpose({
 
 <style scoped>
   .el-form-item.is-error .sc-upload .el-upload--picture-card {border-color: var(--el-color-danger);}
-  .sc-upload .el-upload--picture-card {border-radius: 0;}
+  .sc-upload .el-upload--picture-card {width: 100%;height: 100%;border-radius: 0;}
 
   .sc-upload .uploader,.sc-upload:deep(.el-upload) {width: 100%;height: 100%;}
 

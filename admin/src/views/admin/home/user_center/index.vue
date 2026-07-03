@@ -4,7 +4,7 @@
       <el-container>
         <el-header style="height: auto;display: block;">
           <div class="user-info-top">
-            <el-avatar :size="70" src="/admin/img/avatar.png"></el-avatar>
+            <el-avatar :size="70" :src="avatarUrl"></el-avatar>
             <h2>{{ user.userName }}</h2>
             <p>
               <el-tag class="user-info-role" v-for="role in user.role" effect="dark" round size="large" disable-transitions>{{ role }}</el-tag>
@@ -28,7 +28,8 @@
     <el-main>
       <Suspense>
         <template #default>
-          <component :is="page"/>
+          <account v-if="page === 'account'" :user-info="userInfo" @user-update="setUserInfo"/>
+          <component v-else :is="page"/>
         </template>
         <template #fallback>
           <el-skeleton :rows="3" />
@@ -41,6 +42,7 @@
 <script>
   import { defineAsyncComponent } from 'vue'
   import tool from "@/utils/tool.js";
+  import userApi from "@/api/common/user.js";
 
   export default {
     name: 'user_center',
@@ -109,22 +111,20 @@
         ],
         user: {
           userName: "",
+          avatar: "",
           role: [],
         },
+        userInfo: {},
         page: "account"
       }
     },
-    mounted() {
-      const userInfo = tool.data.get("USER_INFO")
-      if(userInfo) {
-        this.user.userName = userInfo.nickname || ""
-        if(userInfo.user_role) {
-          userInfo.user_role.forEach(item => {
-            this.user.role.push(item.role.name)
-          })
-        }
+    computed: {
+      avatarUrl() {
+        return this.user.avatar ? tool.resUrl(this.user.avatar) : "/admin/img/avatar.png"
       }
-      console.log(userInfo)
+    },
+    mounted() {
+      this.loadUserInfo()
     },
     //路由跳转进来 判断from是否有特殊标识做特殊处理
     beforeRouteEnter (to, from, next){
@@ -141,6 +141,31 @@
       })
     },
     methods: {
+      async loadUserInfo() {
+        const cacheUserInfo = tool.data.get("USER_INFO")
+        if (cacheUserInfo) {
+          this.setUserInfo(cacheUserInfo)
+        }
+
+        const res = await userApi.info.get()
+        if (res.code === 0) {
+          this.setUserInfo(res.data)
+          tool.data.set("USER_INFO", res.data)
+        }
+      },
+      setUserInfo(userInfo) {
+        this.userInfo = userInfo || {}
+        this.user.userName = this.userInfo.nickname || ""
+        this.user.avatar = this.userInfo.avatar || ""
+        this.user.role = []
+        if(this.userInfo.user_role) {
+          this.userInfo.user_role.forEach(item => {
+            if (item.role?.name) {
+              this.user.role.push(item.role.name)
+            }
+          })
+        }
+      },
       openPage(item){
         this.page = item.index
       }
@@ -152,6 +177,7 @@
 .page-user {
   .user-info-top {
     text-align: center;
+    padding-top: 24px;
   }
 
   .user-info-top h2 {

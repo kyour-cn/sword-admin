@@ -47,7 +47,7 @@
     </div>
     <el-dropdown class="user panel-item" trigger="click" @command="handleUser">
       <div class="user-avatar">
-        <el-avatar :size="30">{{ userNameF }}</el-avatar>
+        <el-avatar :size="30" :src="avatarUrl">{{ userNameF }}</el-avatar>
         <label>{{ userName }}</label>
         <el-icon class="el-icon--right"><el-icon-arrow-down /></el-icon>
       </div>
@@ -71,7 +71,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onBeforeUnmount, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessageBox, ElLoading } from 'element-plus'
 import SearchComponent from './search.vue'
@@ -83,10 +83,15 @@ const router = useRouter()
 // 响应式数据
 const userName = ref("")
 const userNameF = ref("")
+const userAvatar = ref("")
 const searchVisible = ref(false)
 const tasksVisible = ref(false)
 const msg = ref(false)
 const msgList = ref([])
+
+const avatarUrl = computed(() => {
+  return userAvatar.value ? tool.resUrl(userAvatar.value) : ""
+})
 
 // 方法
 const openSearch = () => {
@@ -112,6 +117,16 @@ const showMsg = () => {
 
 const markRead = () => {
   msgList.value = []
+}
+
+const setUserInfo = (userInfo) => {
+  userName.value = userInfo?.nickname || ""
+  userNameF.value = userName.value.substring(0, 1)
+  userAvatar.value = userInfo?.avatar || ""
+}
+
+const userInfoUpdated = (event) => {
+  setUserInfo(event.detail || {})
 }
 
 // 个人信息处理
@@ -160,9 +175,13 @@ const handleUser = (command) => {
 onMounted(() => {
   const userInfo = tool.data.get("USER_INFO")
   if(userInfo) {
-    userName.value = userInfo.nickname || ""
-    userNameF.value = userName.value.substring(0, 1)
+    setUserInfo(userInfo)
   }
+  window.addEventListener('user-info-updated', userInfoUpdated)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('user-info-updated', userInfoUpdated)
 })
 </script>
 

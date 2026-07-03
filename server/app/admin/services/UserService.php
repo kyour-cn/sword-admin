@@ -94,6 +94,78 @@ class UserService extends BaseService
     }
 
     /**
+     * 获取当前登录用户信息
+     * @return array
+     */
+    public function getCurrentUser(): array
+    {
+        $user = $this->getCurrentUserModel(['userRole.role.app']);
+
+        $data = $user->toArray();
+        unset($data['password'], $data['deleted_at']);
+
+        return $data;
+    }
+
+    /**
+     * 更新当前登录用户资料
+     * @param array $data
+     * @return void
+     */
+    public function updateCurrentUser(array $data): void
+    {
+        $user = $this->getCurrentUserModel();
+        $userData = array_intersect_key($data, array_flip(['nickname', 'mobile', 'avatar']));
+
+        if (array_key_exists('nickname', $userData)) {
+            $userData['nickname'] = trim((string)$userData['nickname']);
+            if ($userData['nickname'] === '') {
+                throw new BusinessException('昵称不能为空');
+            }
+        }
+
+        if ($userData === []) {
+            return;
+        }
+
+        $user->fill($userData);
+        $user->save();
+    }
+
+    /**
+     * 修改当前登录用户密码
+     * @param array $data
+     * @return void
+     */
+    public function updateCurrentPassword(array $data): void
+    {
+        $userPassword = (string)($data['user_password'] ?? '');
+        $newPassword = (string)($data['new_password'] ?? '');
+        $confirmNewPassword = (string)($data['confirm_new_password'] ?? '');
+
+        if ($userPassword === '') {
+            throw new BusinessException('请输入当前密码');
+        }
+        if ($newPassword === '') {
+            throw new BusinessException('请输入新密码');
+        }
+        if ($newPassword !== $confirmNewPassword) {
+            throw new BusinessException('两次输入密码不一致');
+        }
+        if (strlen($newPassword) < 8 || !preg_match('/[A-Za-z]/', $newPassword) || !preg_match('/\d/', $newPassword)) {
+            throw new BusinessException('请输入包含英文、数字的8位以上密码');
+        }
+
+        $user = $this->getCurrentUserModel();
+        if ($user->password !== md5($userPassword)) {
+            throw new BusinessException('当前密码不正确');
+        }
+
+        $user->password = md5($newPassword);
+        $user->save();
+    }
+
+    /**
      * @param array $data
      * @return void
      */
@@ -161,6 +233,26 @@ class UserService extends BaseService
     {
         $fields = ['nickname', 'username', 'mobile', 'avatar', 'password', 'status'];
         return array_intersect_key($data, array_flip($fields));
+    }
+
+    private function getCurrentUserModel(array $with = []): User
+    {
+        $claims = JwtUtils::decodeFromRequest(request());
+
+        $query = User::query();
+        if ($with !== []) {
+            $query->with($with);
+        }
+
+        $user = $query->find((int)($claims['id'] ?? 0));
+        if (!$user) {
+            throw new BusinessException('用户不存在');
+        }
+        if ($user->status != 1) {
+            throw new BusinessException('账号异常或被锁定');
+        }
+
+        return $user;
     }
 
     private function formatRoleIds(mixed $roles): array
