@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="loginForm" :model="state.form" :rules="state.rules" label-width="0" size="large"
+  <el-form ref="loginForm" class="login-password-form" :model="state.form" :rules="state.rules" label-width="0" size="large"
            @keyup.enter="refreshCaptcha">
     <el-form-item prop="user">
       <el-input v-model="state.form.user" prefix-icon="el-icon-user" clearable
@@ -18,7 +18,7 @@
                 :placeholder="$t('login.PWPlaceholder')"></el-input>
     </el-form-item>
 
-    <el-form-item style="margin-bottom: 10px;">
+    <el-form-item class="login-options">
       <el-col :span="12">
         <el-checkbox :label="$t('login.rememberMe')" v-model="state.form.autologin"></el-checkbox>
       </el-col>
@@ -26,7 +26,7 @@
         <router-link to="/reset_password">{{ $t('login.forgetPassword') }}？</router-link>
       </el-col>
     </el-form-item>
-    <el-form-item>
+    <el-form-item class="login-action">
       <div v-if="config.LOGIN_VERIFY" class="login-altcha">
         <altcha-widget
           v-if="state.altchaChallengeJson"
@@ -39,7 +39,7 @@
           hidelogo
         />
       </div>
-      <el-button type="primary" style="width: 100%;" :loading="state.isLogin" round @click="refreshCaptcha">
+      <el-button class="login-submit" type="primary" :loading="state.isLogin" round @click="refreshCaptcha">
         {{ $t('login.signIn') }}
       </el-button>
     </el-form-item>
@@ -408,6 +408,60 @@ const getMenu = async (appId) => {
 </script>
 
 <style lang="scss" scoped>
+.login-password-form {
+  :deep(.el-form-item) {
+    margin-bottom: 18px;
+  }
+
+  :deep(.el-input__wrapper) {
+    min-height: 48px;
+    padding: 0 16px;
+    border-radius: 12px;
+    background: var(--el-bg-color);
+    box-shadow: 0 0 0 1px var(--el-border-color-light) inset, 0 10px 24px rgba(45, 70, 130, 0.04);
+    transition: box-shadow 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  :deep(.el-input__wrapper:hover) {
+    box-shadow: 0 0 0 1px var(--el-color-primary-light-5) inset, 0 12px 26px rgba(45, 70, 130, 0.08);
+  }
+
+  :deep(.el-input__wrapper.is-focus) {
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 14px 30px rgba(64, 158, 255, 0.14);
+  }
+
+  :deep(.el-input__prefix) {
+    color: var(--el-text-color-secondary);
+  }
+
+  .login-options {
+    margin: 4px 0 18px;
+
+    :deep(.el-form-item__content) {
+      align-items: center;
+      line-height: 1;
+    }
+
+    :deep(.el-checkbox) {
+      height: 24px;
+      color: var(--el-text-color-regular);
+      font-weight: 500;
+    }
+
+    :deep(.el-checkbox__inner) {
+      width: 17px;
+      height: 17px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(45, 70, 130, 0.08);
+    }
+  }
+
+  .login-action {
+    margin-bottom: 0;
+  }
+}
+
 .app-list {
   margin-top: 20px;
 }
@@ -450,16 +504,71 @@ const getMenu = async (appId) => {
 
 .login-altcha {
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 
   altcha-widget {
     display: block;
     width: 100%;
     --altcha-max-width: 100%;
-    --altcha-border-radius: 6px;
-    --altcha-color-border: var(--el-border-color);
+    --altcha-border-radius: 12px;
+    --altcha-color-border: var(--el-border-color-light);
     --altcha-color-border-focus: var(--el-color-primary);
     --altcha-color-active: var(--el-color-primary);
+    --altcha-color-base: var(--el-bg-color);
+    --altcha-color-text: var(--el-text-color-primary);
+    --altcha-color-border-hover: var(--el-color-primary-light-5);
+    filter: drop-shadow(0 10px 24px rgba(45, 70, 130, 0.04));
+  }
+}
+
+.login-submit {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+  background: linear-gradient(135deg, var(--el-color-primary), #5b6cff);
+  box-shadow: 0 14px 28px rgba(64, 99, 255, 0.26);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+
+  &:hover,
+  &:focus {
+    opacity: 0.94;
+    transform: translateY(-1px);
+    box-shadow: 0 18px 34px rgba(64, 99, 255, 0.32);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 10px 20px rgba(64, 99, 255, 0.22);
+  }
+}
+
+.login-reg {
+  margin-top: 18px;
+  text-align: center;
+  color: var(--el-text-color-secondary);
+
+  a {
+    font-weight: 600;
+  }
+}
+
+:global(html.dark) {
+  .login-password-form {
+    :deep(.el-input__wrapper) {
+      background: var(--el-bg-color-overlay);
+      box-shadow: 0 0 0 1px var(--el-border-color-light) inset, 0 10px 24px rgba(0, 0, 0, 0.18);
+    }
+  }
+
+  .login-altcha {
+    altcha-widget {
+      --altcha-color-base: var(--el-bg-color-overlay);
+      filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.18));
+    }
   }
 }
 </style>
