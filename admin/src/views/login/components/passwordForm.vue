@@ -27,22 +27,21 @@
       </el-col>
     </el-form-item>
     <el-form-item>
-      <el-popover :visible="state.captchaShow" placement="top-start" width="350">
-        <CaptchaSlide
-          v-if="state.captchaShow"
-          :data="state.captchaData"
-          :events="{
-            close: closeCaptcha,
-            refresh: refreshCaptcha,
-            confirm: confirmEvent,
-          }"
+      <div v-if="config.LOGIN_VERIFY" class="login-altcha">
+        <altcha-widget
+          v-if="state.altchaChallengeJson"
+          ref="altchaRef"
+          :key="state.altchaKey"
+          :challengejson="state.altchaChallengeJson"
+          :language="altchaLanguage"
+          auto="off"
+          hidefooter
+          hidelogo
         />
-        <template #reference>
-          <el-button type="primary" style="width: 100%;" :loading="state.isLogin" round @click="refreshCaptcha">
-            {{ $t('login.signIn') }}
-          </el-button>
-        </template>
-      </el-popover>
+      </div>
+      <el-button type="primary" style="width: 100%;" :loading="state.isLogin" round @click="refreshCaptcha">
+        {{ $t('login.signIn') }}
+      </el-button>
     </el-form-item>
     <div v-if="config.ACCOUNT_REGISTER" class="login-reg">
       {{ $t('login.noAccount') }}
@@ -86,16 +85,17 @@
 
 <script setup>
 import config from "@/config"
-import {Slide as CaptchaSlide} from 'go-captcha-vue'
-import {getCurrentInstance, reactive, ref} from "vue";
+import 'altcha'
+import 'altcha/i18n/zh-cn'
+import {computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
 import authApi from "@/api/common/auth.js"
 import tool from "@/utils/tool.js";
 import {ElMessage, ElMessageBox} from "element-plus";
 import router from "@/router/index.js";
-import "go-captcha-vue/dist/style.css"
 
 const proxy = getCurrentInstance().proxy
 const loginForm = ref(null)
+const altchaRef = ref(null)
 
 const state = reactive({
   form: {
@@ -112,94 +112,223 @@ const state = reactive({
     ]
   },
   isLogin: false,
-  captchaShow: false,
-  captchaData: null,
+  pendingLogin: false,
+  altchaKey: 0,
+  altchaChallengeJson: "",
+  altchaPayload: "",
   dialogRoleVisible: false,
   appList: [],
 })
 
 const selectedApp = ref(null)
+const altchaLanguage = computed(() => (proxy.$i18n.locale === 'zh-cn' ? 'zh-cn' : 'en'))
 
-const refreshCaptcha = () => {
-  if(!config.LOGIN_VERIFY) {
-    confirmEvent()
-    return
+const loadAltchaChallenge = async () => {
+  if (!config.LOGIN_VERIFY) {
+    return true
   }
-  state.captchaShow = false
-  authApi.captcha.get().then(res => {
-    if (res.code === 0) {
 
-      state.captchaData = {
-        image: res.data.image_base64,
-        thumb: res.data.tile_base64,
-        captKey: res.data.captcha_key,
-        thumbX: res.data.tile_x,
-        thumbY: res.data.tile_y,
-        thumbWidth: res.data.tile_width,
-        thumbHeight: res.data.tile_height,
-      }
-
-      state.captchaShow = true
-    } else {
-      ElMessage.error(res.message)
+  try {
+    const res = await authApi.captcha.get()
+    if (res.code !== 0) {
+      ElMessage.warning(res.message || '获取人机验证失败')
+      return false
     }
-  })
+
+    state.altchaPayload = ""
+    state.altchaChallengeJson = JSON.stringify(res.data)
+    await nextTick()
+    return true
+  } catch (error) {
+    ElMessage.warning(error?.data?.message || error?.message || '获取人机验证失败')
+    return false
+  }
 }
 
-const closeCaptcha = () => {
-  state.captchaShow = false
-}
+const refreshCaptcha = async () => {
+  if (state.isLogin || state.pendingLogin) {
+    return false
+  }
 
-const confirmEvent = async (point) => {
-  closeCaptcha()
-
-  const validate = await loginForm.value.validate().catch()
+  const validate = await loginForm.value.validate().catch(() => false)
   if (!validate) {
     return false
   }
 
-  state.isLogin = true
-  const data = {
-    username: state.form.user,
-    password: tool.crypto.MD5(state.form.password),
-    md5: true,
-    point: point,
-    captcha_key: state.captchaData?.captKey
-  };
-  //获取token
-  const user = await authApi.login.post(data);
-  if (user.code === 0) {
-    tool.cookie.set("TOKEN", user.data.token, {
-      expires: state.form.autologin ? user.data.expire : 0
-    })
-    tool.data.set("USER_INFO", user.data.userInfo)
-  } else {
-    if (user.code === 102) {
-      refreshCaptcha()
-    }
-    state.isLogin = false
-    ElMessage.warning(user.message)
+  if(!config.LOGIN_VERIFY) {
+    await confirmEvent()
+    return
+  }
+
+  if (!state.altchaChallengeJson && (await loadAltchaChallenge()) === false) {
     return false
   }
 
-  state.appList = Object.values(user.data.apps)
-  selectedApp.value = null
-
-  // 获取应用
-  if (state.appList.length === 0) {
-    ElMessage.error("该账号暂无应用权限！")
+  const verifiedPayload = getAltchaPayload()
+  if (verifiedPayload) {
+    state.altchaPayload = verifiedPayload
+    await confirmEvent()
     return
-  } else if (state.appList.length === 1) {
-    await getMenu(state.appList[0].id)
-  } else {
-    // 存在多个应用，让用户选择
-    state.dialogRoleVisible = true
-    // 默认选中第一个
-    selectApp(state.appList[0])
   }
 
-  state.isLogin = false
+  try {
+    const widget = altchaRef.value
+    if (!widget?.verify) {
+      ElMessage.warning('人机验证组件未加载完成，请稍后再试')
+      return false
+    }
+
+    state.pendingLogin = true
+    await widget.verify()
+    await nextTick()
+
+    const payload = getAltchaPayload()
+    if (payload) {
+      state.altchaPayload = payload
+      await submitPendingLogin()
+      return
+    }
+
+    if (state.pendingLogin && widget.getState?.() !== 'verifying') {
+      state.pendingLogin = false
+      ElMessage.warning('请点击上方“我不是机器人”完成人机验证')
+    }
+  } catch (error) {
+    state.pendingLogin = false
+    ElMessage.warning(error?.message || '人机验证失败，请重新验证')
+    resetAltcha()
+  }
 }
+
+const confirmEvent = async (event) => {
+  const validate = await loginForm.value.validate().catch(() => false)
+  if (!validate) {
+    return false
+  }
+
+  const altchaPayload = event?.detail?.payload || state.altchaPayload
+  if (config.LOGIN_VERIFY && !altchaPayload) {
+    ElMessage.warning('请先完成人机验证')
+    return false
+  }
+  state.altchaPayload = altchaPayload
+
+  state.isLogin = true
+  try {
+    const data = {
+      username: state.form.user,
+      password: tool.crypto.MD5(state.form.password),
+      md5: true,
+      altcha: altchaPayload
+    };
+    //获取token
+    const user = await authApi.login.post(data);
+    if (user.code === 0) {
+      tool.cookie.set("TOKEN", user.data.token, {
+        expires: state.form.autologin ? user.data.expire : 0
+      })
+      tool.data.set("USER_INFO", user.data.userInfo)
+    } else {
+      resetAltcha()
+      ElMessage.warning(user.message)
+      return false
+    }
+
+    state.appList = Object.values(user.data.apps)
+    selectedApp.value = null
+
+    // 获取应用
+    if (state.appList.length === 0) {
+      ElMessage.error("该账号暂无应用权限！")
+      return false
+    } else if (state.appList.length === 1) {
+      if (await getMenu(state.appList[0].id) === false) {
+        return false
+      }
+    } else {
+      // 存在多个应用，让用户选择
+      state.dialogRoleVisible = true
+      // 默认选中第一个
+      selectApp(state.appList[0])
+    }
+  } catch (error) {
+    resetAltcha()
+    ElMessage.warning(error?.message || '登录失败')
+    return false
+  } finally {
+    state.isLogin = false
+  }
+}
+
+const getAltchaPayload = () => {
+  return state.altchaPayload || altchaRef.value?.querySelector?.('input[name="altcha"]')?.value || ""
+}
+
+const getAltchaEventDetail = (event) => {
+  return event?.detail || event || {}
+}
+
+const handleAltchaVerified = async (event) => {
+  const detail = getAltchaEventDetail(event)
+  state.altchaPayload = detail.payload || getAltchaPayload()
+  await submitPendingLogin()
+}
+
+const handleAltchaStateChange = (event) => {
+  const detail = getAltchaEventDetail(event)
+  state.altchaPayload = detail.payload || getAltchaPayload()
+
+  if (detail.state === 'verified') {
+    submitPendingLogin()
+    return
+  }
+
+  if (['error', 'expired', 'unverified'].includes(detail.state)) {
+    state.pendingLogin = false
+    if (detail.state !== 'verified') {
+      state.altchaPayload = ""
+    }
+  }
+}
+
+const submitPendingLogin = async () => {
+  if (!state.pendingLogin) {
+    return
+  }
+
+  const payload = getAltchaPayload()
+  if (!payload) {
+    return
+  }
+
+  state.pendingLogin = false
+  state.altchaPayload = payload
+  await confirmEvent()
+}
+
+const resetAltcha = () => {
+  state.pendingLogin = false
+  state.altchaPayload = ""
+  state.altchaChallengeJson = ""
+  state.altchaKey += 1
+  loadAltchaChallenge()
+}
+
+watch(altchaRef, (element, oldElement) => {
+  oldElement?.removeEventListener?.('verified', handleAltchaVerified)
+  oldElement?.removeEventListener?.('statechange', handleAltchaStateChange)
+  element?.addEventListener?.('verified', handleAltchaVerified)
+  element?.addEventListener?.('statechange', handleAltchaStateChange)
+})
+
+onBeforeUnmount(() => {
+  altchaRef.value?.removeEventListener?.('verified', handleAltchaVerified)
+  altchaRef.value?.removeEventListener?.('statechange', handleAltchaStateChange)
+})
+
+onMounted(() => {
+  loadAltchaChallenge()
+})
 
 // 点击选中
 function selectApp(item) {
@@ -317,5 +446,20 @@ const getMenu = async (appId) => {
 
 .el-dialog__footer {
   text-align: right;
+}
+
+.login-altcha {
+  width: 100%;
+  margin-bottom: 12px;
+
+  altcha-widget {
+    display: block;
+    width: 100%;
+    --altcha-max-width: 100%;
+    --altcha-border-radius: 6px;
+    --altcha-color-border: var(--el-border-color);
+    --altcha-color-border-focus: var(--el-color-primary);
+    --altcha-color-active: var(--el-color-primary);
+  }
 }
 </style>

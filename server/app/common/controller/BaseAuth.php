@@ -5,6 +5,7 @@ namespace app\common\controller;
 use app\BaseController;
 use app\common\exception\BusinessException;
 use app\common\services\AuthService;
+use app\common\services\CaptchaService;
 use app\common\services\SiteService;
 use app\common\utils\AuditLog;
 use app\common\utils\JwtUtils;
@@ -16,6 +17,16 @@ use support\Response;
 class BaseAuth extends BaseController
 {
     /**
+     * 获取登录人机验证 challenge
+     * @return Response
+     * @api
+     */
+    public function captcha(): Response
+    {
+        return $this->success('获取成功', CaptchaService::instance()->challenge());
+    }
+
+    /**
      * 登录
      * @param Request $request
      * @return Response
@@ -24,6 +35,15 @@ class BaseAuth extends BaseController
     public function login(Request $request): Response
     {
         $params = $request->post();
+        $siteConfig = SiteService::instance()->getConfig();
+
+        if ($this->captchaEnabled($siteConfig)) {
+            try {
+                CaptchaService::instance()->verify((string)($params['altcha'] ?? ''));
+            } catch (BusinessException $e) {
+                return $this->fail(102, $e->getMessage());
+            }
+        }
 
         //密码转换
         if (empty($params['md5'])) {
@@ -48,7 +68,6 @@ class BaseAuth extends BaseController
             $apps[$item->role->app->id] = $item->role->app;
         }
 
-        $siteConfig = SiteService::instance()->getConfig();
         $expire = max(300, (int)($siteConfig['token_expire'] ?? 86400));
 
         // 生成token
@@ -122,6 +141,11 @@ class BaseAuth extends BaseController
             'menu' => $menu,
             'permissions' => $permissions
         ]);
+    }
+
+    private function captchaEnabled(array $siteConfig): bool
+    {
+        return filter_var($siteConfig['admin_captcha_switch'] ?? false, FILTER_VALIDATE_BOOLEAN);
     }
 
 }
