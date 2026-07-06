@@ -1,26 +1,46 @@
 <template>
-  <el-container>
-    <el-header>
-      <div class="left-panel">
-        <el-button v-auth="'admin.system.role.add'" type="primary" icon="el-icon-plus" @click="add"/>
-        <el-button v-auth="'admin.system.role.delete'" type="danger" plain icon="el-icon-delete"
-                   :disabled="!state.selection.length" @click="batchDel"/>
+  <el-container class="admin-crud-page role-page">
+    <el-header class="admin-crud-table-header role-table-header">
+      <div class="admin-crud-search-row role-search-row">
+        <el-select
+          v-if="state.appList.length"
+          v-model="state.selectedApp"
+          filterable
+          placeholder="所属应用"
+          class="admin-crud-base-filter role-app-filter"
+          @change="filterChange"
+        >
+          <el-option label="全部" value=""/>
+          <el-option
+            v-for="item in state.appList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+        <el-input
+          v-model="state.search.keyword"
+          placeholder="角色名称"
+          clearable
+          class="admin-crud-keyword-filter keyword-filter"
+          @clear="clearSearch"
+        />
+        <el-button type="primary" icon="el-icon-search" @click="upSearch">查询</el-button>
+        <el-button icon="el-icon-refresh" @click="clearSearch">重置</el-button>
       </div>
-      <div class="right-panel">
-        <div class="right-panel-search">
-          <el-input v-model="state.search.keyword" placeholder="角色名称" clearable @clear="clearSearch"/>
-          <el-button type="primary" icon="el-icon-search" @click="upSearch"/>
-        </div>
+      <div class="admin-crud-action-row role-action-row">
+        <el-button v-auth="'admin.system.role.add'" type="primary" icon="el-icon-plus" @click="add">新增角色</el-button>
+        <el-button
+          v-auth="'admin.system.role.delete'"
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          :disabled="!state.selection.length"
+          @click="batchDel"
+        >
+          批量删除
+        </el-button>
       </div>
-    </el-header>
-    <el-header style="height: auto;">
-      <sc-select-filter
-        v-if="state.appList.length"
-        :data="state.filterData"
-        :selected-values="state.selectedApp"
-        :label-width="80"
-        @on-change="filterChange"
-      />
     </el-header>
     <el-main class="nopadding">
       <sc-table
@@ -82,7 +102,7 @@
   <permission-dialog
     v-if="dialog.permission"
     ref="permissionDialogRef"
-    :app-id="state.selectedApp.value"
+    :app-id="state.selectedApp"
     @getNewData="refreshTable"
     @closed="dialog.permission = false"
   />
@@ -93,7 +113,6 @@
 import {nextTick, onMounted, reactive, ref} from "vue"
 import SaveDialog from './save'
 import PermissionDialog from './permission.vue'
-import scSelectFilter from "@/components/scSelectFilter"
 import ScStatusIndicator from "@/components/scMini/scStatusIndicator.vue"
 import ScTable from "@/components/scTable/index.vue"
 import systemApi from "@/api/admin/system.js";
@@ -113,19 +132,9 @@ const state = reactive({
     keyword: null
   },
   appList: [],
-  selectedApp: {},
-  filterData: [
-    {
-      title: "所属应用",
-      key: "value",
-      multiple: false,
-      options: [
-        // {label: "全部", value: ""},
-      ]
-    }
-  ],
+  selectedApp: '',
   tableParams: {
-    app_id: null,
+    app_id: '',
     keyword: null
   }
 })
@@ -148,25 +157,8 @@ const getApp = async () => {
     return
   }
 
-  //初始化筛选器
-  const opts = []
-  res.data.rows.forEach(item => {
-    opts.push({
-      label: item.name,
-      value: item.id
-    })
-  })
-
-  //读取缓存
-  const appId = sessionStorage.getItem("sys_role_app_id")
-  if (appId) {
-    state.selectedApp = opts.find(item => item.value === Number(appId))
-  } else {
-    state.selectedApp = opts[0]
-  }
-
-  state.filterData[0].options = opts
-  state.tableParams.app_id = state.selectedApp.value
+  state.selectedApp = ''
+  state.tableParams.app_id = ''
   state.appList = res.data.rows
 }
 
@@ -174,12 +166,10 @@ const refreshTable = () => {
   table.value.refresh()
 }
 
-const filterChange = (data) => {
-  state.selectedApp = data
+const filterChange = (appId) => {
   table.value.upData({
-    app_id: state.selectedApp.value
+    app_id: appId
   }, 1)
-  sessionStorage.setItem("sys_role_app_id", state.selectedApp.value)
 }
 
 const selectionChange = (val) => {
@@ -191,7 +181,6 @@ const add = () => {
   dialog.save = true
   nextTick(() => {
     saveDialogRef.value.open()
-    saveDialogRef.value.setData({app_id: Number(state.selectedApp.value)})
   })
 }
 
@@ -246,15 +235,18 @@ const openPermission = (row) => {
 //搜索
 const upSearch = () => {
   table.value.upData({
-    app_id: state.selectedApp.value,
-    name: state.search.keyword
+    app_id: state.selectedApp,
+    keyword: state.search.keyword
   }, 1)
 }
 
 // 删除搜索
 const clearSearch = () => {
+  state.search.keyword = null
+  state.selectedApp = ''
   table.value.reload({
-    app_id: state.selectedApp.value
+    app_id: '',
+    keyword: ''
   }, 1)
 }
 

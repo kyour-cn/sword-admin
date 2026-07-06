@@ -1,8 +1,28 @@
 <template>
-  <el-container>
-    <el-header>
-      <div class="left-panel">
-        <el-button v-auth="'admin.system.configForm.add'" type="primary" icon="el-icon-plus" @click="add"/>
+  <el-container class="admin-crud-page config-form-page">
+    <el-header class="admin-crud-table-header config-form-table-header">
+      <div class="admin-crud-search-row config-form-search-row">
+        <el-select
+          v-model="state.search.status"
+          class="admin-crud-base-filter status-filter"
+          placeholder="状态"
+          clearable
+        >
+          <el-option label="启用" :value="1"/>
+          <el-option label="停用" :value="0"/>
+        </el-select>
+        <el-input
+          v-model="state.search.keyword"
+          class="admin-crud-keyword-filter keyword-filter"
+          placeholder="名称 / key / 分组"
+          clearable
+          @clear="clearSearch"
+        />
+        <el-button type="primary" icon="el-icon-search" @click="upSearch">查询</el-button>
+        <el-button icon="el-icon-refresh" @click="clearSearch">重置</el-button>
+      </div>
+      <div class="admin-crud-action-row config-form-action-row">
+        <el-button v-auth="'admin.system.configForm.add'" type="primary" icon="el-icon-plus" @click="add">新增配置表单</el-button>
         <el-button
           v-auth="'admin.system.configForm.delete'"
           type="danger"
@@ -10,23 +30,16 @@
           icon="el-icon-delete"
           :disabled="!state.selection.length"
           @click="batchDel"
-        />
-      </div>
-      <div class="right-panel">
-        <div class="right-panel-search config-form-search">
-          <el-select v-model="state.search.status" class="status-select" placeholder="状态" clearable>
-            <el-option label="启用" :value="1"/>
-            <el-option label="停用" :value="0"/>
-          </el-select>
-          <el-input v-model="state.search.keyword" class="keyword-input" placeholder="名称 / key / 分组" clearable @clear="clearSearch"/>
-          <el-button type="primary" icon="el-icon-search" @click="upSearch"/>
-        </div>
+        >
+          批量删除
+        </el-button>
       </div>
     </el-header>
     <el-main class="nopadding">
       <sc-table
         ref="table"
         :apiObj="apiObj"
+        :params="state.tableParams"
         row-key="id"
         @selection-change="selectionChange"
         stripe
@@ -93,6 +106,10 @@ const state = reactive({
   search: {
     keyword: "",
     status: ""
+  },
+  tableParams: {
+    keyword: "",
+    status: ""
   }
 })
 
@@ -123,6 +140,8 @@ const tableDel = async (row) => {
   const res = await systemApi.configForm.delete.post({ids: [row.id]})
   if (res.code === 0) {
     table.value.refresh()
+  } else {
+    await ElMessageBox.alert(res.message, "提示", {type: "error"})
   }
 }
 
@@ -156,9 +175,10 @@ const upSearch = () => {
 
 const clearSearch = () => {
   state.search.keyword = ""
+  state.search.status = ""
   table.value.reload({
     keyword: "",
-    status: state.search.status
+    status: ""
   }, 1)
 }
 
@@ -166,26 +186,3 @@ const handleSaveSuccess = () => {
   table.value.refresh()
 }
 </script>
-
-<style scoped>
-.config-form-search .status-select {
-  width: 120px;
-  min-width: 120px;
-  flex: 0 0 120px;
-}
-
-.config-form-search .keyword-input {
-  width: 260px;
-  min-width: 180px;
-  flex: 1 1 260px;
-}
-
-@media (max-width: 992px) {
-  .config-form-search .status-select,
-  .config-form-search .keyword-input {
-    width: 100%;
-    min-width: 0;
-    flex: 1 1 auto;
-  }
-}
-</style>

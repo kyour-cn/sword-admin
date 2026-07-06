@@ -14,6 +14,21 @@
       label-position="left"
       label-width="100px"
     >
+      <el-form-item v-if="state.mode === 'add'" label="所属应用" prop="app_id">
+        <el-select
+          v-model="state.form.app_id"
+          filterable
+          placeholder="请选择所属应用"
+          style="width: 100%;"
+        >
+          <el-option
+            v-for="item in state.appList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="角色名称" prop="name">
         <el-input v-model="state.form.name" clearable></el-input>
       </el-form-item>
@@ -63,6 +78,7 @@ const state = reactive({
   },
   visible: false,
   isSaving: false,
+  appList: [],
   //表单数据
   form: {
     id: 0,
@@ -71,10 +87,13 @@ const state = reactive({
     is_admin: 0,
     status: 1,
     remark: "",
-    app_id: 0
+    app_id: ""
   },
   //验证规则
   rules: {
+    app_id: [
+      {required: true, message: '请选择所属应用', trigger: 'change'}
+    ],
     sort: [
       {required: true, message: '请输入排序', trigger: 'change'}
     ],
@@ -116,12 +135,25 @@ const submit = () => {
 const open = (mode = 'add') => {
   state.mode = mode
   state.visible = true
+  if (mode === 'add') {
+    state.form.app_id = ""
+    getApp()
+  }
 }
 
 const setData = (data) => {
   Object.assign(state.form, data)
   state.form.is_admin = data.is_admin === 1
   state.form.status = data.status === 1
+}
+
+const getApp = async () => {
+  const res = await systemApi.app.list.get({page: 1, page_size: 500});
+  if (res.code === 0) {
+    state.appList = res.data.rows
+  } else {
+    await ElMessageBox.alert(res.message, "提示", {type: 'error'});
+  }
 }
 
 //暴露给父组件的方法

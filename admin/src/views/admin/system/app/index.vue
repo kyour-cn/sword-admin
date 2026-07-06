@@ -1,16 +1,29 @@
 <template>
-  <el-container>
-    <el-header>
-      <div class="left-panel">
-        <el-button v-auth="'admin.system.app.add'" type="primary" icon="el-icon-plus" @click="add"/>
-        <el-button v-auth="'admin.system.app.delete'" type="danger" plain icon="el-icon-delete"
-                   :disabled="!state.selection.length" @click="batchDel"/>
+  <el-container class="admin-crud-page app-page">
+    <el-header class="admin-crud-table-header app-table-header">
+      <div class="admin-crud-search-row app-search-row">
+        <el-input
+          v-model="state.search.keyword"
+          placeholder="应用名称"
+          clearable
+          class="admin-crud-keyword-filter keyword-filter"
+          @clear="clearSearch"
+        />
+        <el-button type="primary" icon="el-icon-search" @click="upSearch">查询</el-button>
+        <el-button icon="el-icon-refresh" @click="clearSearch">重置</el-button>
       </div>
-      <div class="right-panel">
-        <div class="right-panel-search">
-          <el-input v-model="state.search.keyword" placeholder="应用名称" clearable @clear="clearSearch"/>
-          <el-button type="primary" icon="el-icon-search" @click="upSearch"/>
-        </div>
+      <div class="admin-crud-action-row app-action-row">
+        <el-button v-auth="'admin.system.app.add'" type="primary" icon="el-icon-plus" @click="add">新增应用</el-button>
+        <el-button
+          v-auth="'admin.system.app.delete'"
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          :disabled="!state.selection.length"
+          @click="batchDel"
+        >
+          批量删除
+        </el-button>
       </div>
     </el-header>
     <el-main class="nopadding">
@@ -153,6 +166,7 @@ const upSearch = () => {
 
 // 删除搜索
 const clearSearch = () => {
+  state.search.keyword = null
   table.value.reload({
     keyword: ''
   }, 1)
