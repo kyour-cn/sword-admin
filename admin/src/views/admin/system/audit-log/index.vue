@@ -1,19 +1,19 @@
 <template>
-  <el-container class="audit-log-page">
-    <el-header class="audit-log-table-header">
-      <div class="audit-log-search-row">
+  <el-container class="admin-crud-page audit-log-page">
+    <el-header class="admin-crud-table-header audit-log-table-header">
+      <div class="admin-crud-search-row audit-log-search-row">
         <el-input
           v-model="state.search.keyword"
           placeholder="标题 / 摘要 / 操作人 / 资源 / 路径"
           clearable
-          class="keyword-filter"
+          class="admin-crud-keyword-filter keyword-filter"
           @clear="clearSearch"
         />
         <el-select
           v-model="state.search.module"
           placeholder="模块"
           clearable
-          class="base-filter"
+          class="admin-crud-base-filter base-filter"
         >
           <el-option
             v-for="item in state.options.modules"
@@ -26,7 +26,7 @@
           v-model="state.search.action"
           placeholder="动作"
           clearable
-          class="base-filter"
+          class="admin-crud-base-filter base-filter"
         >
           <el-option
             v-for="item in state.options.actions"
@@ -43,7 +43,7 @@
           range-separator="至"
           start-placeholder="开始时间"
           end-placeholder="结束时间"
-          class="date-filter"
+          class="admin-crud-date-filter audit-log-date-filter date-filter"
         />
         <el-button type="primary" icon="el-icon-search" @click="upSearch">查询</el-button>
         <el-button icon="el-icon-refresh" @click="clearSearch">重置</el-button>
@@ -393,7 +393,6 @@ function formatDate(date) {
 .audit-log-page {
   height: 100%;
   overflow: hidden;
-  background: var(--el-bg-color);
 }
 
 :global(.adminui-main:has(.audit-log-page)) {
@@ -407,39 +406,12 @@ function formatDate(date) {
   overflow: hidden;
 }
 
-.audit-log-table-header {
-  height: auto;
-  display: block;
-  padding: 0;
-  border-bottom: 0;
-}
-
-.audit-log-search-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-}
-
-.audit-log-search-row {
-  flex-wrap: wrap;
-  border-bottom: 1px solid var(--el-border-color-light);
-}
-
-.keyword-filter {
-  width: 240px;
-}
-
-.base-filter {
-  width: 130px;
-}
-
-.date-filter {
+.audit-log-date-filter {
   width: 360px !important;
   flex: 0 0 360px;
 }
 
-.audit-log-search-row :deep(.date-filter.el-date-editor) {
+.admin-crud-search-row :deep(.audit-log-date-filter.el-date-editor) {
   width: 360px !important;
   flex: 0 0 360px;
 }
@@ -602,16 +574,10 @@ function formatDate(date) {
 }
 
 @media (max-width: 768px) {
-  .keyword-filter,
-  .base-filter,
-  .date-filter,
-  .audit-log-search-row :deep(.el-button) {
+  .audit-log-date-filter,
+  .admin-crud-search-row :deep(.audit-log-date-filter.el-date-editor) {
     width: 100% !important;
     flex: 1 1 100%;
-  }
-
-  .audit-log-search-row {
-    align-items: stretch;
   }
 
   .audit-log-stat-dashboard {

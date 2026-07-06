@@ -181,10 +181,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.config-page {
-  height: 100%;
-}
-
 .config-aside {
   border-right: 1px solid var(--el-border-color-light);
 }
