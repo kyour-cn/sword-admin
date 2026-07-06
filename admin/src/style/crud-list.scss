@@ -1,0 +1,68 @@
+/* CRUD列表页通用布局 */
+.admin-crud-page {
+  background: var(--el-bg-color);
+}
+
+.admin-crud-table-header {
+  height: auto;
+  display: block;
+  padding: 0;
+  border-bottom: 0;
+}
+
+.admin-crud-search-row,
+.admin-crud-action-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+}
+
+.admin-crud-search-row {
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--el-border-color-light);
+}
+
+.admin-crud-search-row .el-button + .el-button,
+.admin-crud-action-row .el-button + .el-button {
+  margin-left: 0;
+}
+
+.admin-crud-action-row {
+  min-height: 44px;
+}
+
+.admin-crud-keyword-filter {
+  width: 240px;
+}
+
+.admin-crud-base-filter {
+  width: 150px;
+}
+
+.admin-crud-date-filter,
+.admin-crud-search-row .admin-crud-date-filter.el-date-editor {
+  width: 260px !important;
+  flex: 0 0 260px;
+}
+
+@media (max-width: 768px) {
+  .admin-crud-keyword-filter,
+  .admin-crud-base-filter,
+  .admin-crud-date-filter,
+  .admin-crud-search-row .el-button,
+  .admin-crud-action-row .el-button {
+    width: 100%;
+  }
+
+  .admin-crud-date-filter,
+  .admin-crud-search-row .admin-crud-date-filter.el-date-editor {
+    width: 100% !important;
+    flex: 1 1 100%;
+  }
+
+  .admin-crud-search-row,
+  .admin-crud-action-row {
+    align-items: stretch;
+  }
+}

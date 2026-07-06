@@ -1,12 +1,12 @@
 <template>
-  <el-container class="user-page">
-    <el-header class="user-table-header">
-      <div class="user-search-row">
+  <el-container class="admin-crud-page user-page">
+    <el-header class="admin-crud-table-header user-table-header">
+      <div class="admin-crud-search-row user-search-row">
         <el-input
           v-model="state.search.keyword"
           placeholder="登录账号 / 昵称 / 手机号"
           clearable
-          class="keyword-filter"
+          class="admin-crud-keyword-filter keyword-filter"
           @clear="clearSearch"
         />
         <el-date-picker
@@ -17,13 +17,12 @@
           range-separator="至"
           start-placeholder="注册开始"
           end-placeholder="注册结束"
-          class="date-filter"
-          style="width: 260px; flex: 0 0 260px;"
+          class="admin-crud-date-filter date-filter"
         />
         <el-button type="primary" icon="el-icon-search" @click="upSearch">查询</el-button>
         <el-button icon="el-icon-refresh" @click="clearSearch">重置</el-button>
       </div>
-      <div class="user-action-row">
+      <div class="admin-crud-action-row user-action-row">
         <el-button v-auth="'admin.system.user.add'" type="primary" icon="el-icon-plus" @click="add">新增用户</el-button>
         <el-button
           v-auth="'admin.system.user.delete'"
@@ -247,64 +246,8 @@ const handleSaveSuccess = () => {
 </script>
 
 <style scoped>
-.user-page {
-  background: var(--el-bg-color);
-}
-
-.user-table-header {
-  height: auto;
-  display: block;
-  padding: 0;
-  border-bottom: 0;
-}
-
-.user-search-row,
-.user-action-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-}
-
-.user-search-row {
-  flex-wrap: wrap;
-  border-bottom: 1px solid var(--el-border-color-light);
-}
-
-.user-action-row {
-  min-height: 44px;
-}
-
-.keyword-filter {
-  width: 240px;
-}
-
-.date-filter {
-  width: 260px !important;
-  flex: 0 0 260px;
-}
-
-.user-search-row :deep(.date-filter.el-date-editor) {
-  width: 260px !important;
-  flex: 0 0 260px;
-}
-
 .role-name {
   display: inline-block;
   margin-right: 5px;
-}
-
-@media (max-width: 768px) {
-  .keyword-filter,
-  .date-filter,
-  .user-search-row :deep(.el-button),
-  .user-action-row :deep(.el-button) {
-    width: 100%;
-  }
-
-  .user-search-row,
-  .user-action-row {
-    align-items: stretch;
-  }
 }
 </style>
