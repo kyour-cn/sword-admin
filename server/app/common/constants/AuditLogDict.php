@@ -7,7 +7,7 @@ namespace app\common\constants;
  */
 class AuditLogDict
 {
-    public const array ACTIONS = [
+    public const ACTIONS = [
         'login' => '登录',
         'create' => '新增',
         'update' => '编辑',
@@ -17,7 +17,7 @@ class AuditLogDict
         'upload' => '上传',
     ];
 
-    public const array STANDARD_ACTIONS = [
+    public const STANDARD_ACTIONS = [
         'add' => 'create',
         'create' => 'create',
         'edit' => 'update',
@@ -32,12 +32,12 @@ class AuditLogDict
         'import' => 'import',
     ];
 
-    public const array FALLBACK_MODULES = [
+    public const FALLBACK_MODULES = [
         'auth' => '认证',
         'admin' => '后台',
     ];
 
-    public const array STATUS = [
+    public const STATUS = [
         1 => '成功',
         0 => '失败',
     ];

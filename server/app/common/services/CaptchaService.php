@@ -10,9 +10,9 @@ use support\Cache;
 
 class CaptchaService extends BaseService
 {
-    private const string CACHE_PREFIX = 'altcha_challenge_';
-    private const int EXPIRE_SECONDS = 300;
-    private const int MAX_NUMBER = 100000;
+    private const CACHE_PREFIX = 'altcha_challenge_';
+    private const EXPIRE_SECONDS = 300;
+    private const MAX_NUMBER = 100000;
 
     /**
      * 生成 ALTCHA challenge，前端组件会自动完成 PoW 并在登录时提交 payload。

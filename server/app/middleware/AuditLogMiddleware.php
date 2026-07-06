@@ -15,7 +15,7 @@ use Webman\MiddlewareInterface;
  */
 class AuditLogMiddleware implements MiddlewareInterface
 {
-    private const array SKIP_PREFIXES = [
+    private const SKIP_PREFIXES = [
         '/admin/system/auditLog',
         '/admin/auth/',
         '/admin/site/',

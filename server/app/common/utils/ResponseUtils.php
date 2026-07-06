@@ -6,7 +6,7 @@ use support\Response;
 
 class ResponseUtils
 {
-    private const int JSON_FLAGS = JSON_UNESCAPED_UNICODE
+    private const JSON_FLAGS = JSON_UNESCAPED_UNICODE
         | JSON_PRETTY_PRINT
         | JSON_UNESCAPED_SLASHES
         | JSON_INVALID_UTF8_SUBSTITUTE;

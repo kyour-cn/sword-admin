@@ -12,7 +12,7 @@ use Webman\Http\Request;
  */
 class AuditLog
 {
-    private const array SENSITIVE_KEYS = [
+    private const SENSITIVE_KEYS = [
         'password',
         'new_password',
         'old_password',
@@ -26,7 +26,7 @@ class AuditLog
         'session_token',
     ];
 
-    private const string MASK = '******';
+    private const MASK = '******';
 
     /**
      * 记录成功操作
