@@ -15,8 +15,10 @@ class AuditLog
 {
     private const SENSITIVE_KEYS = [
         'password',
-        'new_password',
+        'user_password',
         'old_password',
+        'new_password',
+        'confirm_new_password',
         'token',
         'access_token',
         'refresh_token',

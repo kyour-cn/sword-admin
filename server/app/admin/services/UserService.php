@@ -139,11 +139,11 @@ class UserService extends BaseService
      */
     public function updateCurrentPassword(array $data): void
     {
-        $userPassword = (string)($data['user_password'] ?? '');
+        $oldPassword = (string)($data['old_password'] ?? $data['user_password'] ?? '');
         $newPassword = (string)($data['new_password'] ?? '');
         $confirmNewPassword = (string)($data['confirm_new_password'] ?? '');
 
-        if ($userPassword === '') {
+        if ($oldPassword === '') {
             throw new BusinessException('请输入当前密码');
         }
         if ($newPassword === '') {
@@ -157,8 +157,11 @@ class UserService extends BaseService
         }
 
         $user = $this->getCurrentUserModel();
-        if ($user->password !== md5($userPassword)) {
+        if (!hash_equals($user->password, md5($oldPassword))) {
             throw new BusinessException('当前密码不正确');
+        }
+        if (hash_equals($user->password, md5($newPassword))) {
+            throw new BusinessException('新密码不能与当前密码相同');
         }
 
         $user->password = md5($newPassword);

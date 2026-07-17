@@ -27,6 +27,10 @@ class User extends BaseController
 
     public function password(Request $req): Response
     {
+        if ($req->method() !== 'POST') {
+            return $this->fail(405, '请求方法不支持');
+        }
+
         $serv = new UserService();
         $serv->updateCurrentPassword($req->post());
 

@@ -221,14 +221,11 @@ h2 {
 }
 
 .api-list {
-  border-left: 1px solid #eee;
+  border-left: 1px solid var(--el-border-color-lighter);
 }
 
 [data-theme="dark"] h2 {
   color: #fff;
 }
 
-[data-theme="dark"] .api-list {
-  border-color: #434343;
-}
 </style>

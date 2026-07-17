@@ -1,7 +1,5 @@
 <template>
   <el-form ref="formRef" label-width="120px" label-position="left" style="padding:0 20px;">
-    <el-alert title="以下配置可实时预览，开发者可在 config/category.js 中配置默认值，非常不建议在生产环境下开放布局设置" type="error" :closable="false"></el-alert>
-    <el-divider></el-divider>
     <el-form-item :label="$t('user.nightmode')">
       <el-switch v-model="dark"></el-switch>
     </el-form-item>
