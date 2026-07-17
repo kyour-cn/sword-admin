@@ -49,6 +49,8 @@ class AuditLogService extends BaseService
                 'action',
                 'module',
                 'module_title',
+                'resource_type',
+                'resource_id',
                 'title',
                 'description',
                 'method',

@@ -53,8 +53,36 @@
       </el-table-column>
       <el-table-column label="IP" prop="ip" width="140" show-overflow-tooltip/>
       <el-table-column label="操作时间" prop="created_at" width="170"/>
+      <el-table-column label="操作" fixed="right" align="right" width="80">
+        <template #default="scope">
+          <el-button text plain type="primary" size="small" @click="showInfo(scope.row)">查看</el-button>
+        </template>
+      </el-table-column>
     </sc-table>
   </el-card>
+
+  <el-drawer v-model="state.infoDrawer" title="操作日志详情" :size="560" destroy-on-close>
+    <el-descriptions :column="1" border size="small">
+      <el-descriptions-item label="操作标题">{{ state.currentLog.title || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="操作摘要">{{ state.currentLog.description || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="模块 / 动作">
+        {{ state.currentLog.module_title || state.currentLog.module || '-' }} / {{ actionLabel(state.currentLog.action) }}
+      </el-descriptions-item>
+      <el-descriptions-item label="资源">
+        {{ state.currentLog.resource_type || '-' }} / {{ state.currentLog.resource_id || '-' }}
+      </el-descriptions-item>
+      <el-descriptions-item label="请求路径">
+        {{ state.currentLog.method || '-' }} {{ state.currentLog.path || '-' }}
+      </el-descriptions-item>
+      <el-descriptions-item label="请求 IP">{{ state.currentLog.ip || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="操作结果">
+        <el-tag :type="state.currentLog.status ? 'success' : 'danger'" size="small">
+          {{ state.currentLog.status ? '成功' : '失败' }}
+        </el-tag>
+      </el-descriptions-item>
+      <el-descriptions-item label="操作时间">{{ state.currentLog.created_at || '-' }}</el-descriptions-item>
+    </el-descriptions>
+  </el-drawer>
 </template>
 
 <script setup>
@@ -76,6 +104,8 @@ const actionOptions = [
 ]
 
 const state = reactive({
+  infoDrawer: false,
+  currentLog: {},
   search: {
     keyword: null,
     action: null,
@@ -92,6 +122,11 @@ const state = reactive({
 const actionLabel = (value) => {
   const item = actionOptions.find(item => item.value === value)
   return item?.label || value || '-'
+}
+
+const showInfo = (row) => {
+  state.currentLog = row || {}
+  state.infoDrawer = true
 }
 
 const getSearchParams = () => {
