@@ -9,7 +9,8 @@ namespace app\model;
  * @property int $actor_id 操作人ID 0为匿名或系统
  * @property string $actor_name 操作人名称
  * @property string $action 操作动作
- * @property string $module 业务模块
+ * @property string $module 业务模块标识
+ * @property string $module_title 业务模块名称快照
  * @property string $resource_type 资源类型
  * @property string $resource_id 资源ID
  * @property string $title 审计标题

@@ -6,7 +6,7 @@
         {{ state.data.actor_name || '-' }}（{{ state.data.actor_id || 0 }}）
       </el-descriptions-item>
       <el-descriptions-item label="模块 / 动作">
-        {{ moduleLabel(state.data.module) }} / {{ actionLabel(state.data.action) }}
+        {{ state.data.module_title || state.data.module || '-' }} / {{ actionLabel(state.data.action) }}
       </el-descriptions-item>
       <el-descriptions-item label="资源">
         {{ state.data.resource_type || '-' }} / {{ state.data.resource_id || '-' }}
@@ -59,8 +59,6 @@ const contextText = computed(() => {
 })
 
 const actionLabel = (value) => optionLabel('actions', value)
-
-const moduleLabel = (value) => optionLabel('modules', value)
 
 const optionLabel = (group, value) => {
   const item = props.options[group]?.find(item => item.value === value)

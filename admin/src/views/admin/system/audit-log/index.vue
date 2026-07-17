@@ -130,7 +130,7 @@
         </el-table-column>
         <el-table-column label="模块" prop="module" width="110">
           <template #default="scope">
-            {{ moduleLabel(scope.row.module) }}
+            {{ scope.row.module_title || scope.row.module || '-' }}
           </template>
         </el-table-column>
         <el-table-column label="标题" prop="title" min-width="180" show-overflow-tooltip/>
@@ -330,8 +330,6 @@ const getSearchParams = () => {
 }
 
 const actionLabel = (value) => optionLabel('actions', value)
-
-const moduleLabel = (value) => optionLabel('modules', value)
 
 const optionLabel = (group, value) => {
   const item = state.options[group]?.find(item => item.value === value)

@@ -53,9 +53,10 @@ class AuditLogMiddleware implements MiddlewareInterface
     {
         $actionName = $this->actionName($request);
         $action = AuditLogDict::standardAction($actionName);
-        $module = $this->moduleName($request);
+        $resourceType = $this->moduleName($request);
         [$ruleMenu, $moduleMenu] = $this->menusFromApi($request);
-        $moduleLabel = $this->moduleLabel($moduleMenu, $module);
+        $module = $this->moduleKey($moduleMenu, $resourceType);
+        $moduleLabel = $this->moduleLabel($moduleMenu, $resourceType);
         $actionLabel = AuditLogDict::actionLabel((string)$action);
         $title = $this->operationTitle($ruleMenu, $actionLabel, $moduleLabel);
         $isSuccess = $this->isSuccess($response);
@@ -66,7 +67,8 @@ class AuditLogMiddleware implements MiddlewareInterface
             'actor_name' => $claims['name'] ?? '',
             'action' => $action,
             'module' => $module,
-            'resource_type' => $module,
+            'module_title' => $moduleLabel,
+            'resource_type' => $resourceType,
             'resource_id' => $this->resourceId($request),
             'title' => $title,
             'description' => $title . ($isSuccess ? '成功' : '失败'),
@@ -101,6 +103,14 @@ class AuditLogMiddleware implements MiddlewareInterface
     private function moduleLabel(?Menu $menu, string $module): string
     {
         return $menu?->title ?? AuditLogDict::FALLBACK_MODULES[$module] ?? $module;
+    }
+
+    /**
+     * 使用模块菜单主键生成稳定标识，避免菜单标题和组件地址变更影响历史审计记录。
+     */
+    private function moduleKey(?Menu $menu, string $fallback): string
+    {
+        return $menu ? "menu:{$menu->id}" : $fallback;
     }
 
     /**

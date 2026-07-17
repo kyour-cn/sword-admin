@@ -2,6 +2,7 @@
 
 namespace app\common\utils;
 
+use app\common\constants\AuditLogDict;
 use app\model\AuditLog as AuditLogModel;
 use support\Log;
 use Throwable;
@@ -131,12 +132,15 @@ class AuditLog
 
     private static function normalize(array $data): array
     {
+        $module = (string)($data['module'] ?? '');
+
         return [
             'app_id' => (int)($data['app_id'] ?? 0),
             'actor_id' => (int)($data['actor_id'] ?? 0),
             'actor_name' => self::limit((string)($data['actor_name'] ?? ''), 64),
             'action' => self::limit((string)($data['action'] ?? ''), 64),
-            'module' => self::limit((string)($data['module'] ?? ''), 64),
+            'module' => self::limit($module, 64),
+            'module_title' => self::limit((string)($data['module_title'] ?? AuditLogDict::FALLBACK_MODULES[$module] ?? $module), 64),
             'resource_type' => self::limit((string)($data['resource_type'] ?? ''), 64),
             'resource_id' => self::limit((string)($data['resource_id'] ?? ''), 64),
             'title' => self::limit((string)($data['title'] ?? ''), 255),
