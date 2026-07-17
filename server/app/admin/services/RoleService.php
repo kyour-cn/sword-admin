@@ -4,6 +4,8 @@ namespace app\admin\services;
 
 use app\common\services\BaseService;
 use app\model\Role;
+use app\model\UserRole;
+use support\Db;
 
 class RoleService extends BaseService
 {
@@ -54,6 +56,10 @@ class RoleService extends BaseService
 
     public function delete(array $ids): void
     {
-        Role::whereIn('id', $ids)->delete();
+        Db::transaction(function () use ($ids) {
+            // 角色使用软删除，需同步删除用户角色关联，数据库外键级联不会生效。
+            UserRole::whereIn('role_id', $ids)->delete();
+            Role::whereIn('id', $ids)->delete();
+        });
     }
 }
