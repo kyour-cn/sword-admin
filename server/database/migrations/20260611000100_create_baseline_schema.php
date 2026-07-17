@@ -58,7 +58,7 @@ final class CreateBaselineSchema extends AbstractMigration
         $this->table('file', $this->tableOptions('文件'))
             ->addColumn('id', 'integer', $this->idOptions())
             ->addColumn('file_name', 'string', ['limit' => 255, 'null' => false, 'comment' => '文件名'])
-            ->addColumn('file_type', 'string', ['limit' => 50, 'null' => false, 'comment' => '文件类型（MIME类型，如 image/png）'])
+            ->addColumn('file_type', 'string', ['limit' => 255, 'null' => false, 'comment' => '文件类型（MIME类型，如 image/png）'])
             ->addColumn('file_ext', 'string', ['limit' => 20, 'null' => false, 'comment' => '文件后缀（如 .jpg/.pdf）文件后缀'])
             ->addColumn('file_size', 'biginteger', ['signed' => false, 'null' => false, 'comment' => '文件大小（字节）'])
             ->addColumn('url', 'string', ['limit' => 255, 'null' => false, 'comment' => '链接地址'])
