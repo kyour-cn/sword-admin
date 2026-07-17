@@ -25,5 +25,12 @@ export default {
     list: async function (param = {}) {
       return await http.get(this.url+'taskList', param);
     }
+  },
+  operationLog: {
+    url: `${config.API_URL}/admin/user/operationLog`,
+    name: "个人操作日志",
+    get: async function (params = {}) {
+      return await http.get(this.url, params);
+    }
   }
 }

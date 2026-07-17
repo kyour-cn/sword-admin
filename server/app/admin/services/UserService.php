@@ -94,6 +94,18 @@ class UserService extends BaseService
     }
 
     /**
+     * 获取当前登录用户的操作日志。
+     * @param array $params
+     * @return array
+     */
+    public function getCurrentAuditLogList(array $params): array
+    {
+        $user = $this->getCurrentUserModel();
+
+        return (new AuditLogService())->getPersonalList((int)$user->id, $params);
+    }
+
+    /**
      * 获取当前登录用户信息
      * @return array
      */

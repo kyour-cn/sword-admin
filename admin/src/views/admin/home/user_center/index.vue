@@ -76,11 +76,11 @@
                 title: "密码",
                 component: "password"
               },
-              {
-                icon: "el-icon-bell",
-                title: "*通知设置",
-                component: "pushSettings"
-              }
+              // {
+              //   icon: "el-icon-bell",
+              //   title: "*通知设置",
+              //   component: "pushSettings"
+              // }
             ]
           },
           {
@@ -93,7 +93,7 @@
               // },
               {
                 icon: "el-icon-clock",
-                title: "*操作日志",
+                title: "操作日志",
                 component: "logs"
               }
             ]

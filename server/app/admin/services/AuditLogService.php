@@ -31,6 +31,44 @@ class AuditLogService extends BaseService
     }
 
     /**
+     * 获取指定用户的个人操作日志。
+     *
+     * 个人中心仅返回展示所需字段，避免将请求上下文等审计详情暴露给前端。
+     * @param int $actorId 操作人ID
+     * @param array $params 筛选参数
+     * @return array
+     */
+    public function getPersonalList(int $actorId, array $params): array
+    {
+        // 操作人由服务端传入，不能使用请求参数，避免越权查询其他用户的日志。
+        $params['actor_id'] = $actorId;
+
+        $row = $this->buildQuery($params)
+            ->select([
+                'id',
+                'action',
+                'module',
+                'module_title',
+                'title',
+                'description',
+                'method',
+                'path',
+                'ip',
+                'status',
+                'created_at',
+            ])
+            ->orderByDesc('id')
+            ->paginate(perPage: $params['page_size'] ?? 10, page: $params['page'] ?? 1);
+
+        return [
+            'rows' => $row->items(),
+            'total' => $row->total(),
+            'page' => $row->currentPage(),
+            'page_size' => $row->perPage()
+        ];
+    }
+
+    /**
      * 获取操作审计统计
      * @param array $params
      * @return array
