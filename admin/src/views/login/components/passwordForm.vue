@@ -422,17 +422,16 @@ const getMenu = async (appId) => {
     padding: 0 16px;
     border-radius: 12px;
     background: var(--el-bg-color);
-    box-shadow: 0 0 0 1px var(--el-border-color-light) inset, 0 10px 24px rgba(45, 70, 130, 0.04);
-    transition: box-shadow 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 0 0 1px var(--el-border-color-light) inset;
+    transition: box-shadow 0.2s ease, background-color 0.2s ease;
   }
 
   :deep(.el-input__wrapper:hover) {
-    box-shadow: 0 0 0 1px var(--el-color-primary-light-5) inset, 0 12px 26px rgba(45, 70, 130, 0.08);
+    box-shadow: 0 0 0 1px var(--el-color-primary-light-5) inset;
   }
 
   :deep(.el-input__wrapper.is-focus) {
-    transform: translateY(-1px);
-    box-shadow: 0 0 0 1px var(--el-color-primary) inset, 0 14px 30px rgba(64, 158, 255, 0.14);
+    box-shadow: 0 0 0 1px var(--el-color-primary) inset;
   }
 
   :deep(.el-input__prefix) {
@@ -521,7 +520,7 @@ const getMenu = async (appId) => {
     --altcha-color-base: var(--el-bg-color);
     --altcha-color-text: var(--el-text-color-primary);
     --altcha-color-border-hover: var(--el-color-primary-light-5);
-    filter: drop-shadow(0 10px 24px rgba(45, 70, 130, 0.04));
+    filter: none;
   }
 }
 
@@ -534,19 +533,16 @@ const getMenu = async (appId) => {
   font-weight: 600;
   letter-spacing: 0;
   background: linear-gradient(135deg, var(--el-color-primary), #5b6cff);
-  box-shadow: 0 14px 28px rgba(64, 99, 255, 0.26);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: none;
+  transition: opacity 0.2s ease;
 
   &:hover,
   &:focus {
     opacity: 0.94;
-    transform: translateY(-1px);
-    box-shadow: 0 18px 34px rgba(64, 99, 255, 0.32);
   }
 
   &:active {
-    transform: translateY(0);
-    box-shadow: 0 10px 20px rgba(64, 99, 255, 0.22);
+    opacity: 0.88;
   }
 }
 
@@ -564,14 +560,14 @@ const getMenu = async (appId) => {
   .login-password-form {
     :deep(.el-input__wrapper) {
       background: var(--el-bg-color-overlay);
-      box-shadow: 0 0 0 1px var(--el-border-color-light) inset, 0 10px 24px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 0 0 1px var(--el-border-color-light) inset;
     }
   }
 
   .login-altcha {
     altcha-widget {
       --altcha-color-base: var(--el-bg-color-overlay);
-      filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.18));
+      filter: none;
     }
   }
 }

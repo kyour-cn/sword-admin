@@ -35,7 +35,7 @@
         <el-tab-pane :label="$t('login.accountLogin')" lazy>
           <password-form></password-form>
         </el-tab-pane>
-        <el-tab-pane :label="$t('login.mobileLogin')" lazy>
+        <el-tab-pane v-if="$CONFIG.MOBILE_LOGIN" :label="$t('login.mobileLogin')" lazy>
           <phone-form></phone-form>
         </el-tab-pane>
       </el-tabs>

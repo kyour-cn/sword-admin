@@ -12,6 +12,9 @@ export function applySiteConfig(data = {}) {
   if (Object.prototype.hasOwnProperty.call(data, "admin_captcha_switch")) {
     sysConfig.LOGIN_VERIFY = Boolean(data.admin_captcha_switch)
   }
+  if (Object.prototype.hasOwnProperty.call(data, "mobile_login_switch")) {
+    sysConfig.MOBILE_LOGIN = Boolean(data.mobile_login_switch)
+  }
   if (Object.prototype.hasOwnProperty.call(data, "account_register_switch")) {
     sysConfig.ACCOUNT_REGISTER = Boolean(data.account_register_switch)
   }

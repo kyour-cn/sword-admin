@@ -27,6 +27,9 @@ const DEFAULT_CONFIG = {
   //是否开启行为验证登录
   LOGIN_VERIFY: true,
 
+  //是否开放手机号验证码登录
+  MOBILE_LOGIN: false,
+
   //是否开放账号注册
   ACCOUNT_REGISTER: true,
 
