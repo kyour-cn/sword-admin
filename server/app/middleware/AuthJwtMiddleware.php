@@ -21,6 +21,7 @@ class AuthJwtMiddleware implements MiddlewareInterface
      */
     protected array $whitelist = [
         '/admin/auth/login',
+        '/admin/auth/register',
         '/admin/auth/captcha',
         '/admin/site/config',
     ];

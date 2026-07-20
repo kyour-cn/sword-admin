@@ -239,6 +239,10 @@ const confirmEvent = async (event) => {
 
     // 获取应用
     if (state.appList.length === 0) {
+      // 无角色账号不保留无效登录态，避免后续路由误判为已登录。
+      tool.cookie.remove("TOKEN")
+      tool.data.remove("USER_INFO")
+      resetAltcha()
       ElMessage.error("该账号暂无应用权限！")
       return false
     } else if (state.appList.length === 1) {

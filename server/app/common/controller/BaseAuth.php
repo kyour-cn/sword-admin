@@ -100,6 +100,37 @@ class BaseAuth extends BaseController
     }
 
     /**
+     * 注册账号
+     * @param Request $request
+     * @return Response
+     * @api
+     */
+    public function register(Request $request): Response
+    {
+        if ($request->method() !== 'POST') {
+            return $this->fail(405, '请求方法不支持');
+        }
+
+        $siteConfig = SiteService::instance()->getConfig();
+        if (!filter_var($siteConfig['account_register_switch'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+            return $this->fail(403, '账号注册功能已关闭');
+        }
+
+        try {
+            $user = (new AuthService())->register($request->post());
+        } catch (BusinessException $e) {
+            return $this->fail(1, $e->getMessage());
+        }
+
+        return $this->success('注册成功', [
+            'id' => $user->id,
+            'username' => $user->username,
+            'nickname' => $user->nickname,
+            'mobile' => $user->mobile,
+        ]);
+    }
+
+    /**
      * 获取菜单
      * @param Request $request
      * @return Response

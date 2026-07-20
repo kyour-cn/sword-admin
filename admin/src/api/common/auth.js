@@ -16,6 +16,13 @@ export default {
       return await http.post(this.url, data);
     }
   },
+  register: {
+    url: `${config.API_URL}/admin/auth/register`,
+    name: "注册账号",
+    post: async function (data = {}) {
+      return await http.post(this.url, data);
+    }
+  },
   menu: {
     url: `${config.API_URL}/admin/auth/menu`,
     name: "获取菜单",

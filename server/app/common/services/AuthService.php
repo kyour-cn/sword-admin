@@ -7,10 +7,67 @@ use app\common\exception\BusinessException;
 use app\model\Menu;
 use app\model\MenuApi;
 use app\model\User;
+use Illuminate\Database\QueryException;
 use support\Cache;
 
 class AuthService extends BaseService
 {
+
+    /**
+     * 注册新账号。注册阶段只创建用户数据，不写入用户角色关联。
+     * @param array $data
+     * @return User
+     * @throws BusinessException
+     */
+    public function register(array $data): User
+    {
+        $username = trim((string)($data['username'] ?? ''));
+        $password = (string)($data['password'] ?? '');
+        $confirmPassword = (string)($data['confirm_password'] ?? '');
+        $nickname = trim((string)($data['nickname'] ?? ''));
+        $mobile = trim((string)($data['mobile'] ?? ''));
+
+        if (!preg_match('/^[A-Za-z0-9][A-Za-z0-9_.-]{2,31}$/', $username)) {
+            throw new BusinessException('账号须为3-32位字母、数字、下划线、点或短横线');
+        }
+        if (strlen($password) < 8 || strlen($password) > 64 || !preg_match('/[A-Za-z]/', $password) || !preg_match('/\d/', $password)) {
+            throw new BusinessException('请输入包含英文、数字的8-64位密码');
+        }
+        if ($password !== $confirmPassword) {
+            throw new BusinessException('两次输入密码不一致');
+        }
+        if (!preg_match('/^[^\r\n]{1,32}$/u', $nickname)) {
+            throw new BusinessException('请输入1-32个字符的昵称');
+        }
+        if ($mobile !== '' && !preg_match('/^1\d{10}$/', $mobile)) {
+            throw new BusinessException('请输入合法的手机号');
+        }
+        if (User::withTrashed()->where('username', $username)->exists()) {
+            throw new BusinessException('登录账号已存在');
+        }
+
+        $user = new User();
+        $user->fill([
+            'username' => $username,
+            'password' => md5($password),
+            'nickname' => $nickname,
+            'mobile' => $mobile,
+            'avatar' => '',
+            'status' => 1,
+        ]);
+
+        try {
+            $user->save();
+        } catch (QueryException $e) {
+            // 并发注册相同账号时，统一转换为明确的业务提示。
+            if (User::withTrashed()->where('username', $username)->exists()) {
+                throw new BusinessException('登录账号已存在');
+            }
+            throw $e;
+        }
+
+        return $user;
+    }
 
     /**
      * @param string $username
