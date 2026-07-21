@@ -48,9 +48,11 @@
       >
         <el-table-column type="selection" width="50"/>
         <el-table-column label="ID" prop="id" width="90" sortable/>
-        <el-table-column label="头像" prop="avatar" width="78">
+        <el-table-column label="头像" prop="avatar" width="88" align="center" header-align="center">
           <template #default="scope">
-            <el-avatar :src="tool.resUrl(scope.row.avatar)" size="small"/>
+            <div class="avatar-cell">
+              <el-avatar :src="tool.resUrl(scope.row.avatar)" :size="30"/>
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="登录账号" prop="username" min-width="150" show-overflow-tooltip/>
@@ -249,5 +251,11 @@ const handleSaveSuccess = () => {
 .role-name {
   display: inline-block;
   margin-right: 5px;
+}
+
+.avatar-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

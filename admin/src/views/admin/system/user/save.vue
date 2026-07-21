@@ -9,6 +9,9 @@
       <el-form-item label="登录账号" prop="username">
         <el-input v-model="state.form.username" placeholder="用于登录系统" clearable></el-input>
       </el-form-item>
+      <el-form-item label="手机号" prop="mobile">
+        <el-input v-model="state.form.mobile" placeholder="请输入手机号" clearable></el-input>
+      </el-form-item>
       <el-form-item label="昵称" prop="nickname">
         <el-input v-model="state.form.nickname" placeholder="请输入完整的真实姓名" clearable></el-input>
       </el-form-item>
@@ -78,6 +81,7 @@ const state = reactive({
   form: {
     id: "",
     username: "",
+    mobile: "",
     nickname: "",
     avatar: "",
     status: true,
@@ -93,17 +97,17 @@ const state = reactive({
     nickname: [
       {required: true, message: '请输入昵称'}
     ],
-    // mobile: [
-    //   {
-    //     validator: (_, value, callback) => {
-    //       if (value === '') return callback()
-    //       const regMobile = /^1\d{10}$/
-    //       if (regMobile.test(value)) return callback()
-    //       callback(new Error('请输入合法的手机号'))
-    //     },
-    //     trigger: 'blur'
-    //   }
-    // ],
+    mobile: [
+      {
+        validator: (_, value, callback) => {
+          if (value === '') return callback()
+          const regMobile = /^1\d{10}$/
+          if (regMobile.test(value)) return callback()
+          callback(new Error('请输入合法的手机号'))
+        },
+        trigger: 'blur'
+      }
+    ],
     password: [
       {required: true, message: '请输入登录密码'},
     ],
@@ -167,6 +171,7 @@ const setData = (data) => {
     nickname: data.nickname,
     avatar: data.avatar,
     username: data.username,
+    mobile: data.mobile,
     status: data.status === 1,
   })
 }
