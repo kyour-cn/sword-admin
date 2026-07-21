@@ -29,7 +29,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.4",
     "sass": "^1.89.2",
-    "vite": "^7.1.12"
+    "vite": "^8.0.5"
   },
   "browserslist": [
     "> 1%",

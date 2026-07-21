@@ -16,11 +16,7 @@ class BusinessException extends \support\exception\BusinessException
     /**
      * @var mixed
      */
-    protected $data = null {
-        get {
-            return $this->data;
-        }
-    }
+    protected $data = null;
 
     /**
      * @var bool
