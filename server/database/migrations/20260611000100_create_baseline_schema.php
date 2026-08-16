@@ -15,6 +15,7 @@ final class CreateBaselineSchema extends AbstractMigration
         $this->createMenuTable();
         $this->createMenuApiTable();
         $this->createRoleTable();
+        $this->createRolePermissionTable();
         $this->createTaskTable();
         $this->createUserTable();
         $this->createUserRoleTable();
@@ -160,8 +161,6 @@ final class CreateBaselineSchema extends AbstractMigration
             ->addColumn('id', 'integer', $this->idOptions())
             ->addColumn('app_id', 'integer', ['signed' => false, 'null' => false, 'comment' => '应用ID'])
             ->addColumn('name', 'string', ['limit' => 12, 'default' => '', 'null' => false, 'comment' => '角色名称'])
-            ->addColumn('rules', 'string', ['limit' => 1000, 'default' => '', 'null' => false, 'comment' => '权限ID ,分割'])
-            ->addColumn('rules_checked', 'string', ['limit' => 1000, 'default' => '', 'null' => false, 'comment' => '权限树选中的字节点ID'])
             ->addColumn('remark', 'string', ['limit' => 255, 'default' => '', 'null' => false, 'comment' => '简介'])
             ->addColumn('status', 'tinyinteger', ['signed' => false, 'default' => 0, 'null' => false, 'comment' => '状态'])
             ->addColumn('sort', 'integer', ['signed' => false, 'default' => 0, 'null' => false, 'comment' => '排序'])
@@ -176,6 +175,28 @@ final class CreateBaselineSchema extends AbstractMigration
             ])
             ->addIndex(['app_id', 'sort'], ['name' => 'role_app_sort_index'])
             ->addIndex(['status'], ['name' => 'role_status_index'])
+            ->create();
+    }
+
+    private function createRolePermissionTable(): void
+    {
+        $this->table('role_permission', $this->tableOptions('角色权限关联'))
+            ->addColumn('id', 'integer', $this->idOptions())
+            ->addColumn('role_id', 'integer', ['signed' => false, 'null' => false, 'comment' => '角色ID'])
+            ->addColumn('menu_id', 'integer', ['signed' => false, 'null' => false, 'comment' => '菜单或操作权限ID'])
+            ->addColumn('created_at', 'datetime', ['null' => false, 'comment' => '创建时间'])
+            ->addForeignKey('role_id', 'role', 'id', [
+                'constraint' => 'role_permission_role_id_fk',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ])
+            ->addForeignKey('menu_id', 'menu', 'id', [
+                'constraint' => 'role_permission_menu_id_fk',
+                'delete' => 'CASCADE',
+                'update' => 'CASCADE',
+            ])
+            ->addIndex(['role_id', 'menu_id'], ['unique' => true, 'name' => 'role_permission_role_menu_unique'])
+            ->addIndex(['menu_id'], ['name' => 'role_permission_menu_id_index'])
             ->create();
     }
 
@@ -315,6 +336,7 @@ final class CreateBaselineSchema extends AbstractMigration
             'config',
             'config_form',
             'user_role',
+            'role_permission',
             'user',
             'task',
             'role',

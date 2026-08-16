@@ -33,6 +33,16 @@ class Role extends BaseController
         return $this->success();
     }
 
+    public function permission(Request $req): Response
+    {
+        $serv = new RoleService();
+        $serv->updatePermissions(
+            (int)$req->post('id'),
+            (array)$req->post('permission_ids', [])
+        );
+        return $this->success();
+    }
+
     public function delete(Request $req): Response
     {
         $serv = new RoleService();

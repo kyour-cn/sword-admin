@@ -2,6 +2,7 @@
 
 namespace app\model;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -10,8 +11,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $id 
  * @property int $app_id 应用ID
  * @property string $name 角色名称
- * @property string $rules 权限ID ,分割
- * @property string $rules_checked 权限树选中的字节点ID
  * @property string $remark 简介
  * @property int $status 状态
  * @property int $sort 排序
@@ -46,5 +45,13 @@ class Role extends BaseModel
     public function app(): HasOne
     {
         return $this->hasOne(App::class, 'id', 'app_id');
+    }
+
+    /**
+     * 角色拥有的菜单及操作权限关系。
+     */
+    public function permissions(): HasMany
+    {
+        return $this->hasMany(RolePermission::class, 'role_id');
     }
 }

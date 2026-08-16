@@ -22,6 +22,7 @@ final class FillBaselineData extends AbstractMigration
     public function down(): void
     {
         $this->deleteWhere('user_role', $this->eq('user_id', self::ADMIN_USER_ID) . ' AND ' . $this->eq('role_id', self::ADMIN_ROLE_ID));
+        $this->deleteWhere('role_permission', $this->eq('role_id', self::ADMIN_ROLE_ID));
         $this->deleteIn('user', 'id', [self::ADMIN_USER_ID]);
         $this->deleteIn('role', 'id', [self::ADMIN_ROLE_ID]);
         $this->deleteIn('menu_api', 'tag', $this->menuApiTags());
@@ -142,7 +143,7 @@ final class FillBaselineData extends AbstractMigration
             $this->rule(22, 'role', 'role_add', '新增角色', 2, 'admin.system.role.add', ['/admin/system/role/add']),
             $this->rule(23, 'role', 'role_edit', '编辑角色', 3, 'admin.system.role.edit', ['/admin/system/role/edit']),
             $this->rule(24, 'role', 'role_delete', '删除角色', 4, 'admin.system.role.delete', ['/admin/system/role/delete']),
-            $this->rule(25, 'role', 'role_permission', '分配权限', 5, 'admin.system.role.permission', ['/admin/system/role/edit?type=permission']),
+            $this->rule(25, 'role', 'role_permission', '分配权限', 5, 'admin.system.role.permission', ['/admin/system/role/permission']),
 
             $this->rule(26, 'user', 'user_list', '查询用户', 1, 'admin.system.user.list', ['/admin/system/user/list']),
             $this->rule(27, 'user', 'user_add', '新增用户', 2, 'admin.system.user.add', ['/admin/system/user/add']),
@@ -180,8 +181,6 @@ final class FillBaselineData extends AbstractMigration
                 'id' => self::ADMIN_ROLE_ID,
                 'app_id' => self::APP_ID,
                 'name' => '管理员',
-                'rules' => '',
-                'rules_checked' => '',
                 'remark' => '',
                 'status' => 1,
                 'sort' => 0,

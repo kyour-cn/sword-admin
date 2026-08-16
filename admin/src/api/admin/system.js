@@ -78,7 +78,7 @@ export default {
       }
     },
     editPermission: {
-      url: `${config.API_URL}/admin/system/role/edit?type=permission`,
+      url: `${config.API_URL}/admin/system/role/permission`,
       name: "修改角色权限",
       post: async function (data = {}) {
         return await http.post(this.url, data);

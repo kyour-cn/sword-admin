@@ -38,7 +38,7 @@ const state = reactive({
   saveLoading: false,
   row: {
     id: 0,
-    rules_checked: ''
+    permission_ids: []
   },
   rule: {
     list: [],
@@ -61,24 +61,24 @@ const open = (row) => {
 
 const submit = async () => {
   state.saveLoading = true;
-  //选中的和半选的合并后传值接口
-  const checkedKeys = rule.value.getCheckedKeys().concat(rule.value.getHalfCheckedKeys());
-  const checked = rule.value.getCheckedKeys().join(',')
-  let checkIds = checkedKeys.join(',');
-  const data = {
-    id: state.row.id,
-    rules: checkIds,
-    rules_checked: checked
-  }
-  const res = await systemApi.role.editPermission.post(data);
-  if (res.code === 0) {
+  try {
+    // 选中的和半选的节点合并后提交。
+    const checkedKeys = rule.value.getCheckedKeys().concat(rule.value.getHalfCheckedKeys());
+    const data = {
+      id: state.row.id,
+      permission_ids: checkedKeys
+    }
+    const res = await systemApi.role.editPermission.post(data);
+    if (res.code === 0) {
+      state.visible = false;
+      ElMessage.success("操作成功");
+      emit('success')
+      emit('getNewData')
+    } else {
+      await ElMessageBox.alert(res.message, "提示", {type: 'error'});
+    }
+  } finally {
     state.saveLoading = false;
-    state.visible = false;
-    ElMessage.success("操作成功");
-    emit('success')
-    emit('getNewData')
-  } else {
-    await ElMessageBox.alert(res.message, "提示", {type: 'error'});
   }
 }
 
@@ -90,7 +90,7 @@ const getRule = async () => {
   });
   if (res.code === 0) {
     state.rule.list = res.data
-    state.checkIds = state.row.rules.split(',')
+    state.checkIds = state.row.permission_ids || []
     //实时设置选中的tree
     await nextTick(() => {
       state.checkIds.forEach(item => {

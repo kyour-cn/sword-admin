@@ -6,7 +6,11 @@ use app\admin\services\MenuService;
 use app\common\exception\BusinessException;
 use app\model\Menu;
 use app\model\MenuApi;
+use app\model\Role;
+use app\model\RolePermission;
 use app\model\User;
+use app\model\UserRole;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
 use support\Cache;
 
@@ -111,22 +115,8 @@ class AuthService extends BaseService
             throw new BusinessException('用户角色不存在');
         }
 
-        $isAdmin = false;
-
-        // 筛选指定appid的菜单列表
-        $mIds = [];
-        foreach ($userInfo->userRole as $v) {
-            if ($v->role->app_id != $appID) {
-                continue;
-            }
-            if ($v->role->is_admin == 1) {
-                $isAdmin = true;
-                break;
-            }
-            foreach (explode(',', $v->role->rules ?? '') as $ruleId) {
-                $mIds[] = (int) trim($ruleId);
-            }
-        }
+        $roles = $this->getActiveRoles($userInfo, $appID);
+        $isAdmin = $roles->contains(static fn (Role $role): bool => $role->is_admin == 1);
 
         $query = Menu::with('menuApi')
             ->where('type', 'menu')
@@ -134,10 +124,23 @@ class AuthService extends BaseService
 
         // 非管理员，根据角色权限筛选菜单
         if (!$isAdmin) {
-            if (empty($mIds)) {
+            $roleIds = $roles->pluck('id')->map(static fn ($id): int => (int)$id)->all();
+            if ($roleIds === []) {
                 throw new BusinessException('暂无权限');
             }
-            $query->whereIn('id', $mIds);
+
+            $permissionIds = RolePermission::whereIn('role_id', $roleIds)
+                ->pluck('menu_id')
+                ->map(static fn ($id): int => (int)$id)
+                ->unique()
+                ->values()
+                ->all();
+            $menuIds = $this->expandMenuIds($appID, $permissionIds);
+            if ($menuIds === []) {
+                throw new BusinessException('暂无权限');
+            }
+
+            $query->whereIn('id', $menuIds);
         }
 
         $menus = $query->get();
@@ -153,44 +156,37 @@ class AuthService extends BaseService
 
     public function getPermissions(User $userInfo, int $appID = 0): array
     {
-        $isAdmin = false;
-
-        // 筛选指定appid的菜单列表
-        $mIds = [];
-        foreach ($userInfo->userRole as $v) {
-            if ($v->role->app_id != $appID) {
-                continue;
-            }
-            if ($v->role->is_admin == 1) {
-                $isAdmin = true;
-                break;
-            }
-            foreach (explode(',', $v->role->rules ?? '') as $ruleId) {
-                $mIds[] = (int) trim($ruleId);
-            }
-        }
+        $roles = $this->getActiveRoles($userInfo, $appID);
+        $isAdmin = $roles->contains(static fn (Role $role): bool => $role->is_admin == 1);
 
         $query = MenuApi::where('tag', '<>', '')
             ->where('app_id', $appID);
 
         // 非管理员，根据角色权限筛选菜单API
         if (!$isAdmin) {
-            if (empty($mIds)) {
+            $roleIds = $roles->pluck('id')->map(static fn ($id): int => (int)$id)->all();
+            if ($roleIds === []) {
                 return [];
             }
-            $query->whereIn('menu_id', $mIds);
+
+            $permissionIds = RolePermission::whereIn('role_id', $roleIds)
+                ->pluck('menu_id')
+                ->unique()
+                ->values()
+                ->all();
+            if ($permissionIds === []) {
+                return [];
+            }
+
+            $query->whereIn('menu_id', $permissionIds);
         }
 
-        $apis = $query->select(['id', 'tag'])->get();
-        if ($apis->isEmpty()) {
-            return [];
-        }
-        return array_column($apis->toArray(), 'tag');
+        return $query->pluck('tag')->unique()->values()->all();
     }
 
     /**
      * 检查路径权限
-     * 参照Go版本CheckPath实现：根据menu_api.path查询关联菜单，再通过用户角色的rules匹配菜单权限
+     * 根据menu_api.path查询关联菜单，再通过用户角色及关系表匹配菜单权限。
      * @param array $claims JWT claims
      * @param \Webman\Http\Request $request
      * @return bool
@@ -235,7 +231,7 @@ class AuthService extends BaseService
             return false;
         }
 
-        $roles = (new \app\model\UserRole())
+        $roles = UserRole::query()
             ->where('user_id', $userId)
             ->get();
 
@@ -244,39 +240,108 @@ class AuthService extends BaseService
         }
 
         $roleIds = $roles->pluck('role_id')->toArray();
-        $roleList = (new \app\model\Role())
+        $roleList = Role::query()
             ->whereIn('id', $roleIds)
             ->where('status', 1)
-            ->select(['id', 'app_id', 'is_admin', 'rules'])
+            ->select(['id', 'app_id', 'is_admin'])
             ->get();
 
-        // 构建权限规则集，同时检查管理员角色
-        $ruleSet = [];
+        if ($roleList->isEmpty()) {
+            return false;
+        }
+
+        $adminAppIds = [];
+        $normalRoleApps = [];
         foreach ($roleList as $role) {
-            // 管理员角色拥有所有权限
             if ($role->is_admin == 1) {
-                foreach ($menus as $menu) {
-                    if ($menu->app_id == $role->app_id) {
-                        return true;
-                    }
-                }
+                $adminAppIds[(int)$role->app_id] = true;
+                continue;
             }
-            // 普通角色收集规则ID
-            if (!empty($role->rules)) {
-                foreach (explode(',', $role->rules) as $ruleId) {
-                    $ruleSet[(int)$ruleId] = true;
-                }
+
+            $normalRoleApps[(int)$role->id] = (int)$role->app_id;
+        }
+
+        $menuMap = [];
+        foreach ($menus as $menu) {
+            $menuMap[(int)$menu->id] = $menu;
+            if (isset($adminAppIds[(int)$menu->app_id])) {
+                return true;
             }
         }
 
-        // 判断是否有匹配的权限
-        foreach ($menus as $menu) {
-            if (isset($ruleSet[$menu->id])) {
+        if ($normalRoleApps === []) {
+            return false;
+        }
+
+        $permissions = RolePermission::whereIn('role_id', array_keys($normalRoleApps))
+            ->whereIn('menu_id', array_keys($menuMap))
+            ->select(['role_id', 'menu_id'])
+            ->get();
+
+        foreach ($permissions as $permission) {
+            $roleAppId = $normalRoleApps[(int)$permission->role_id] ?? 0;
+            $menu = $menuMap[(int)$permission->menu_id] ?? null;
+            if ($menu && $roleAppId === (int)$menu->app_id) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private function getActiveRoles(User $userInfo, int $appID): Collection
+    {
+        $roleIds = $userInfo->userRole
+            ->pluck('role_id')
+            ->map(static fn ($id): int => (int)$id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($roleIds === []) {
+            return new Collection();
+        }
+
+        return Role::whereIn('id', $roleIds)
+            ->where('app_id', $appID)
+            ->where('status', 1)
+            ->select(['id', 'app_id', 'is_admin'])
+            ->get();
+    }
+
+    /**
+     * 将已授权节点向上补齐到根菜单，避免只授权操作节点时菜单树断层。
+     */
+    private function expandMenuIds(int $appID, array $permissionIds): array
+    {
+        if ($permissionIds === []) {
+            return [];
+        }
+
+        $nodes = Menu::where('app_id', $appID)
+            ->select(['id', 'pid', 'type'])
+            ->get()
+            ->keyBy('id');
+        $menuIds = [];
+
+        foreach ($permissionIds as $permissionId) {
+            $nodeId = (int)$permissionId;
+            $visited = [];
+            while ($nodeId > 0 && !isset($visited[$nodeId])) {
+                $visited[$nodeId] = true;
+                $node = $nodes->get($nodeId);
+                if (!$node) {
+                    break;
+                }
+                if ($node->type === 'menu') {
+                    $menuIds[(int)$node->id] = (int)$node->id;
+                }
+                $nodeId = (int)$node->pid;
+            }
+        }
+
+        return array_values($menuIds);
     }
 
 }
