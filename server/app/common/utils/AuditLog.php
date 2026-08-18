@@ -68,7 +68,9 @@ class AuditLog
     }
 
     /**
-     * 记录审计日志
+     * 记录审计日志。
+     *
+     * 审计写入不得影响已完成的业务请求；失败仅记录服务端错误并返回空值。
      * @param array $data 审计数据
      * @return AuditLogModel|null
      */
@@ -116,6 +118,9 @@ class AuditLog
         ];
     }
 
+    /**
+     * 调用方未显式传入操作人时，从已解析 JWT 取值；认证失败的请求保留匿名审计。
+     */
     private static function fillActor(array $data, ?Request $request): array
     {
         if (!$request || !empty($data['actor_id'])) {
@@ -123,7 +128,7 @@ class AuditLog
         }
 
         try {
-            $claims = JwtUtils::decodeFromRequest($request);
+            $claims = $request->jwt ?? JwtUtils::decodeFromRequest($request);
             $data['actor_id'] = $claims['id'] ?? 0;
             $data['actor_name'] = $claims['name'] ?? '';
         } catch (Throwable) {
@@ -132,6 +137,9 @@ class AuditLog
         return $data;
     }
 
+    /**
+     * 按审计表字段长度截断并填充回退模块名称，防止日志本身因超长输入写入失败。
+     */
     private static function normalize(array $data): array
     {
         $module = (string)($data['module'] ?? '');
@@ -157,6 +165,9 @@ class AuditLog
         ];
     }
 
+    /**
+     * 递归脱敏请求上下文，密码、令牌及密钥不能进入审计记录或异常日志。
+     */
     private static function sanitizeContext(mixed $context): mixed
     {
         if (!is_array($context)) {

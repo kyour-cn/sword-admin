@@ -3,7 +3,7 @@ const DEFAULT_CONFIG = {
   APP_NAME: "GourdAdmin",
 
   //Logo
-  APP_LOGO: "/admin/img/logo.png",
+  APP_LOGO: "/admin/img/logo.svg",
 
   //首页地址
   DASHBOARD_URL: "/dashboard",

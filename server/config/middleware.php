@@ -20,6 +20,7 @@ return [
     ],
     // admin应用中间件
     'admin' => [
+        // 顺序不可调整：先建立认证上下文，再计算接口权限和数据范围，最后记录业务审计。
         app\middleware\AuthJwtMiddleware::class,
         app\middleware\AuditLogMiddleware::class,
     ]

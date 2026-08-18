@@ -46,7 +46,7 @@ class Role extends BaseController
     public function delete(Request $req): Response
     {
         $serv = new RoleService();
-        $serv->delete($req->post('ids'));
+        $serv->delete((array)$req->post('ids', []));
         return $this->success();
     }
 }

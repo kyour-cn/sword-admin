@@ -8,6 +8,9 @@ use Webman\Http\Request;
 
 class JwtUtils
 {
+    /**
+     * 统一创建 JWT 实例，调用方可覆盖默认过期时间以匹配访问令牌 TTL。
+     */
     protected static function instance(?int $expire = null): JWT
     {
         return new JWT(
@@ -44,11 +47,15 @@ class JwtUtils
      */
     public static function decodeFromRequest(Request $request): array
     {
-        $token = $request->header('Authorization');
-        if(empty($token)){
-            throw new BusinessException('token不能为空');
+        $authorization = trim((string)$request->header('Authorization', ''));
+        if (!preg_match('/^Bearer\s+(\S+)$/i', $authorization, $matches)) {
+            throw new BusinessException('访问令牌格式不正确');
         }
-        $token = str_replace('Bearer ', '', $token);
-        return self::decode($token);
+        $claims = self::decode($matches[1]);
+        if (!isset($claims['id']) && isset($claims['sub'])) {
+            // 兼容仍读取 id 的既有服务；id 不写入 JWT，只在解析结果中提供别名。
+            $claims['id'] = (int)$claims['sub'];
+        }
+        return $claims;
     }
 }

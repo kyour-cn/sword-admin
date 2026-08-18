@@ -37,7 +37,7 @@ class App extends BaseController
     public function delete(Request $req): Response
     {
         $serv = new AppService();
-        $serv->delete($req->post('ids'));
+        $serv->delete((array)$req->post('ids', []));
         return $this->success();
     }
 }

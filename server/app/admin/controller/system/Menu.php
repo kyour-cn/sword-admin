@@ -50,10 +50,13 @@ class Menu extends BaseController
     public function delete(Request $req): Response
     {
         $serv = new MenuService();
-        $serv->delete($req->post('ids'));
+        $serv->delete((array)$req->post('ids', []));
         return $this->success();
     }
 
+    /**
+     * 将前端菜单树节点还原为服务层所需的扁平字段，并补齐历史页面缺失的 meta 默认值。
+     */
     private function formatSaveData(array $data): array
     {
         $meta = $data['meta'] ?? [];

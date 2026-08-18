@@ -7,6 +7,8 @@
   "require": {
     "php": ">=8.2",
     "ext-pdo": "*",
+    "ext-curl": "*",
+    "ext-dom": "*",
     "workerman/webman-framework": "^2.1",
     "monolog/monolog": "^2.0",
     "webman/database": "*",
@@ -15,7 +17,7 @@
     "adhocore/jwt": "^1.1",
     "illuminate/pagination": "*",
     "webman/console": "^2.1",
-    "openspout/openspout": "~4.28.5",
+    "openspout/openspout": ">=4.28.5",
     "robmorgan/phinx": "^0.16",
     "aws/aws-sdk-php": ">=3.300 <4.0",
     "altcha-org/altcha": "^2.0"

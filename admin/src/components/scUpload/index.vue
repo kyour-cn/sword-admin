@@ -103,7 +103,6 @@ const style = reactive({
 
 // 监听器
 watch(() => props.modelValue, (val) => {
-  val = tool.resUrl(val)
   value.value = val
   newFile(val)
 })
@@ -123,7 +122,7 @@ const newFile = (url) => {
   if (url) {
     file.value = {
       status: "success",
-      url: url
+      url: tool.resUrl(url)
     }
   } else {
     file.value = null
@@ -227,8 +226,9 @@ const success = (res, uploadFile) => {
     return false
   }
   const response = config.parseData(res)
-  uploadFile.url = response.src
-  value.value = uploadFile.url
+  // 表单保存后端返回的原始路径，预览始终使用完整资源地址，避免相对路径被解析到前端站点。
+  uploadFile.url = tool.resUrl(response.src)
+  value.value = response.src
 }
 
 const error = (err) => {
