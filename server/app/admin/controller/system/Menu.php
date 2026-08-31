@@ -86,7 +86,7 @@ class Menu extends BaseController
         $data['type'] = $meta['type'];
         $data['meta'] = json_encode($meta, JSON_UNESCAPED_UNICODE);
 
-        unset($data['apiList'], $data['menu_api'], $data['children'], $data['appId']);
+        unset($data['menu_api'], $data['children'], $data['appId']);
 
         return $data;
     }
